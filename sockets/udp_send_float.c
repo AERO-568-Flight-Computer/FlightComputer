@@ -7,6 +7,7 @@
 #include <unistd.h>  // for close
 #include "udp_send_float.h"
 
+// Added more comments
 // This function sends a float to the server
 void udp_send_float(float number, int port) {
     // Create a socket

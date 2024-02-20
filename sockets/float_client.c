@@ -8,6 +8,7 @@ int main() {
     printf("Enter a float value between -90.0 and 90.0: ");
     scanf("%f", &number);
 
+    // Added more comments:
     // This calls the function I imported above from udp_send_float.h
     // The .h file is a header file that contains the function prototype
     // The udp_send_float.c file is the implementation file that 
