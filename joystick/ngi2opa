@@ -30,7 +30,7 @@ def interact(ngi, flightcomputer, writer=None):
         """ RECEIVE FROM PORT 7004"""
         data, addr = ngi.rxSockStatus.recvfrom(4096)
         axis, pos, force, sw09, sw10, sw11, sw12 = ngi.decodeMsg10(data)
-        # print(f"Axis {axis} | Position {pos[0]}")
+        # print(f"Axis {axis} | Position {pos}")
         if axis == 0:
             print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
             # Convert to ratio to feed to xplane [-1, 1]
