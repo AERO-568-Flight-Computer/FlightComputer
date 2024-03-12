@@ -8,6 +8,7 @@ import os
 
 class StirlingInceptor():
     UDP_IP_NGI = "192.168.10.101"
+    # UDP_IP_NGI = "192.168.0.59"
     UDP_PORT_INIT = 7000        # Initialization Message
     UDP_PORT_CTL = 7001         # Control Message
     UDP_PORT_ROTCHAR = 7002     # Rotary Characteristic Message
@@ -47,10 +48,12 @@ class StirlingInceptor():
 
         # Open UDP Socket to Receive Stick Status
         self.rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.rxSockStatus.bind(('', self.UDP_PORT_STATUS))  # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
+        self.rxSockStatus.bind(('', self.UDP_PORT_STATUS))  
+        # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
 
         self.rxSockLimRot = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.rxSockLimRot.bind(('', self.UDP_PORT_LIMROT))  # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
+        self.rxSockLimRot.bind(('', self.UDP_PORT_LIMROT))  
+        # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
 
         """" INITIALIZATION HANDSHAKE """
         self.txSock.sendto(self.msg00(axis='pitch'), (self.UDP_IP_NGI, self.UDP_PORT_INIT))
