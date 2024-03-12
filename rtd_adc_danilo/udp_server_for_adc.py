@@ -26,25 +26,25 @@ while True:
         # Receive data from the client with a maximum data buffer size of 4096 bytes (if data is getting truncated, check here)
         data, addr = server.recvfrom(1 << 12)
 
-        num_ints_in_data = str(len(data) // 4)
+        num_ints_in_data = len(data) // 4
 
 
         # Each time we get back to the first channel, we want to append a new empty array to the data_from_adc array
         if i % num_channels == 0:
             try:
-                np.append(data_from_adc, np.empty((num_channels,int(num_ints_in_data)), np.float64) * np.nan, axis=1)
+                np.append(data_from_adc, np.empty((num_channels,num_ints_in_data), np.float64) * np.nan, axis=1)
             except NameError:
-                data_from_adc = np.empty((num_channels,int(num_ints_in_data)), np.float64) * np.nan
+                data_from_adc = np.empty((num_channels,num_ints_in_data), np.float64) * np.nan
             
 
-        if int(num_ints_in_data) > longestChannel:
-            longestChannel = int(num_ints_in_data)
+        if num_ints_in_data > longestChannel:
+            longestChannel = num_ints_in_data
             counter += 1
-        elif int(num_ints_in_data) < longestChannel:
+        elif num_ints_in_data < longestChannel:
             counter += 1
 
         # Unpack the data from the client into a tuple of integers
-        unpacked_data = struct.unpack(num_ints_in_data + 'i', data)
+        unpacked_data = struct.unpack(str(num_ints_in_data) + 'i', data)
         # Place data into array at the correct channel
         data_from_adc[:num_ints_in_data, i] = unpacked_data
 
