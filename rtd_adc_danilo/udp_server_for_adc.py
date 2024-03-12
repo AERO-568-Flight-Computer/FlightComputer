@@ -65,7 +65,7 @@ while True:
 
 # Plot channel 1
 
-plt.scatter(data_from_adc[:, 0])
+plt.scatter(list(range(len(data_from_adc[:,0]))) ,data_from_adc[:, 0])
 plt.show()
 
 
