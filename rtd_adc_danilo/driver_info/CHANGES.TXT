@@ -1,0 +1,75 @@
+Change log for SWP-700010144 rev E
+
+Linux Software (DM35424)
+
+Copyright (C) RTD Embedded Technologies, Inc.  All Rights Reserved.
+
+
+v01.00.00 (rev A)   6/26/2013  RGG
+-----------------------------------
+- Initial version
+
+
+v02.00.00 (rev B)   7/20/2015  RGG
+-----------------------------------
+- Updated example programs to handle passing 16-bit DAC values to library
+  instead of 32-bit values for the conversion functions.
+- Added open function to temperature library
+- Minor change to how driver allocates memory for DMA.
+- ADC and DAC Interrupt Enable was not being returned correctly from the
+  library function call.
+- The convenience functions to convert counts to volts and volts to counts now
+  takes the set input/output range as a parameter instead of channel.  This removes
+  a hidden structure that kept that information.  
+- Driver is now dual-licensed.  The driver and all files required to use it
+  is GPLv2 licensed, and the user-mode libraries and examples use the
+  standard RTD license.
+- Driver now creates the device files directly, instead of having the user
+  do so via the /proc.  This is in response to the /proc interface changing
+  in kernel version 3.10.
+- "Board" library functions and references changed to "Gbc" because that
+  is where they actually are.  
+  
+  
+v03.00.00 (rev C)   3/20/2016  RGG
+-----------------------------------
+- Explicitly calling pci_set_master in driver to allow DMA, as some
+  UEFI BIOS do not set this in PCI space.
+- Removed library function _Find_Used_Buffer because it had some inherent flaws
+  and in very remote cases could fail.  The user is now responsible to keep
+  track of what buffer is next.  All examples using DMA have been updated to
+  demonstrate how to do this.
+- Changed method in library for setting sample/conversion rate.  It now gets the 
+  system clock from another library call (which constrains it) instead of reading
+  it directly.  This solves a problem where consecutive calls to set the same
+  sample rate was resulting in different rates for different function blocks.
+- Removed library function for setting ISR priority.  Using it required being root,
+  and it's not actually needed anyway.
+
+
+v04.00.00 (rev D)    03/17/2017     RGG
+---------------------------------------
+- Added revision info from GBC registers to list_fb example output.
+- DMA Buffer setup library call changed.  It now takes a single unsigned
+  8-bit value for the register instead of booleans for every bit.
+- Dma Initialize and other functions moved out of DMA library and into 
+  os-specific library.
+- Added reference count to driver.  This prevents the device file from being
+  opened while already held open by another program.
+- All instances of CLK_SRC_GBL have been changed to CLK_BUS for clarity.
+- Removed setting rate in _dac example, as it is not needed.
+- Removed --adc option from ADC examples, as it did not provide much help
+  to the user, and prevented example compatibility between 224 and 424 boards.
+- Added --bin2txt option for ADC DMA example, to convert binary file to ASCII
+
+  
+v04.00.01 (rev E)   03/03/2020  LRF
+-----------------------------------
+- Added support for the 5.0 Kernel Version. Repalced depricated SUBDIRS with
+the modern M=
+- Added support for 5.1 kernel version DMA. Sets a Device struct to track DMA
+allocated memory, which is now required.
+- Kernel version 5.6 requries the use of ioremap(...) since ioremap_nocache(...)
+s now deprecated and subsumed by the former.
+- Fixed an error with some versions of Linux for accepting input on the DM35424_ref_adjust(...)
+

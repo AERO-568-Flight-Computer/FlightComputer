@@ -1,0 +1,17 @@
+Make sure driver is loaded on the flight computer
+
+Open terminal and use command:
+
+lsmod 
+
+to check which drivers are running
+
+Driver name is "rtd_dm35424"
+
+If it is not there, use command:
+
+sudo insmod /home/cp-opa/Desktop/DM35424_Linux_v04.00.01/driver/rtd_dm35424.Known
+
+This will reload the driver to the system. Check if it is loaded with lsmod
+
+
