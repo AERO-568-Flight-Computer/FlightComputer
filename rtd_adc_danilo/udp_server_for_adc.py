@@ -32,9 +32,9 @@ while True:
         # Each time we get back to the first channel, we want to append a new empty array to the data_from_adc array
         if i % num_channels == 0:
             try:
-                np.append(data_from_adc, np.empty((num_channels,num_ints_in_data), np.float64) * np.nan, axis=1)
+                np.append(data_from_adc, np.empty((num_ints_in_data,num_channels), np.float64) * np.nan, axis=1)
             except NameError:
-                data_from_adc = np.empty((num_channels,num_ints_in_data), np.float64) * np.nan
+                data_from_adc = np.empty((num_ints_in_data,num_channels), np.float64) * np.nan
             
 
         if num_ints_in_data > longestChannel:
