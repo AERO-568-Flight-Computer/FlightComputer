@@ -25,14 +25,7 @@ WARNING_FLAGS=-Wall
 CFLAGS:=$(DEBUG_FLAGS) $(INCLUDE_FLAGS) $(OPTIMIZE_FLAGS) $(WARNING_FLAGS)
 
 EXAMPLES = \
-	dm35424_adc \
-	dm35424_adc_continuous_dma \
-	dm35424_dac \
-	dm35424_dac_dma \
-	dm35424_dio \
-	dm35424_temperature \
-	dm35424_ref_adjust \
-	dm35424_list_fb 
+	dm35424_adc_for_cpopa 
 
 
 all:	$(EXAMPLES)
