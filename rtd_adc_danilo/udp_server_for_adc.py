@@ -46,7 +46,7 @@ while True:
         # Unpack the data from the client into a tuple of integers
         unpacked_data = struct.unpack(str(num_ints_in_data) + 'i', data)
         # Place data into array at the correct channel
-        data_from_adc[:num_ints_in_data, i] = unpacked_data
+        data_from_adc[-num_ints_in_data:, i] = unpacked_data
 
     numIters += 1
 
