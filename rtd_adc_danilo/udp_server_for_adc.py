@@ -3,6 +3,7 @@ import time
 import struct
 import itertools
 import numpy as np
+import pyplot as plt
 
 # udp_server_for_adc.py
 
@@ -55,11 +56,17 @@ while True:
     if counter > 1:
         print("Hmmmm")
 
+    if numIters == 10:
+        break
 # Changes to make
 # Initialize empty array that is 8 by num_ints_in_data
 # apend empty array of that size on each loop iteration except the first at the start of the loop (I did think this through)
 # Put the data into the array instead of appending
-    
+
+# Plot channel 1
+
+plt.scatter(data_from_adc[:, 0])
+plt.show()
 
 
 
