@@ -3,7 +3,7 @@ import time
 import struct
 import itertools
 import numpy as np
-import pyplot as plt
+from matplotlib import pyplot as plt
 
 # udp_server_for_adc.py
 
