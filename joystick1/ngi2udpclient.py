@@ -16,6 +16,9 @@ def interact(ngi, writer=None):
 
     while True:
         """ RECEIVE FROM PORT 7004"""
+
+        print("Waiting to receive data")
+
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
         print(data)
