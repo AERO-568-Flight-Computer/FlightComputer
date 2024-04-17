@@ -39,7 +39,6 @@ def interact(ngi, writer=None):
 
     while True:
         """ RECEIVE FROM PORT 7004"""
-        print(f"chandler sux")
         data, addr = ngi.rxSockStatus.recvfrom(4096)
         # client.sendto(data, ('localhost', 11111))
         print(data)
@@ -89,4 +88,4 @@ def main():
         print("Data transmission terminated by user.")
 
 if __name__ == '__main__':
-    main()
+    main() 

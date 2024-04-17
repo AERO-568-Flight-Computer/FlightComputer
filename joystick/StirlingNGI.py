@@ -1,14 +1,13 @@
 import socket
 import struct
 from time import sleep
-import csv
-from datetime import datetime, timezone
-import os
+# import csv
+# from datetime import datetime, timezone
+# import os
 
 
 class StirlingInceptor():
     UDP_IP_NGI = "192.168.10.101"
-    # UDP_IP_NGI = "192.168.0.59"
     UDP_PORT_INIT = 7000        # Initialization Message
     UDP_PORT_CTL = 7001         # Control Message
     UDP_PORT_ROTCHAR = 7002     # Rotary Characteristic Message
@@ -48,11 +47,11 @@ class StirlingInceptor():
 
         # Open UDP Socket to Receive Stick Status
         self.rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.rxSockStatus.bind(('', self.UDP_PORT_STATUS))  
-        # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
+
+        # TODO: not working i  self.rxSockStatus.bind(('', self.UDP_PORT_STATUS))f NGI is not on network - "only one usage of each socket address is normally permitted
 
         self.rxSockLimRot = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        self.rxSockLimRot.bind(('', self.UDP_PORT_LIMROT))  
+        self.rxSockLimRot.bind(('', self.UDP_PORT_LIMROT))
         # TODO: not working if NGI is not on network - "only one usage of each socket address is normally permitted
 
         """" INITIALIZATION HANDSHAKE """
@@ -423,7 +422,9 @@ def main():
         ngi.configSetup()
 
         while True:
-            data, addr = ngi.rxSockLimRot.recvfrom(4096)
+            print("test")
+            data = ngi.rxSockLimRot.recvfrom(1)
+            print("data received: ")
             axis, posCoords, negCoords = ngi.decodeMsg11(data)
             print(f"Positive {axis} Pos/Force Coordinates: {posCoords} | Negative Pos/Force Coordinates: {negCoords}")
             ngi.POS_FORCE_COORDS = [[0, 0], [5, 5], [10, 10], [15, 15], [20, 40]]
