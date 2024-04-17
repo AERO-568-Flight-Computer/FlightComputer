@@ -11,13 +11,15 @@ def interact(ngi, writer=None):
     rollTrimVal = 0
     trimStep = 0.01
 
-    print(f"Sending data to port 11111")
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
     while True:
         """ RECEIVE FROM PORT 7004"""
         data, addr = ngi.rxSockStatus.recvfrom(4096)
+
+        print(data)
+        print(f"Sending data to port 11111")
 
         client.sendto(data, ('localhost', 11111))
 
