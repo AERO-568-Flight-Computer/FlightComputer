@@ -20,7 +20,6 @@ class StirlingInceptor():
 
     ROLL_GAIN = -0.0583
     ROLL_OFFSET = 21.6876
-
     PITCH_FORCE_BIAS = 1.5
     ROLL_FORCE_BIAS = 7.0
 

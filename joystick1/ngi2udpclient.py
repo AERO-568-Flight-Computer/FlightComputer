@@ -22,6 +22,7 @@ def interact(ngi, writer=None):
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
         print(data)
+        
         print(f"Sending data to port 11111")
 
         client.sendto(data, ('localhost', 11111))
