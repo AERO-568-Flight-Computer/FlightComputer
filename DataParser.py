@@ -1,10 +1,9 @@
 import serial
+import struct
+import time
 from typing import Dict
 
-# Concept
-# To get the group information, it would always be the byte right after the sync byte
-# from that byte, we can get the group names and determine the number of groups that we need to look into to find the fields
-# From the number of groups that will tell us the number of bytes after the group byte that we need to look into to find the fields and payload length
+'''-----------------------------Lookup Tables (Data Structure)-------------------------------'''
 
 group_lookup_table: Dict[int, str] = {
     1: 'Common',
@@ -54,12 +53,15 @@ field_lookup_table: Dict[str, Dict[int, str]] = {
         3: 'UncompAccel',
         4: 'UncompGyro',
         5: 'Temperature',
-        6: 'DeltaTheta',
-        7: 'DeltaVel',
-        8: 'Mag',
-        9: 'Accel',
-        10: 'AngularRate',
-        11: 'SensSat'
+        6: 'Pres', # This one is weird. It's not in the Control Center and there is some contradictions in the manual for this parameter. Appears in the manual as a field,
+        # but isn't a group field that you can select in both the manual and Control Center. You can also see its presence in the group field bytes in the message. There will be
+        # a zero in the middle of the message where the pressure field should be.
+        7: 'DeltaTheta',
+        8: 'DeltaVel',
+        9: 'Mag',
+        10: 'Accel',
+        11: 'AngularRate',
+        12: 'SensSat' # I couldn't find this group fields payload size, Don't select
     },
 
     'Gnss': {
@@ -72,25 +74,30 @@ field_lookup_table: Dict[str, Dict[int, str]] = {
         7: 'GnssPosEcef',
         8: 'GnssVelNed',
         9: 'GnssVelEcef',
-        10: 'GbssPosUncertainty',
+        10: 'GnssPosUncertainty',
         11: 'GnssVelUncertainty',
         12: 'GnssTimeUncertainty',
         13: 'GnssTimeInfo',
-        14: 'GnssDop',
-        15: 'GnssSatInfo',
-        16: 'GnssRawMeas'
+        14: 'GnssDop', # If this group field is selected in Control Center, the message will be corrupted and the CRC will not match 0.
+        # This could be because the Vector Nav currently does not have a GPS connected to it and it isn't getting any satellite info on the DOP, but I'm not sure.
+        15: 'GnssSatInfo', # Don't Select this field. Not Programmed. Just Please Don't. PLEASE.
+        16: 'GnssRawMeas' # Same with this one. Just don't.
+        # The problem with this is that the size of the message changes signicantly when these fields are selected.
+        # GNSSSatInfo and GnssRawMeas change in size depending on a variable N that is specified in the manual.
     },
 
     'Attitude': {
-        1: 'Ypr',
-        2: 'Quaternion',
-        3: 'Dcm',
-        4: 'MagNed',
-        5: 'AccelNed',
-        6: 'LinearBodyAcc',
-        7: 'LinearAccelNed',
-        8: 'YprU',
-        9: 'Heave'
+        1: 'Reserved', # Reserved byte, probably for the presence of GnssRawMeas and GnssSatInfo fields.
+        2: 'Ypr',
+        3: 'Quaternion',
+        4: 'Dcm',
+        5: 'MagNed',
+        6: 'AccelNed',
+        7: 'LinearBodyAcc',
+        8: 'LinearAccelNed',
+        9: 'YprU',
+        10: 'Heave' # This is also a weird group field. It appears in Control Center as a selectable group field, but it isn't described in the manual. It seems to be
+        # reserved group field.
     },
 
     'Ins': {
@@ -121,20 +128,157 @@ field_lookup_table: Dict[str, Dict[int, str]] = {
         11: 'GnssVelUncertainty',
         12: 'GnssTimeUncertainty',
         13: 'GnssTimeInfo',
-        14: 'GnssDop',
-        15: 'GnssSatInfo',
-        16: 'GnssRawMeas'
+        14: 'GnssDop', # If this group field is selected in Control Center, the message will be corrupted and the CRC will not match 0.
+        # This could be because the Vector Nav currently does not have a GPS connected to it and it isn't getting any satellite info on the DOP, but I'm not sure.
+        15: 'GnssSatInfo', # PLEASE DON'T SELECT THIS FIELD
+        16: 'GnssRawMeas' # Same with this one. Just don't.
+        # The problem with this is that the size of the message changes signicantly when these fields are selected.
+        # GNSSSatInfo and GnssRawMeas change in size depending on a variable N that is specified in the manual.
     }
 }
 
-'''Method is working'''
-def findSyncByte(port, sync_byte):
-    byte = port.read(1)
-    while byte != sync_byte:
-        byte = port.read(1)
-    return byte
+payload_lookup_table: Dict[str, int] = {
+    
+    # These are all of the fields payload sizes that I know work and assumes that there will be only one case/data for each of these fields. If we were to add
+    # a 2nd GNSS system then we would have to add a new case for the GNSS fields such as GPSTow2, GpsWeek2, etc. This should also be reflected in the field_lookup_table.
 
-'''Method is working'''
+    # Time
+        'TimeStartup': 8,
+        'TimeGps': 8,
+        'TimeSyncIn': 8,
+        'TimeGpsPps': 8,
+        'TimeUtc': 8,
+        'SyncInCnt': 4,
+        'SyncOutCnt': 4,
+        'TimeStatus': 1,
+
+    # IMU
+        'ImuStatus': 2,
+        'UncompMag': 12,
+        'UncompAccel': 12,
+        'UncompGyro': 12,
+        'Temperature': 4,
+        'DeltaTheta': 16,
+        'DeltaVel': 12,
+        'Mag': 12,
+        'Accel': 12,
+        'AngularRate': 12,
+
+    # GNSS
+        'GpsTow': 8,
+        'GpsWeek': 2,
+        'NumSats': 1,
+        'GnssFix': 1,
+        'GnssPosLla': 24,
+        'GnssPosEcef': 24,
+        'GnssVelNed': 12,
+        'GnssVelEcef': 12,
+        'GnssPosUncertainty': 12,
+        'GnssVelUncertainty': 4,
+        'GnssTimeUncertainty': 4,
+        'GnssTimeInfo': 2,
+
+    # Attitude
+        'Ypr': 12,
+        'Quaternion': 16,
+        'Dcm': 36,
+        'MagNed': 12,
+        'AccelNed': 12,
+        'LinearBodyAcc': 12,
+        'LinearAccelNed': 12,
+        'YprU': 12,
+
+    # INS
+        'InsStatus': 2,
+        'PosLla': 24,
+        'PosEcef': 24,
+        'VelBody': 12,
+        'VelNed': 12,
+        'VelEcef': 12,
+        'MagEcef': 12,
+        'AccelEcef': 12,
+        'LinAccelEcef': 12,
+        'PosU': 4,
+        'VelU': 4,
+
+}
+
+data_type_lookup_table: Dict[str, tuple[str, int]] = {
+
+    # This table will be used to determine the data type that is being read from the message
+    # b = signed byte
+    # B = unsigned byte
+    # H = unsigned short (2 bytes)
+    # h = signed short (2 bytes)
+    # f = float
+    # Q = unsigned long long (8 bytes)
+    # q = signed long long (8 bytes)
+    # d = double (8 bytes)
+    # I = unsigned int (4 bytes)
+    # i = signed int (4 bytes)
+
+        # Time
+        'TimeStartup': ('Q', 8),
+        'TimeGps': ('Q', 8),
+        'TimeSyncIn': ('Q', 8),
+        'TimeGpsPps': ('Q', 8),
+        'TimeUtc': ('b 5B H', 8), # The year is given as a signed byte year offset from the year 2000 and the miliseconds byte is given as a u16 data type
+        'SyncInCnt': ('I', 4),
+        'SyncOutCnt': ('I', 4),
+        'TimeStatus': ('B', 1), # has bit flags *Not Coded*
+
+    # IMU
+        'ImuStatus': ('H', 2),
+        'UncompMag': ('3f', 12),
+        'UncompAccel': ('3f', 12),
+        'UncompGyro': ('3f', 12),
+        'Temperature': ('f', 4),
+        'DeltaTheta': ('4f', 16),
+        'DeltaVel': ('3f', 12),
+        'Mag': ('3f', 12),
+        'Accel': ('3f', 12),
+        'AngularRate': ('3f', 12),
+
+    # GNSS
+        'GpsTow': ('Q', 8),
+        'GpsWeek': ('H', 2),
+        'NumSats': ('B', 1),
+        'GnssFix': ('B', 1), # Has bit flags *Not Coded*
+        'GnssPosLla': ('3d', 24),
+        'GnssPosEcef': ('3d', 24),
+        'GnssVelNed': ('3f', 12),
+        'GnssVelEcef': ('3f', 12),
+        'GnssPosUncertainty': ('3f', 12),
+        'GnssVelUncertainty': ('f', 4),
+        'GnssTimeUncertainty': ('f', 4),
+        'GnssTimeInfo': ('B b', 2), # Has bit flags *Not Coded*
+
+    # Attitude
+        'Ypr': ('3f', 12),
+        'Quaternion': ('4f', 16),
+        'Dcm': ('9f', 36),
+        'MagNed': ('3f', 12),
+        'AccelNed': ('3f', 12),
+        'LinearBodyAcc': ('3f', 12),
+        'LinearAccelNed': ('3f', 12),
+        'YprU': ('3f', 12),
+
+    # INS
+        'InsStatus': ('H', 2),
+        'PosLla': ('3d', 24),
+        'PosEcef': ('3d', 24),
+        'VelBody': ('3f', 12),
+        'VelNed': ('3f', 12),
+        'VelEcef': ('3f', 12),
+        'MagEcef': ('3f', 12),
+        'AccelEcef': ('3f', 12),
+        'LinAccelEcef': ('3f', 12),
+        'PosU': ('f', 4),
+        'VelU': ('f', 4)
+}
+
+'''-----------------------------Main Methods-------------------------------'''
+
 def getMessage(port, sync_byte):
     message = []
     message.append(findSyncByte(port, sync_byte))
@@ -144,24 +288,19 @@ def getMessage(port, sync_byte):
         byte = port.read(1)
     return message
 
-'''Method is working'''
-def getSize(message):
-    return len(message)
+def calculate_crc(data):
+    crc = 0x0000
+    for byte in data:
+        crc = (crc >> 8) | (crc << 8) & 0xFFFF
+        crc ^= byte
+        crc ^= (crc & 0xFF) >> 4
+        crc ^= (crc << 12) & 0xFFFF
+        crc ^= ((crc & 0xFF) << 5) & 0xFFFF
+    return crc
 
-'''Method is working'''
-def findGroupByte(message):
-    groupbyte = b''
-    for byte in message:
-        if byte == sync_byte:
-            groupbyte = message[message.index(byte) + 1]
-            break
-    return groupbyte
-
-'''Method is working'''
 def getGroupInfo(groupbyte):
     binary_string = format(int.from_bytes(groupbyte, byteorder='big'), '08b')
     binary_string = binary_string[::-1]
-    print(binary_string)
     
     active_groups = []
     
@@ -172,7 +311,6 @@ def getGroupInfo(groupbyte):
                 active_groups.append(group_name)
     return active_groups
 
-'''Method is working'''
 def findGroupFieldBytes(message, active_groups):
     byte_count = 2
     start_index = 2
@@ -183,26 +321,18 @@ def findGroupFieldBytes(message, active_groups):
         start_index += byte_count
     return group_field_bytes
 
-# I think the issue that I'm getting is that its not reading the 16 bits correctly
-# Example output:
-# [b'\xfa', b'\x12', b'@', b'\x00', b'\x02', b'\x00', b'\x14', b'\x03', b'\x16', b'\x03', b'\t', b' ', b'm', b'\x00', b'\x0c', b'\xbd', b'\x9b', b'\xc2', b'\x88', b'\x95', b'\x97', b'>', b'\x9c', b'\xd4', b'`', b'\xbc', b'\xd1', b'\xdb']
-# 01001000
-# ['Time', 'Attitude']
-# [b'@\x00', b'\x02\x00']
-# 0000000000000010
-# 0000000001000000
-# {'Time': [], 'Attitude': []}
-
 def getActiveFieldNames(active_groups, group_field_bytes, field_lookup_table):
-    # This will hold the final active field names for each group
     active_fields_info = {}
 
     for group_name, field_bytes in zip(active_groups, group_field_bytes):
-        # Convert the two field bytes to a binary string and reverse it
-        # since the LSB corresponds to the first field
-        field_status_bin = format(int.from_bytes(field_bytes, byteorder='big'), '016b')
-        field_status_bin = field_status_bin[::-1]
-        print(field_status_bin)
+        byte1 = field_bytes[0]
+        byte2 = field_bytes[1]
+        byte1_flipped = int(format(byte1, '08b')[::-1], 2)
+        byte2_flipped = int(format(byte2, '08b')[::-1], 2)
+
+        # Combine the two bytes into a 16-bit binary number
+        binary16 = (byte1_flipped << 8) | byte2_flipped
+        field_status_bin = format(binary16, '016b')
         
         # Extract the specific field names that are active for this group
         active_fields = []
@@ -216,14 +346,46 @@ def getActiveFieldNames(active_groups, group_field_bytes, field_lookup_table):
 
     return active_fields_info
 
-'''Method is working'''
-def listToBytes(list_of_bytes):
-    bytes = b''
-    for byte in list_of_bytes:
-        bytes += byte
-    return bytes
+def parse_and_print_data(payload_message, payload_sizes, active_fields_info):
+    start_index = 0
+    for group_name, fields in active_fields_info.items():
+        for field in fields:
+            type_format, size = data_type_lookup_table[field]
+            data_bytes = payload_message[start_index:start_index+size]
+            if ' ' in type_format:
+                formats = type_format.split()
+                results = []
+                offset = 0
+                for fmt in formats:
+                    part_size = struct.calcsize(fmt)
+                    part_bytes = data_bytes[offset:offset+part_size]
+                    results.extend(struct.unpack(fmt, part_bytes))
+                    offset += part_size
+                unpacked_data = tuple(results)
+            else:
+                unpacked_data = struct.unpack(type_format, data_bytes)
+            print(f"{field} ({group_name}):", unpacked_data)
+            start_index += size
 
-'''Method is working'''
+'''-----------------------------Utility Methods-------------------------------'''
+
+def findSyncByte(port, sync_byte):
+    byte = port.read(1)
+    while byte != sync_byte:
+        byte = port.read(1)
+    return byte
+
+def getSize(message):
+    return len(message)
+
+def findGroupByte(message):
+    groupbyte = b''
+    for byte in message:
+        if byte == sync_byte:
+            groupbyte = message[message.index(byte) + 1]
+            break
+    return groupbyte
+
 def removeByte(message, byte):
     new_message = list(message)
     i = 0
@@ -234,53 +396,81 @@ def removeByte(message, byte):
         i += 1
     return new_message
 
+def getPayloadSizes(active_fields_info, payload_lookup_table):
+    
+    payload_sizes = []
 
-'''Method is working'''
-def calculate_crc(data):
-    crc = 0x0000
-    for byte in data:
-        crc = (crc >> 8) | (crc << 8) & 0xFFFF
-        crc ^= byte
-        crc ^= (crc & 0xFF) >> 4
-        crc ^= (crc << 12) & 0xFFFF
-        crc ^= ((crc & 0xFF) << 5) & 0xFFFF
-    return crc
+    for group_name, fields in active_fields_info.items():
+        for field in fields:
+            payload_size = payload_lookup_table.get(field)
+            if payload_size:
+                payload_sizes.append(payload_size)
+    return payload_sizes
+
+def calculatePayloadSize(payload_sizes):
+    return sum(payload_sizes)
+
+def removeHeader(message, active_groups):
+    header_size = 2 + len(active_groups) * 2
+    payload_message = message[header_size:]
+    # Remove the 2 hex bytes that are at the end of the message (CRC bytes)
+    return payload_message[:-2]
+
+def joinBytes(bytes):
+    joined_bytes = b''.join(bytes)
+    return joined_bytes
+
+'''-----------------------------Main-------------------------------'''
 
 if __name__ == "__main__":
 
-    port = serial.Serial('COM3', 115200)
+    port = serial.Serial('COM3', 115200) # Port may be changed depending on where you plug the VectorNav into
     sync_byte = b'\xfa'
 
     try:
         while True:
             try:
 
-                message = getMessage(port, sync_byte)
+                message = getMessage(port, sync_byte) # Get the message
 
                 # CRC Check to ensure message is not corrupted
-                new_message = removeByte(message, sync_byte)
-                data = listToBytes(new_message)
-                crc = calculate_crc(data)
+                # *Note: From reading the manual, the CRC is caluclated from the byte after the sync byte to the end of the message.
+                #        VectorNav makes it easy to check the CRC because when this calculation is done, the CRC should always be 0 for a valid message.
+                new_message = removeByte(message, sync_byte) # removes the sync byte
+                data = joinBytes(new_message) # joins the bytes into a single byte string
+                crc = calculate_crc(data) # calculates the CRC
 
                 if crc != 0:
                     raise ValueError("Message may be corrupted! CRC does not match.")
                 
-                print(message)
+                # getting the group/groupfield info
+                groupbyte = findGroupByte(message) # gets the group byte
+                active_groups = getGroupInfo(groupbyte) # gets the active groups from the group byte
+                groupFields = findGroupFieldBytes(message, active_groups) # gets the active group field bytes from the message
+                active_fields_info = getActiveFieldNames(active_groups, groupFields, field_lookup_table) # gets the active fields from the active group field bytes
                 
-                groupbyte = findGroupByte(message)
-                active_groups = getGroupInfo(groupbyte)
-                print(active_groups)
-                groupFields = findGroupFieldBytes(message, active_groups)
-                print(groupFields)
-                active_fields_info = getActiveFieldNames(active_groups, groupFields, field_lookup_table)
-                print(active_fields_info)
+                # Extracting the payload from the active groups/groupfields
+                payload_sizes = getPayloadSizes(active_fields_info, payload_lookup_table)
+                payload_size = calculatePayloadSize(payload_sizes)
+                payload_message = removeHeader(message, active_groups) # This gets rid of the header which contains the syncbyte, groupbyte, and groupfield bytes and the CRC bytes at the end
+
+                # Prints data in a readable format on the terminal
+                print_data = parse_and_print_data(joinBytes(payload_message), payload_sizes, active_fields_info)
+
+                '''This needs work because i'm not sure how other devices will read the data yet.'''
+                # data that is sent to other devices to be used
+                VectorNav_data = joinBytes(payload_message)
 
             except (ValueError, IndexError) as error:
                 print(error)
                 continue
 
+            time.sleep(0.1)
+
+            #Reset the input buffer to prevent overflow
+            port.reset_input_buffer()
+
     except KeyboardInterrupt:
         print("Disconnected from VectorNav")
     finally:
         port.close()
-
