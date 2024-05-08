@@ -40,8 +40,9 @@ def main():
     running = True
     while running:
         print("Waiting to receive data")
-        pitchPos, address = sock.recvfrom(4096)
-
+        pitchPosbyte, address = sock.recvfrom(4096)
+        pitchPos = int.from_bytes(pitchPosbyte, byteorder='little')
+        
         try:
             print(pitchPos)
 
@@ -54,7 +55,7 @@ def main():
             message_bytes = struct.pack('f', angle)
             client.sendto(message_bytes, ('localhost', 12300))
             print("Sending: ", angle, "to port 12300")
-            
+
             sleep(2)
 
         except ValueError:
