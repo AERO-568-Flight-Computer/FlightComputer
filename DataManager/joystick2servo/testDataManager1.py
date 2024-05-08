@@ -77,10 +77,10 @@ def main():
             """ RECEIVE FROM PORT 7004"""
 
             axis, pos, force, sw09, sw10, sw11, sw12 = decodeMsg10(data)
-            print(f"Axis {axis} | Position {pos[0]}")
+            # print(f"Axis {axis} | Position {pos[0]}")
             
             if axis == 0:
-                print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
+                # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
                 pitchNorm = 2 * (pos[0] - PITCH_MIN) / (PITCH_MAX - PITCH_MIN) - 1
                 if pitchNorm > 1:
                     pitchNorm = 1.0
