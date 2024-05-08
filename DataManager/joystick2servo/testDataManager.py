@@ -97,8 +97,6 @@ def main():
                 client.sendto(message_bytes, ('localhost', 12300))
                 print("Sending: ", angle)
 
-                time.sleep(2)
-
             
 
         except ValueError:
