@@ -39,10 +39,10 @@ def interact(ngi, writer=None):
     # rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
     while True:
+
         """ RECEIVE FROM PORT 7004"""
 
         print("Waiting to receive data")
-
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
         print(data)
@@ -54,19 +54,21 @@ def interact(ngi, writer=None):
             ROLL_MAX = 20.0
 
             """ RECEIVE FROM PORT 7004"""
+
             axis, pos, force, sw09, sw10, sw11, sw12 = decodeMsg10(data)
             print(f"Axis {axis} | Position {pos[0]}")
-            # print(f"Force {force} | sw09 {sw09} | sw10 {sw10} | sw11 {sw11} | sw12 {sw12}")
+            
             if axis == 0:
                 print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
-                # Convert to ratio to feed to xplane [-1, 1]
                 pitchNorm = 2 * (pos[0] - PITCH_MIN) / (PITCH_MAX - PITCH_MIN) - 1
                 if pitchNorm > 1:
                     pitchNorm = 1.0
                 elif pitchNorm < -1.0:
                     pitchNorm = -1.0
                 pitchPosition = pos[0]
-                return pitchPosition
+                print("Sending Position", pitchPosition, "to port 11112")
+                client.sendto(str(pitchPosition).encode(), ('localhost', 11112))
+                # If you want to return pitchPosition from this function, you can't continuously run the loop
             elif axis == 1:
                 print(f"axis: roll | position: {pos[0]} | force: {force[0]}")
                 rollNorm = 2 * (pos[0] - ROLL_MIN) / (ROLL_MAX - ROLL_MIN) - 1
@@ -77,9 +79,7 @@ def interact(ngi, writer=None):
         except ValueError:
             print("Error: Received data is not valid.")
 
-        print("Sending Position", pitchPosition, "to port 11112")
         client.sendto(data, ('localhost', 11111))
-        client.sendto(pitchPosition, ('localhost', 11112))
 
 def main():
 
