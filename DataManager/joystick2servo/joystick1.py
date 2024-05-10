@@ -1,7 +1,9 @@
 import socket
 import struct
 from NGIcalibration1 import *
+from time import sleep, time
 
+# Translate hex data from servo to force in Newtons
 def decodeMsg10(msg):
     # TODO: make this self.msg10.msgId, etc?
     msgId = msg[0]
@@ -37,6 +39,8 @@ def interact(ngi, writer=None):
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+
+    next_send_time = time() + 2  # Set the initial time to send data after 2 seconds
 
     while True:
 
@@ -79,7 +83,10 @@ def interact(ngi, writer=None):
         except ValueError:
             print("Error: Received data is not valid.")
 
-        client.sendto(data, ('localhost', 11111))
+        # Check if it's time to send data to port 11111
+        if time() >= next_send_time:
+            client.sendto(data, ('localhost', 11111))
+            next_send_time = time() + 2  # Update the next sending time
 
 def main():
 
