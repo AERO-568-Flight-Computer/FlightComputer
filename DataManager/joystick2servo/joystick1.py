@@ -40,7 +40,7 @@ def interact(ngi, writer=None):
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
-    next_send_time = time() + 2  # Set the initial time to send data after 2 seconds
+    next_send_time = time() + 10  # Set the initial time to send data after 10 seconds
 
     while True:
 
@@ -86,7 +86,7 @@ def interact(ngi, writer=None):
         # Check if it's time to send data to port 11111
         if time() >= next_send_time:
             client.sendto(data, ('localhost', 11111))
-            next_send_time = time() + 2  # Update the next sending time
+            next_send_time = time() + 3  # Update the next sending time
 
 def main():
 
