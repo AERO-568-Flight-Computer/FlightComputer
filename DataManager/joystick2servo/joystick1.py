@@ -86,7 +86,7 @@ def interact(ngi, writer=None):
         # Check if it's time to send data to port 11111
         if time() >= next_send_time:
             client.sendto(data, ('localhost', 11111))
-            next_send_time = time() + 3  # Update the next sending time
+            next_send_time = time() + 0.5  # Update the next sending time
 
 def main():
 
