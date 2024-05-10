@@ -99,8 +99,6 @@ def main():
             client.sendto(message_bytes, ('localhost', 12300))
             print("Sending: ", angle, "to port 12300")
 
-            sleep(2)
-
         except ValueError:
             print("Error: Received data is not valid.")
 
