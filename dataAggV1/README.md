@@ -2,11 +2,7 @@
 
 # Description
 
-This data aggregator is designed to follow the ARINC 653 inspired architecture by Carl Denslow.
-
-The current version can receive a single integer piece of data per packet from an arbitrary number of partitions.
-
-It is multithreaded and has a thread dedicated to listening to each partition.
+This data aggregator is designed to follow the ARINC 653 inspired architecture by Carl Denslow. The current version can receive a single integer piece of data per packet from an arbitrary number of partitions. It is multithreaded and has a thread dedicated to listening to each partition. There is another thread that saves the data every so often. 
 
 # How to use
 
