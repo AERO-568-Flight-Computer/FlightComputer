@@ -14,7 +14,7 @@ int udp_main_guide() {
 
     // Use the client...
     // For example, to send data:
-    // sendto(client.sockfd, data, size, 0, (struct sockaddr*)&client.serveraddr, sizeof(client.serveraddr));
+    sendto(client.sockfd, data, size, 0, (struct sockaddr*)&client.serveraddr, sizeof(client.serveraddr));
 
     // Close the client
     udp_end_client(&client);
