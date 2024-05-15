@@ -48,7 +48,7 @@ def interact(ngi, writer=None):
 
         """ RECEIVE FROM PORT 7004"""
 
-        print("Waiting to receive data")
+        # print("Waiting to receive data")
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
         try:
@@ -81,11 +81,11 @@ def interact(ngi, writer=None):
 
                 # Send Pitch Trim Data
 
-                print(sw10)
+                print(f"Forward: {sw10}")
                 sw10data = struct.pack('f', sw10)
                 client.sendto(sw10data, ('localhost', 11112))
 
-                print(sw12)
+                print(f"Backward: {sw12}")
                 sw12data = struct.pack('f', sw12)
                 client.sendto(sw12data, ('localhost', 11112))                
 
