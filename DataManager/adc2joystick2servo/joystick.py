@@ -74,7 +74,21 @@ def interact(ngi, writer=None):
             # print(data)
             # Check if it's time to send data to port 11111
             if time() >= next_send_time:
-                client.sendto(data, ('localhost', 11111))
+                
+                # Send Pitch Position Data
+                pitchPositiondata = struct.pack('f', pitchPosition)
+                client.sendto(pitchPositiondata, ('localhost', 11111))
+
+                # Send Pitch Trim Data
+
+                print(sw10)
+                sw10data = struct.pack('f', sw10)
+                client.sendto(sw10data, ('localhost', 11112))
+
+                print(sw12)
+                sw12data = struct.pack('f', sw12)
+                client.sendto(sw12data, ('localhost', 11112))                
+
                 next_send_time = time() + 3  # Update the next sending time
 
         except ValueError:
