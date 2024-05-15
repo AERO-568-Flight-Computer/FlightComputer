@@ -329,7 +329,7 @@ class StirlingInceptor():
         msgId = msg[0]
         axis = msg[1]
         inceptorNumber = msg[2]
-        status = struct.unpack("L", msg[4:8])  # TODO: further unpack each bit
+        # status = struct.unpack("L", msg[4:8])  # TODO: further unpack each bit
         pos = struct.unpack("f", msg[8:12])
         force = struct.unpack("f", msg[12:16])
         motorDemand = struct.unpack("f", msg[16:20])
