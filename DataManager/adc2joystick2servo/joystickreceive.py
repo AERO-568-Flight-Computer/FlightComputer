@@ -13,7 +13,7 @@ def calcForce(airspeed):
 def adjustForce(ngi, axis, position, ias=None):
     # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
     # if negative, send the first pos/force coordinate on the neg schedule
-    ias = 20
+    ias = 150
     if ias < 20:
         ias = 20
     force = calcForce(ias)
@@ -39,7 +39,7 @@ def interact(ngi, writer=None):
     rollTrimVal = 0
     trimStep = 0.01
 
-    print(f"Starting port 7004 data receive")
+    # print(f"Starting port 7004 data receive")
     while True:
         """ RECEIVE FROM PORT 7004"""
         data, addr = ngi.rxSockStatus.recvfrom(4096)
