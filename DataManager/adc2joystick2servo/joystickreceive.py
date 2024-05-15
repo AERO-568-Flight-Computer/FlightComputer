@@ -13,7 +13,7 @@ def calcForce(airspeed):
 def adjustForce(ngi, axis, position, ias=None):
     # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
     # if negative, send the first pos/force coordinate on the neg schedule
-    ias = 200
+    ias = 0
     if ias < 10:
         ias = 10
     force = calcForce(ias)
