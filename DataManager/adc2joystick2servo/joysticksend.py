@@ -47,8 +47,6 @@ def interact(ngi, writer=None):
     while True:
 
         """ RECEIVE FROM PORT 7004"""
-
-        # print("Waiting to receive data")
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
         try:
@@ -58,21 +56,25 @@ def interact(ngi, writer=None):
             ROLL_MAX = 20.0
 
             """ RECEIVE FROM PORT 7004"""
-
             axis, pos, force, sw09, sw10, sw11, sw12 = decodeMsg10(data)
-            # print(f"Axis {axis} | Position {pos[0]}")
             
             if axis == 0:
-                # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
                 pitchNorm = 2 * (pos[0] - PITCH_MIN) / (PITCH_MAX - PITCH_MIN) - 1
                 if pitchNorm > 1:
                     pitchNorm = 1.0
                 elif pitchNorm < -1.0:
                     pitchNorm = -1.0
                 pitchPosition = pos[0]
-
+            elif axis == 1:
+                rollNorm = 2 * (pos[0] - ngi.ROLL_MIN) / (ngi.ROLL_MAX - ngi.ROLL_MIN) - 1
+                if rollNorm > 1:
+                    rollNorm = 1.0
+                elif rollNorm < -1:
+                    rollNorm = -1.0
+                rollPosition = pos[0]    
             # print(data)
-            # Check if it's time to send data to port 11111
+
+            # Check if it's time to send data
             if time() >= next_send_time:
                 
                 # Send Pitch Position Data
@@ -80,20 +82,31 @@ def interact(ngi, writer=None):
                 client.sendto(pitchPositiondata, ('localhost', 11111))
 
                 # Send Pitch Trim Data
-
                 print(f"Forward: {sw10}")
-                sw10data = struct.pack('f', sw10)
+                sw10data = struct.pack('f', sw10) # Stick Forward
                 client.sendto(sw10data, ('localhost', 11112))
 
                 print(f"Backward: {sw12}")
-                sw12data = struct.pack('f', sw12)
-                client.sendto(sw12data, ('localhost', 11112))                
+                sw12data = struct.pack('f', sw12) # Stick Back
+                client.sendto(sw12data, ('localhost', 11113))   
+
+                # Send Roll Position Data             
+                rollPositiondata = struct.pack('f', rollPosition)
+                client.sendto(rollPositiondata, ('localhost', 11114))
+
+                # Send Roll Trim Data
+                print(f"Forward: {sw09}")
+                sw09data = struct.pack('f', sw09) # Stick Left
+                client.sendto(sw09data, ('localhost', 11115))
+
+                print(f"Backward: {sw11}")
+                sw11data = struct.pack('f', sw11) # Stick Right
+                client.sendto(sw11data, ('localhost', 11116))                 
 
                 next_send_time = time() + 3  # Update the next sending time
 
         except ValueError:
             print("Error: Received data is not valid.")
-
 
 def main():
 
