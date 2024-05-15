@@ -1,6 +1,6 @@
 import socket
 import struct
-from NGIcalibration1 import *
+from NGIcalibration import *
 from time import sleep, time
 
 # Recieves data from the NGI and sends it to the Data Manager through UDP.\
