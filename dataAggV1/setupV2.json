@@ -29,7 +29,7 @@
     },
     {
         "name": "partition3",
-        "portSend": 12353,
+        "portSend": "FALSE",
         "portReceive": 12363,
         "rate": 1,
         "receiveDict":
