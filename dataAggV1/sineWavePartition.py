@@ -110,10 +110,12 @@ def main():
                 
             sockSend.sendto(dataToSend, ("localhost", portSend))
 
-            if recentRow > 100:
-                plt.plot(internalDataStore[recentRow-100:recentRow], label="Internal")
-            if recentRowExternal > 100:
-                plt.plot(externalDataStore[recentRowExternal-100:recentRowExternal], label="External")
+            numPlotPoints = 1000
+
+            if recentRow > numPlotPoints:
+                plt.plot(internalDataStore[recentRow-numPlotPoints:recentRow], label="Internal")
+            if recentRowExternal > numPlotPoints:
+                plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal], label="External")
             plt.legend()
             plt.draw()  # Draw the plot
             plt.pause(0.001)  # Pause for a short period (this also allows the plot to update)
@@ -123,6 +125,7 @@ def main():
         # Close the connection on Ctrl+C
         sockSend.close()
         sockReceive.close()
+        plt.close()
         print("Connections closed")
 
     return

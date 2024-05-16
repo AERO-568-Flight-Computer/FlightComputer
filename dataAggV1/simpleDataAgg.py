@@ -67,7 +67,7 @@ def listenerT(port, partNum):
                 timeList[partNum] = np.pad(timeList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
 
             # Write the data to the array
-            cvtList[partNum][rowList[partNum]:rowList[partNum]+numRows, :] = data
+            cvtList[partNum][rowList[partNum]:rowList[partNum]+numRows, :] = newData
             timeList[partNum][rowList[partNum]:rowList[partNum]+numRows] = timeRecv
             rowList[partNum] += numRows
 
@@ -87,12 +87,13 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         arraysToSend = []
         numRows = []
         # For each partition, assemble the numpy array to send
-        for partitionNum in enumerate(sendFromPartitionNum):
+        for partitionNum in sendFromPartitionNum:
             with lockList[partitionNum]:
                 if rowList[partitionNum] > recentRow[partitionNum]:
                     arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], :])
+                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
                     recentRow[partitionNum] = rowList[partitionNum]
-                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])
+
                 else:
                     arraysToSend.append(np.full((1, len(sendFromFieldIndices[partitionNum])), np.nan, dtype=np.float64))
                     numRows.append(1)
@@ -102,7 +103,7 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         # (the two bytes will be an unsigned integer in big endian format)
         data = b''
         for i, array in enumerate(arraysToSend):
-            data += numRows.to_bytes(2, byteorder='big')
+            data += numRows[i].to_bytes(2, byteorder='big')
             data += array.tobytes()
 
         # Send the data
@@ -382,3 +383,5 @@ if __name__ == "__main__":
 # Get sender working
 
 # Maybe take in command line arguments for the setup file or the save interval time or other stuff
+
+# Make sure that you can bind to the port before starting the listener thread
