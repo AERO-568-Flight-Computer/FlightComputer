@@ -71,7 +71,7 @@ def interact(ngi, writer=None):
 
     while True:
 
-        ias = 0
+        ias = 15
 
         # Adjust Force Schedule Based on IAS
         if count > 20:
@@ -138,7 +138,7 @@ def interact(ngi, writer=None):
                 sw11data = struct.pack('f', sw11) # Stick Right
                 client.sendto(sw11data, ('localhost', 11116))                 
 
-                next_send_time = time() + 3  # Update the next sending time
+                next_send_time = time() + 1  # Update the next sending time
 
         except ValueError:
             print("Error: Received data is not valid.")
