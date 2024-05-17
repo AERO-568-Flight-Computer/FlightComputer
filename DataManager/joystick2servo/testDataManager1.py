@@ -63,6 +63,10 @@ def main():
     server_address = ('localhost', 11111)
     sock.bind(server_address)
 
+    trimSum = 0
+    maxTrimSum = 20 # degrees
+    mimTrimSum = -20
+
     running = True
     while running:
         print("Waiting to receive data")
@@ -86,9 +90,6 @@ def main():
                 angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
                 
                 # trim elevator
-                trimSum = 0
-                maxTrimSum = 20 # degrees
-                mimTrimSum = -20
                 if trimup == 1 or trimdwn == 1:
                     if trimup == 1:
                         if trimSum < maxTrimSum:
