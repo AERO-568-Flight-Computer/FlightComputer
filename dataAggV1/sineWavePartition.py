@@ -65,7 +65,7 @@ def main():
 
     recentRowExternal = 0
 
-    # plt.ion()
+    plt.ion()
     # Generate random numbers and send them to the data aggregator
     try:
         while True:
@@ -113,14 +113,14 @@ def main():
 
             numPlotPoints = 1000
 
-            # if recentRow > numPlotPoints:
-            #     plt.plot(internalDataStore[recentRow-numPlotPoints:recentRow], label="Internal")
-            # if recentRowExternal > numPlotPoints:
-            #     plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal], label="External")
-            # plt.legend()
-            # plt.draw()  # Draw the plot
-            # plt.pause(0.001)  # Pause for a short period (this also allows the plot to update)
-            # plt.gca().clear()  # Clear the axes for the next iteration
+            if recentRow > numPlotPoints:
+                plt.plot(internalDataStore[recentRow-numPlotPoints:recentRow], label="Internal")
+            if recentRowExternal > numPlotPoints:
+                plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal], label="External")
+            plt.legend()
+            plt.draw()  # Draw the plot
+            plt.pause(0.001)  # Pause for a short period (this also allows the plot to update)
+            plt.gca().clear()  # Clear the axes for the next iteration
             
     except KeyboardInterrupt:
         # Close the connection on Ctrl+C

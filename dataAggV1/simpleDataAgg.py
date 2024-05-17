@@ -79,10 +79,10 @@ def listenerT(port, partNum):
 
 def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
-    while senderStopList[partNum].is_set() == False:
+    # List of most recent row sent from each partition
+    recentRow = [0 for i in range(len(sendFromPartitionNum))]
 
-        # List of most recent row sent from each partition
-        recentRow = [0 for i in range(len(sendFromPartitionNum))]
+    while senderStopList[partNum].is_set() == False:
 
         arraysToSend = []
         numRows = []
