@@ -385,3 +385,7 @@ if __name__ == "__main__":
 # Maybe take in command line arguments for the setup file or the save interval time or other stuff
 
 # Make sure that you can bind to the port before starting the listener thread
+
+# Check the size of the data that is being sent, don't let it be too big
+
+# Check why the sine wave partition keeps crashing. Seems like there is a build up on the buffer
