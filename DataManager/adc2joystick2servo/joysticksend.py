@@ -3,7 +3,7 @@ import struct
 from NGIcalibration import *
 from time import sleep, time
 
-# Recieves data from the NGI and sends it to the Data Manager through UDP.\
+# Recieves data from the NGI and sends it to the Data Manager through UDP.
 
 # Translate hex data from servo to force in Newtons
 def decodeMsg10(msg):

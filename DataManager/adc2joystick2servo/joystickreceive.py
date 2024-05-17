@@ -6,16 +6,16 @@ from time import sleep, time
 # Recieves ias from ADC, converts ias to force, and sends it to the NGI through UDP.
 
 def calcForce(airspeed):
-    if airspeed < 20:
-        airspeed = 10
+    if airspeed < 5:
+        airspeed = 5
     return airspeed / 4
 
-def adjustForce(ngi, axis, position, ias=None):
+def adjustForce(ngi, axis, position, ias= None):
     # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
     # if negative, send the first pos/force coordinate on the neg schedule
     ias = 0
-    if ias < 10:
-        ias = 10
+    if ias < 5:
+        ias = 5
     force = calcForce(ias)
 
     if axis == 'pitch':
@@ -91,7 +91,6 @@ def main():
         print(e)
     finally:
         ngi.tearDown()
-
 
 if __name__ == '__main__':
     main()
