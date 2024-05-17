@@ -34,54 +34,93 @@ def dataDecode(data, partNum):
         raise ValueError("Data length is not correct")
 
     # get the array
-    return np.frombuffer(data[2:], dtype=np.float64).reshape(numRows, -1)
+    return np.frombuffer(data[2:], dtype=np.float64).reshape(numRows, -1), numRows
 
 
-def handle_client(server, partNum):
-
-    while True:
-        try:
-            # Supposedly, recvfrom is a blocking call, so i don't need the conditional
-            # statement below. I will leave it for now.
-            data, addr = server.recvfrom(65507)
-            if not data:
-                continue
-
-            timeRecv = time.time()
-            
-            # Convert data to numpy array using our custom function
-            newData = dataDecode(data, partNum)
-
-            # Create time stamp array
-            timeArray = np.full((newData.shape[0], 1), timeRecv, dtype=np.float64)
-
-            # Acquire the lock before writing to the array
-            with lockList[partNum]:
-                # If the row is outside the current array, resize the array
-                if rowList[partNum] >= cvtList[partNum].shape[0]:
-                    new_size = cvtList[partNum].shape[0] + 1000
-                    cvtList[partNum] = np.pad(cvtList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
-                    timeList[partNum] = np.pad(timeList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
-
-                # Write the data to the array
-                cvtList[partNum][rowList[partNum]] = data
-                timeList[partNum][rowList[partNum]] = time.time()
-                rowList[partNum] += 1
-
-        except KeyboardInterrupt:
-            server.close()
-            print(f"Receive connection to partition {partNum} closed")
-            return
-        
-
-def serverListen(port, partNum):
+def listenerT(port, partNum):
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server.bind(("0.0.0.0", port))
     print(f"[*] Listening on port {port}")
 
-    handle_client(server, partNum)
+    while receiverStopList[partNum].is_set() == False:
 
-def dataEncode(partNum):
+        # Supposedly, recvfrom is a blocking call, so i don't need the conditional
+        # statement below. I will leave it for now.
+        data, addr = server.recvfrom(65507)
+        if not data:
+            continue
+
+        timeRecv = time.time()
+        
+        # Convert data to numpy array using our custom function
+        newData, numRows = dataDecode(data, partNum)
+
+        # Create time stamp array
+        timeArray = np.full((newData.shape[0], 1), timeRecv, dtype=np.float64)
+
+        # Acquire the lock before writing to the array
+        with lockList[partNum]:
+            # If the row is outside the current array, resize the array
+            if rowList[partNum] >= cvtList[partNum].shape[0]:
+                new_size = cvtList[partNum].shape[0] + 1000
+                cvtList[partNum] = np.pad(cvtList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
+                timeList[partNum] = np.pad(timeList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
+
+            # Write the data to the array
+            cvtList[partNum][rowList[partNum]:rowList[partNum]+numRows, :] = newData
+            timeList[partNum][rowList[partNum]:rowList[partNum]+numRows] = timeRecv
+            rowList[partNum] += numRows
+
+    # Close the socket
+    server.close()
+
+    return
+
+
+def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
+
+    while senderStopList[partNum].is_set() == False:
+
+        # List of most recent row sent from each partition
+        recentRow = [0 for i in range(len(sendFromPartitionNum))]
+
+        arraysToSend = []
+        numRows = []
+        # For each partition, assemble the numpy array to send
+        for partitionNum in sendFromPartitionNum:
+            with lockList[partitionNum]:
+                if rowList[partitionNum] > recentRow[partitionNum]:
+                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], :])
+                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
+                    recentRow[partitionNum] = rowList[partitionNum]
+
+                else:
+                    arraysToSend.append(np.full((1, len(sendFromFieldIndices[partitionNum])), np.nan, dtype=np.float64))
+                    numRows.append(1)
+                
+        # Data will consist of two bytes for the number of rows, then the data from the first partition, 
+        # then two bytes for the number of rows, then the data from the second partition, etc.
+        # (the two bytes will be an unsigned integer in big endian format)
+        data = b''
+        for i, array in enumerate(arraysToSend):
+            data += numRows[i].to_bytes(2, byteorder='big')
+            data += array.tobytes()
+
+        # Send the data
+        sock.sendto(data, ("localhost", partitionInfo[partNum]["portReceive"]))
+
+        # Wait for the specified rate
+        time.sleep(1/rate)
+
+    return
+
+
+def setupReadForSender(partNum):
+    # Description:
+    # This function finds the data that a given partition has requested
+    # and finds the inices of the partiton from which the data is requested
+    # and within those the indices of the fields that are requested
+
     # Make sure to only call this function when a receiveDict exists
     # First 2 bytes are the number of rows
     # next numRows * numFields * 8 bytes are the data
@@ -92,32 +131,48 @@ def dataEncode(partNum):
     # number of partitions that data is requested from (contained in partitionInfo)
     for i in range(len(partitionInfo[partNum]["receiveDict"])):
         # Find each distinct partition that data is requested from
-        if partitionInfo[partNum]["receiveDict"][i][0] not in sendPartitionList:
-            sendPartitionList.append(partitionInfo[partNum]["receiveDict"][i][0])
+        if partitionInfo[partNum]["receiveDict"][str(i)][0] not in sendPartitionList:
+            sendPartitionList.append(partitionInfo[partNum]["receiveDict"][str(i)][0])
             
             # Get the index of the partition that data is requested from by finding that partition in partitionInfo
-            sendPartitionIndices.append([j for j in range(len(partitionInfo)) if partitionInfo[j]["name"] == sendPartitionList[-1]])
+            sendPartitionIndices.append([j for j in range(len(partitionInfo)) if partitionInfo[j]["name"] == sendPartitionList[-1]][0])
     
     fieldIndices = []
-    # Get the index of the fields that are requested
+    # List where each element is a list of indices of the fields that are requested from the corresponding partition
     for i in sendPartitionIndices:
         # TODO: Make sure this works
-        fieldIndices.append([j for j in range(len(partitionInfo[i[0]]["sendDict"])) if partitionInfo[i[0]]["sendDict"][j] in partitionInfo[partNum]["receiveDict"]])
+        fieldNamesInPartition = [partitionInfo[i]["sendDict"][str(j)] for j in range(len(partitionInfo[i]["sendDict"]))]
+        partSpecificFieldIndices = []
+        for field in partitionInfo[partNum]["receiveDict"].values():
+            if field[0] == partitionInfo[i]["name"]:
+                partSpecificFieldIndices.append(fieldNamesInPartition.index(field[1]))
+        fieldIndices.append(partSpecificFieldIndices)
 
+    print(partitionInfo[partNum]["name"])
+    print(sendPartitionIndices)
+    print(fieldIndices)
+    
+    return sendPartitionIndices, fieldIndices
 
-def sendData(sock, partNum):
-    try:
-        while True:
-            # Send the data every 5 seconds
-            time.sleep(5)
-    except KeyboardInterrupt:
-        sock.close()
-        print(f"Connection to partition {partNum} closed")
-  
 
 def saveCVT(saveTime, numPartitions):
     # Most recent row saved for each partition
     recentRow = [0 for i in range(numPartitions)]
+
+    for i in range(numPartitions):
+
+        # Get the field names from partitionInfo global variable
+        fieldnames = ",".join(list(partitionInfo[i]["sendDict"].values()))
+
+        # Ensure that the DataAggRecords directory exists
+        os.makedirs('DataAggRecords', exist_ok=True)
+
+        # Check if the file exists
+        if not os.path.isfile(f"DataAggRecords/CVT{i}.csv"):
+            # If the file doesn't exist, write the field names
+            with open(f"DataAggRecords/CVT{i}.csv", 'w') as f:
+                f.write(fieldnames + '\n')
+
     while True:
         # Save the data every saveTime seconds
         time.sleep(saveTime)
@@ -132,7 +187,7 @@ def saveCVT(saveTime, numPartitions):
                 if rowList[i] > recentRow[i]:
                     
                     # TODO: This might change if there are extra columns
-                    recentCVT.append(cvtList[i][recentRow[i]:rowList[i]])
+                    recentCVT.append(cvtList[i][recentRow[i]:rowList[i], :])
                     recentTime.append(timeList[i][recentRow[i]:rowList[i]])
 
                     # Update the most recent row saved
@@ -141,23 +196,14 @@ def saveCVT(saveTime, numPartitions):
                 else:
                     recentCVT.append(0)
                     recentTime.append(0)
-        
+
+
+
         # Save the local copy to a file
         for i in range(numPartitions):
 
             # I put zero when there is no new data to save
             if type(recentCVT[i]) != int:
-                # Get the field names from partitionInfo global variable
-                fieldnames = ",".join(list(partitionInfo[i]["sendDict"].values()))
-
-                # Ensure that the DataAggRecords directory exists
-                os.makedirs('DataAggRecords', exist_ok=True)
-
-                # Check if the file exists
-                if not os.path.isfile(f"DataAggRecords/CVT{i}.csv"):
-                    # If the file doesn't exist, write the field names
-                    with open(f"DataAggRecords/CVT{i}.csv", 'w') as f:
-                        f.write(fieldnames + '\n')
 
                 # Write the data
                 with open(f"DataAggRecords/CVT{i}.csv", 'ab') as f:
@@ -182,7 +228,7 @@ def main():
     partitionInfo = 0
 
     # Load the setup file
-    with open("setupV2.json") as f:
+    with open("sineWaveTest.json") as f:
         partitionInfo = json.load(f)
 
 
@@ -209,10 +255,14 @@ def main():
     global cvtList
     global timeList
     global rowList
+    global receiverStopList
+    global senderStopList
     lockList = []
     cvtList = []
     timeList = []
     rowList = []
+    receiverStopList = []
+    senderStopList = []
 
 
     # This list will hold an array for each partition that stores the data
@@ -230,6 +280,12 @@ def main():
             # Create a lock for each partition that is sending data
             lockList.append(threading.Lock())
 
+            # Create a stop event for each thread that is receiving data
+            receiverStopList.append(threading.Event())
+
+            # Create a stop event for each thread that is sending data
+            senderStopList.append(threading.Event())
+
             # Clear the numFields variable
             del numFields
 
@@ -237,6 +293,8 @@ def main():
             cvtList.append(0)
             timeList.append(0)
             lockList.append(0)
+            receiverStopList.append(0)
+            senderStopList.append(0)
 
         # List of most recent row in CVT
         rowList.append(0)
@@ -254,26 +312,43 @@ def main():
         else:
             sendSockList.append(0)
 
+    # List of partitions to send data from
+    sendFromPartitionNum = []
 
-    # You were here last (keep it strong soldier) #######################
-    # Next steps:
-    # Think about sender implementation
-    # Think about the save function (copilot thought of this one)
-    # Unrelated (check the global interpreter lock as it applies to separate terminals)
+    # List of fields to send data from
+    sendFromFieldIndices = []
 
+    # Get the indices for data that we need to send
+    for i, port in enumerate(sendPorts):
+        if type(port) == int:
+            sendPartitionIndices, fieldIndices = setupReadForSender(i)
+        
+        else:
+            sendPartitionIndices = [0]
+            fieldIndices = [[0]]
+
+        # List of lists of partition indices that data is requested from
+        sendFromPartitionNum.append(sendPartitionIndices)
+
+        # List (by partition) of lists (by requested partition) of field indices (in the requested partition)
+        sendFromFieldIndices.append(fieldIndices)
+
+    
     # Create a listener thread for each partition
     for i, port in enumerate(receivePorts):
         if type(port) == int:
 
-            listener = threading.Thread(target=serverListen, args=(port, i))
+            listener = threading.Thread(target=listenerT, args=(port, i))
 
             listener.start()
 
-    # Send data to each partition
+    # Create a sender thread for each partition
     for i, port in enumerate(sendPorts):
         if type(port) == int:
             
-            sender = threading.Thread(target=sendData, args=(sendSockList[i], i))
+            rate = partitionInfo[i]["rate"]
+
+            sender = threading.Thread(target=senderT, args=(sendSockList[i], i, sendFromPartitionNum[i], sendFromFieldIndices[i], rate))
 
             sender.start()
 
@@ -282,10 +357,14 @@ def main():
         saveTime = 30 # [s]
         saveCVT(saveTime, numPartitions)
     except KeyboardInterrupt:
-        # for i in range(numPartitions):
-        #     print(cvtList[i])
-        #     print(timeList[i])
-        # TODO: Trigger all threads to close using event
+        
+        # Stop the listener threads
+        for i in range(len(receivePorts)):
+            receiverStopList[i].set()
+        
+        # Stop the sender threads
+        for i in range(len(sendPorts)):
+            senderStopList[i].set()
 
 
         return
@@ -295,4 +374,14 @@ if __name__ == "__main__":
     main()
 
 
-# TODO: Column number in sender needs checking
+# Unrelated (check the global interpreter lock as it applies to separate terminals)
+
+# General TODO:
+
+# Don't hardcode the save interval time
+
+# Get sender working
+
+# Maybe take in command line arguments for the setup file or the save interval time or other stuff
+
+# Make sure that you can bind to the port before starting the listener thread
