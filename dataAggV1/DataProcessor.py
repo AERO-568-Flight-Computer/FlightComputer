@@ -2,6 +2,7 @@ import struct
 import json
 import numpy as np
 import binascii
+import socket
 
 class DataProcessor:
     JSON_STRING = '''
@@ -19,7 +20,8 @@ class DataProcessor:
             "receiveDict": {
                 "0": ["partition1", "yaw"],
                 "1": ["partition1", "pitch"],
-                "2": ["partition1", "roll"]
+                "2": ["partition1", "roll"],
+                "3": ["partition2", "roll"]
             }
         },
         {
@@ -82,6 +84,25 @@ class DataProcessor:
                 self.rate = partition.get("rate", False)
                 self.sendDict = partition.get("sendDict", False)
                 self.receiveDict = partition.get("receiveDict", False)
+
+                if self.portSend:
+                    self.sendSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+                # Initialize receive socket if portReceive is defined
+                if self.portReceive:
+                    self.receiveSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    self.receiveSock.bind(("localhost", self.portReceive))
+
+                if self.receiveDict:
+                    dataPointsPerPartition = {}
+                    for key, value in self.receiveDict.items():
+                        partition = value[0]
+                        if partition not in dataPointsPerPartition:
+                            dataPointsPerPartition[partition] = 0
+                        dataPointsPerPartition[partition] += 1
+
+                    self.dataPointsPerPartition = list(dataPointsPerPartition.values())
+
                 break
     
     def sendData(self, dataDictionaryList):
@@ -99,7 +120,49 @@ class DataProcessor:
                     dataArray[row, index] = dataDictionary[value]
         
         dataBytes = dataArray.tobytes()
-        return dataBytes
+
+        # Create the packet to send
+        packet = struct.pack('>H', numRows) + dataBytes
+
+        # Send the packet over UDP
+        self.sock.sendto(packet, ('localhost', self.portSend))
+
+    def receiveData(self):
+        if not self.receiveSock:
+            return None
+
+        while select.select([self.receiveSock], [], [], 0)[0]:
+            data, addr = self.receiveSock.recvfrom(6055)
+
+            byteOffset = 0
+            partitionBytes = []
+
+            for numColumns in self.dataPointsPerPartitionArray:
+                numRowsBytes = data[byteOffset:byteOffset + 2]
+                numRows = int.from_bytes(numRowsBytes, byteorder='big')
+                byteOffset += 2
+
+                payloadSize = numRows * numColumns * 8
+                if byteOffset + payloadSize > len(data):
+                    print("Error: Insufficient data in the packet")
+                    break
+
+                partitionData = data[byteOffset:byteOffset + payloadSize]
+                partitionBytes.append(partitionData)
+                byteOffset += payloadSize
+
+            for partitionData in partitionBytes:
+
+                receivedData = np.frombuffer(dataArray, dtype=np.float64)
+
+                # Reshape the array to have numRows rows and numFields columns
+                receivedData = receivedData.reshape(numRows, numFields)
+
+        return receivedData, numRows
+
+        
+    def close(self):
+        
 
 # Usage example
 processor = DataProcessor("AirDC")
