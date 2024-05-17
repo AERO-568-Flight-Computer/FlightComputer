@@ -71,7 +71,7 @@ def interact(ngi, writer=None):
 
     while True:
 
-        ias = 15
+        ias = 130  # Placeholder for IAS
 
         # Adjust Force Schedule Based on IAS
         if count > 20:
