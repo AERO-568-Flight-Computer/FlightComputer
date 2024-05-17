@@ -10,6 +10,10 @@ from time import sleep
 # Port 11111: Receives data from NGI
 # Port 12300: Sends data to Servo
 
+trimSum = 0 # degrees
+maxTrimSum = 20 # degrees
+mimTrimSum = -20 # degrees
+
 # Translate hex data from servo to force in Newtons
 def decodeMsg10(msg):
     # TODO: make this self.msg10.msgId, etc?
@@ -54,6 +58,22 @@ def convertPositionToDegrees(position):
 
     return angle
 
+# Function to update trim
+delayInterval = 1
+
+def updateTrim():
+    global trimSum
+    # Trim only for elevator so far
+    if trimup == 1 or trimdwn == 1:
+        if trimup == 1:
+            if trimSum < maxTrimSum:
+                trimSum += 1
+        if trimdwn == 1:
+            if trimSum > mimTrimSum:
+                trimSum -= 1
+
+    print('Trim Sum: ', trimSum)
+
 # Function to return NGI pitch position
 def main():
     # Create UDP socket
@@ -62,10 +82,6 @@ def main():
     # Bind socket to specified port
     server_address = ('localhost', 11111)
     sock.bind(server_address)
-
-    trimSum = 0
-    maxTrimSum = 20 # degrees
-    mimTrimSum = -20
 
     running = True
     while running:
@@ -88,18 +104,10 @@ def main():
                 pitchPosition = pos[0]
                 print("Position: ", pitchPosition)
                 angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
-                
-                # trim elevator
-                if trimup == 1 or trimdwn == 1:
-                    if trimup == 1:
-                        if trimSum < maxTrimSum:
-                            trimSum += 1
-                    if trimdwn == 1:
-                        if trimSum > mimTrimSum:
-                            trimSum -= 1
-                print('Trim Sum: ', trimSum)
+                print("Angle before trim: ", angle)
 
                 angle += trimSum
+                print("Angle after trim: ", angle)
 
             # Create a socket object using UDP (not TCP)
             client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -111,6 +119,12 @@ def main():
 
         except ValueError:
             print("Error: Received data is not valid.")
+
+# Start the trim update in a separate thread
+import threading
+trim_thread = threading.Thread(target=updateTrim)
+trim_thread.daemon = True  # Daemonize thread to ensure it exits when the main program does
+trim_thread.start()
 
 if __name__ == '__main__':
     main()
