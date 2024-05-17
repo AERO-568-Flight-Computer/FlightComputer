@@ -76,20 +76,29 @@ def main():
 
             """ RECEIVE FROM PORT 7004"""
 
-            axis, pos, force, sw09, sw10, sw11, sw12 = decodeMsg10(data)
+            axis, pos, force, trimlft, trimup, trimrht, trimdwn = decodeMsg10(data)
             # print(f"Axis {axis} | Position {pos[0]}")
             
             if axis == 0:
                 # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
-                pitchNorm = 2 * (pos[0] - PITCH_MIN) / (PITCH_MAX - PITCH_MIN) - 1
-                if pitchNorm > 1:
-                    pitchNorm = 1.0
-                elif pitchNorm < -1.0:
-                    pitchNorm = -1.0
                 pitchPosition = pos[0]
+                print("Position: ", pitchPosition)
+                angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
+                
+                # trim elevator
+                trimSum = 0
+                maxTrimSum = 20 # degrees
+                mimTrimSum = -20
+                if trimup == 1 or trimdwn == 1:
+                    if trimup == 1:
+                        if trimSum < maxTrimSum:
+                            trimSum += 1
+                    if trimdwn == 1:
+                        if trimSum > mimTrimSum:
+                            trimSum -= 1
+                print('Trim Sum: ', trimSum)
 
-            print("Position: ", pitchPosition)
-            angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
+                angle += trimSum
 
             # Create a socket object using UDP (not TCP)
             client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
