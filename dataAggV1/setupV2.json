@@ -36,5 +36,23 @@
             {
                 "0": ["partition1", "roll"]
             }
+    },
+    {
+        "name": "AirDC",
+        "portSend": 12351,
+        "portReceive": "FALSE",
+        "rate": 1,
+        "sendDict": {
+            "0": "yaw",
+            "1": "pitch",
+            "2": "roll",
+            "3": "militime",
+            "4": "absPressure",
+            "5": "absSenseTemp",
+            "6": "diffPressure",
+            "7": "diffSenseTemp",
+            "8": "rearFlagAOA",
+            "9": "frontFlagYaw"
+        }
     }
 ]
