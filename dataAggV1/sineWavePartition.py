@@ -106,8 +106,8 @@ def main():
 
             dataToSend += internalDataStore[recentRow-numPoints:recentRow].tobytes()
 
-            print("Sent data")
-            print(internalDataStore[recentRow-numPoints:recentRow])
+            # print("Sent data")
+            # print(internalDataStore[recentRow-numPoints:recentRow])
                 
             sockSend.sendto(dataToSend, ("localhost", portSend))
 

@@ -389,3 +389,6 @@ if __name__ == "__main__":
 # Check the size of the data that is being sent, don't let it be too big
 
 # Check why the sine wave partition keeps crashing. Seems like there is a build up on the buffer
+# I figured it out nvm
+
+# Connections closed check if actually worked
