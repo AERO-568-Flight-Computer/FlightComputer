@@ -1,7 +1,7 @@
 import serial
 import struct
 
-ser = serial.Serial('/dev/ttyCOM1', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS1', 115200, timeout=1)
 
 while True:
     pitot = ser.read(1)
