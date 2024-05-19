@@ -1,5 +1,5 @@
 import socket
-from volz_actuator import build_pos_command
+from ServoUtilMethods import *
 import serial
 import struct
 
@@ -28,10 +28,23 @@ except OSError:
 server_address = ('localhost', 12300)
 sock.bind(server_address)
 
+startup = 0
+
 running = True
 while running:
     print('\nWaiting to receive message')
     data, address = sock.recvfrom(4096)
+
+    # determine what the clutch status is - powered on or off?
+    pwr_servo, pwr_clutch = get_pwr_status(ser)
+
+    if startup == 0 and pwr_clutch > 20:
+        # Get the initial position of the actuator
+        startPosition = get_pos(ser)
+        startCommand = build_pos_command(startPosition)
+        ser.write(bytearray(startCommand))
+        startup = 1
+
 
     try:
         # Convert data to integer or float

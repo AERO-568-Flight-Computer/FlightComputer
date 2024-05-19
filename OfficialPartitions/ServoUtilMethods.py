@@ -1,6 +1,4 @@
-import time
-import serial
-
+# Methods taken from volz_actuator.py
 
 # generate and append CRC
 def generate_crc(command):
@@ -125,44 +123,3 @@ def get_pos(ser, actuator_ID=0x01):
         pos_hex = rx[8:10]
         pos_deg = hex2deg(pos_hex)
         return pos_deg, pos_hex
-
-
-if __name__ == '__main__':
-    # set up serial connection
-    # change to the serial port of device
-    ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
-    time.sleep(2)  # Wait for the device to initialize
-    increment = 1
-
-    while True:
-        # try to get servo position
-        try:
-            pos_deg, pos_hex = get_pos(ser)
-        except TypeError:
-            print("can't get servo position - is the servo off?")
-            continue
-
-        # determine what the clutch status is - powered on or off?
-        pwr_servo, pwr_clutch = get_pwr_status(ser)
-
-        if pwr_clutch > 20: # TODO: check w/ Paulo what the power limit is
-            # clutch is powered, Paulo inserts control code
-            #TODO: Paulo's Control Code
-            print("Clutch is ON, servo position is: " + str(pos_deg) + " degrees")
-            if pos_deg < -90:
-                increment = 1
-            if pos_deg > 90:
-                increment = -1
-            pos_deg = pos_deg + increment
-            cmd = build_pos_command(pos_deg)
-            ser.write(bytearray(cmd))
-            rx = ser.read(12)
-        else:
-            # clutch is un-powered, read servo position and send continuously
-            # TODO: should this be a separate thread?
-            print("Clutch is OFF, sending servo to " + str(pos_deg) + " degrees")
-            cmd = build_pos_command(pos_deg)
-            ser.write(bytearray(cmd))
-            rx = ser.read(12)
-
-        ser.flush()
