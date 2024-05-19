@@ -123,6 +123,9 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         # Check how much time has passed
         timePassed = timer2 - timer1
 
+        if timePassed > 4 * 1/rate:
+            print(timePassed)
+
         # If the time passed is less than the rate, wait for the difference
         if timePassed < 1/rate:
             time.sleep(1/rate - timePassed)

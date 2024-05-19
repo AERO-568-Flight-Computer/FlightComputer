@@ -18,12 +18,12 @@ while endIndex <= length(internalData)
     figure(1)
     internal2Plot1 = internalData(startIndex:endIndex, 1) - internalData(startIndex,1);
     internal2Plot2 = internalData(startIndex:endIndex, 2);
-    plot(internal2Plot1, internal2Plot2, 'r');
+    plot(internal2Plot1, internal2Plot2, 'r', "Marker",".");
     hold on
     externalData2Plot = externalData(externalData(:, 1) >= internalData(startIndex, 1), :);
     joe1 = externalData2Plot(1:abs(startIndex-endIndex), 1) - internalData(startIndex,1);
     joe2 = externalData2Plot(1:abs(startIndex-endIndex), 2);
-    plot(joe1, joe2, 'b');
+    plot(joe1, joe2, 'b', "Marker",".");
     title("Internal and External Data");
     xlabel("Time (s)");
     ylabel("Data");
