@@ -91,6 +91,8 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
     while senderStopList[partNum].is_set() == False:
 
+        timer1 = time.time()
+
         arraysToSend = []
         numRows = []
         # For each partition, assemble the numpy array to send
@@ -116,8 +118,14 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         # Send the data
         sock.sendto(data, ("localhost", partitionInfo[partNum]["portReceive"]))
 
-        # Wait for the specified rate
-        time.sleep(1/rate)
+        timer2 = time.time()
+
+        # Check how much time has passed
+        timePassed = timer2 - timer1
+
+        # If the time passed is less than the rate, wait for the difference
+        if timePassed < 1/rate:
+            time.sleep(1/rate - timePassed)
 
     return
 
