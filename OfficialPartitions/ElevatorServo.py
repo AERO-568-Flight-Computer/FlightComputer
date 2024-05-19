@@ -41,6 +41,7 @@ while running:
     if startup == 0 and pwr_clutch > 20:
         # Get the initial position of the actuator
         startPosition = get_pos(ser)
+        print("Initial position:", startPosition)
         startCommand = build_pos_command(startPosition)
         ser.write(bytearray(startCommand))
         startup = 1
