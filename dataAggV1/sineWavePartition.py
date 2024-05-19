@@ -143,6 +143,7 @@ def main():
             plt.plot(externalDataStore[:recentRowExternal, 0], externalDataStore[:recentRowExternal, 1], label="External")
         plt.legend()
         plt.draw()
+        plt.pause(0.005)
         currentRow += 1
     
 
