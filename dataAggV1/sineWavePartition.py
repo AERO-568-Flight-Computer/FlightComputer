@@ -68,7 +68,7 @@ def main():
     plt.ion()
     # Generate random numbers and send them to the data aggregator
     try:
-        for i in range(30000):
+        for i in range(3000):
 
             # Attempt to receive data while it is available
             while select.select([sockReceive], [], [], 0)[0]:

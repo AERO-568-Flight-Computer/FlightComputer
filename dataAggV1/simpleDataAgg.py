@@ -45,7 +45,7 @@ def listenerT(port, partNum):
     while receiverStopList[partNum].is_set() == False:
 
         # Set the socket to non-blocking
-        server.setblocking(0)
+        server.setblocking(False)
 
         while True:  # Assuming this is inside a loop
             try:
