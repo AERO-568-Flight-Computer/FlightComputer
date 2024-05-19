@@ -90,7 +90,7 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         for partitionNum in sendFromPartitionNum:
             with lockList[partitionNum]:
                 if rowList[partitionNum] > recentRow[partitionNum]:
-                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], :])
+                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], sendFromFieldIndices[partitionNum]])
                     numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
                     recentRow[partitionNum] = rowList[partitionNum]
 
