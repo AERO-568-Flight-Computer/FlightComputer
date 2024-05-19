@@ -68,15 +68,15 @@ def listenerT(port, partNum):
         # Acquire the lock before writing to the array
         with lockList[partNum]:
             # If the row is outside the current array, resize the array
-            if rowList[partNum] >= cvtList[partNum].shape[0]:
+            if mostRecentCVTRow[partNum] >= cvtList[partNum].shape[0]:
                 new_size = cvtList[partNum].shape[0] + 1000
                 cvtList[partNum] = np.pad(cvtList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
                 timeList[partNum] = np.pad(timeList[partNum], ((0, new_size), (0, 0)), mode='constant', constant_values=np.nan)
 
             # Write the data to the array
-            cvtList[partNum][rowList[partNum]:rowList[partNum]+numRows, :] = newData
-            timeList[partNum][rowList[partNum]:rowList[partNum]+numRows] = timeRecv
-            rowList[partNum] += numRows
+            cvtList[partNum][mostRecentCVTRow[partNum]:mostRecentCVTRow[partNum]+numRows, :] = newData
+            timeList[partNum][mostRecentCVTRow[partNum]:mostRecentCVTRow[partNum]+numRows] = timeRecv
+            mostRecentCVTRow[partNum] += numRows
 
     # Close the socket
     server.close()
@@ -86,8 +86,12 @@ def listenerT(port, partNum):
 
 def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
-    # List of most recent row sent from each partition
-    recentRow = [0 for i in range(len(sendFromPartitionNum))]
+    # This function sends data to the partitions that are requesting it. What is sent 
+    # is described in README.md
+
+    # List of most recent row sent from each partition for every existing partition
+    # Receiver stop list should be the same length as the number of partitions
+    recentRow = [0 for i in range(len(receiverStopList))]
 
     while senderStopList[partNum].is_set() == False:
 
@@ -96,15 +100,20 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         arraysToSend = []
         numRows = []
         # For each partition, assemble the numpy array to send
-        for partitionNum in sendFromPartitionNum:
+        for sendIndex, partitionNum in enumerate(sendFromPartitionNum):
+            # Get lock for the partition
             with lockList[partitionNum]:
-                if rowList[partitionNum] > recentRow[partitionNum]:
-                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], sendFromFieldIndices[partitionNum]])
-                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
-                    recentRow[partitionNum] = rowList[partitionNum]
+                # Check if there is new data to send from the partition
+                if mostRecentCVTRow[partitionNum] > recentRow[partitionNum]:
+                    # Get the data from the partition, in the order that it is requested
+                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:mostRecentCVTRow[partitionNum], sendFromFieldIndices[sendIndex]])
+                    # Get the number of rows added to the array
+                    numRows.append(mostRecentCVTRow[partitionNum] - recentRow[partitionNum])
+                    # Update the most recent row sent
+                    recentRow[partitionNum] = mostRecentCVTRow[partitionNum]
 
                 else:
-                    arraysToSend.append(np.full((1, len(sendFromFieldIndices[partitionNum])), np.nan, dtype=np.float64))
+                    arraysToSend.append(np.full((1, len(sendFromFieldIndices[sendIndex])), np.nan, dtype=np.float64))
                     numRows.append(1)
                 
         # Data will consist of two bytes for the number of rows, then the data from the first partition, 
@@ -202,14 +211,14 @@ def saveCVT(saveTime, numPartitions):
         # Save a local copy of each CVT and time array
         for i in range(numPartitions):
             with lockList[i]:
-                if rowList[i] > recentRow[i]:
+                if mostRecentCVTRow[i] > recentRow[i]:
                     
                     # TODO: This might change if there are extra columns
-                    recentCVT.append(cvtList[i][recentRow[i]:rowList[i], :])
-                    recentTime.append(timeList[i][recentRow[i]:rowList[i]])
+                    recentCVT.append(cvtList[i][recentRow[i]:mostRecentCVTRow[i], :])
+                    recentTime.append(timeList[i][recentRow[i]:mostRecentCVTRow[i]])
 
                     # Update the most recent row saved
-                    recentRow[i] = rowList[i]
+                    recentRow[i] = mostRecentCVTRow[i]
 
                 else:
                     recentCVT.append(0)
@@ -246,7 +255,7 @@ def main():
     partitionInfo = 0
 
     # Load the setup file
-    with open("sineWaveTest.json") as f:
+    with open("sineWaveMulti.json") as f:
         partitionInfo = json.load(f)
 
 
@@ -272,15 +281,18 @@ def main():
     global lockList
     global cvtList
     global timeList
-    global rowList
+    global mostRecentCVTRow
     global receiverStopList
     global senderStopList
     lockList = []
     cvtList = []
     timeList = []
-    rowList = []
+    mostRecentCVTRow = []
     receiverStopList = []
     senderStopList = []
+
+    # TODO: Decide how many rows to save based on the rate of the slowest partition
+    # Aggregator will eventually stop working if the arrays take up all the memory space
 
 
     # This list will hold an array for each partition that stores the data
@@ -315,7 +327,7 @@ def main():
             senderStopList.append(0)
 
         # List of most recent row in CVT
-        rowList.append(0)
+        mostRecentCVTRow.append(0)
 
 
     sendSockList = []
@@ -396,10 +408,6 @@ if __name__ == "__main__":
 
 # General TODO:
 
-# Don't hardcode the save interval time
-
-# Get sender working
-
 # Maybe take in command line arguments for the setup file or the save interval time or other stuff
 
 # Make sure that you can bind to the port before starting the listener thread
@@ -412,3 +420,5 @@ if __name__ == "__main__":
 # Connections closed check if actually worked
 
 # Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate
+
+# Consider not sending nan when there is no data to send
