@@ -28,7 +28,7 @@ def dataDecode(data):
 def main():
 
     # Load the setup file
-    with open("sineWaveTest.json") as f:
+    with open("sineWaveMulti.json") as f:
         setup = json.load(f)
 
     # Take in the name as a command line argument

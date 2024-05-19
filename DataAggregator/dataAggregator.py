@@ -86,7 +86,11 @@ def listenerT(port, partNum):
 
 def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
+    # This function sends data to the partitions that are requesting it. What is sent 
+    # is described in README.md
+
     # List of most recent row sent from each partition for every existing partition
+    # Receiver stop list should be the same length as the number of partitions
     recentRow = [0 for i in range(len(receiverStopList))]
 
     while senderStopList[partNum].is_set() == False:
