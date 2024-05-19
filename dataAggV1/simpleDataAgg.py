@@ -44,11 +44,16 @@ def listenerT(port, partNum):
 
     while receiverStopList[partNum].is_set() == False:
 
-        # Supposedly, recvfrom is a blocking call, so i don't need the conditional
-        # statement below. I will leave it for now.
-        data, addr = server.recvfrom(65507)
-        if not data:
-            continue
+        # Set the socket to non-blocking
+        server.setblocking(0)
+
+        while True:  # Assuming this is inside a loop
+            try:
+                # Get data from the port
+                data, addr = server.recvfrom(65507)
+            except BlockingIOError:
+                # If there is no data, continue to next loop iteration (i.e. check for more data)
+                continue
 
         timeRecv = time.time()
         
@@ -392,3 +397,5 @@ if __name__ == "__main__":
 # I figured it out nvm
 
 # Connections closed check if actually worked
+
+# Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate
