@@ -4,6 +4,7 @@ import numpy as np
 import time
 import json
 import os
+import select
 
 
 def setupPartitions(partitionInfo):
@@ -40,14 +41,20 @@ def dataDecode(data, partNum):
 def listenerT(port, partNum):
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server.bind(("0.0.0.0", port))
+    # Set the socket to non-blocking
     print(f"[*] Listening on port {port}")
 
     while receiverStopList[partNum].is_set() == False:
 
-        # Supposedly, recvfrom is a blocking call, so i don't need the conditional
-        # statement below. I will leave it for now.
-        data, addr = server.recvfrom(65507)
-        if not data:
+        # recvfrom is a blocking call, so we need to check if there is data available first before calling it. That way the 
+        # thread can be stopped by setting the stop event.
+        ready_to_read, _, _ = select.select([server], [], [], 0)
+        if ready_to_read:
+            # Get data from the port
+            data, addr = server.recvfrom(65507)
+            # Process the data...
+        else:
+            # If there is no data, continue to next loop iteration (i.e. check for more data)
             continue
 
         timeRecv = time.time()
@@ -79,10 +86,12 @@ def listenerT(port, partNum):
 
 def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
+    # List of most recent row sent from each partition
+    recentRow = [0 for i in range(len(sendFromPartitionNum))]
+
     while senderStopList[partNum].is_set() == False:
 
-        # List of most recent row sent from each partition
-        recentRow = [0 for i in range(len(sendFromPartitionNum))]
+        timer1 = time.time()
 
         arraysToSend = []
         numRows = []
@@ -90,7 +99,7 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         for partitionNum in sendFromPartitionNum:
             with lockList[partitionNum]:
                 if rowList[partitionNum] > recentRow[partitionNum]:
-                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], :])
+                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], sendFromFieldIndices[partitionNum]])
                     numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
                     recentRow[partitionNum] = rowList[partitionNum]
 
@@ -109,8 +118,17 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         # Send the data
         sock.sendto(data, ("localhost", partitionInfo[partNum]["portReceive"]))
 
-        # Wait for the specified rate
-        time.sleep(1/rate)
+        timer2 = time.time()
+
+        # Check how much time has passed
+        timePassed = timer2 - timer1
+
+        if timePassed > 4 * 1/rate:
+            print(timePassed)
+
+        # If the time passed is less than the rate, wait for the difference
+        if timePassed < 1/rate:
+            time.sleep(1/rate - timePassed)
 
     return
 
@@ -385,3 +403,12 @@ if __name__ == "__main__":
 # Maybe take in command line arguments for the setup file or the save interval time or other stuff
 
 # Make sure that you can bind to the port before starting the listener thread
+
+# Check the size of the data that is being sent, don't let it be too big
+
+# Check why the sine wave partition keeps crashing. Seems like there is a build up on the buffer
+# I figured it out nvm
+
+# Connections closed check if actually worked
+
+# Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate

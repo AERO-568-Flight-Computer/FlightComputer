@@ -29,6 +29,6 @@ Data aggregator will only exit cleanly if the partitions are closed after the ag
 
 # TODO:
 
-1 Figure out how to exit out of the threads cleanly on keyboard interrupt. This might mean keeping a list of threads and having the main thread handle that.
+1 Figure out why the save is making all the senders slow down. This might be an area where true parallelism would be advantageous. Explanation: right around where the save happens, the sender threads slow down to about 0.02 s per send, which is likely unacceptable. My guess is that saving to a file is taking up a lot of time, and even though it is multithreaded, the os takes big chunks of time to do it. We could look at Kurt's influx DB as a way to fix this. Another option could be doing this operation on another core (i.e. parallel). I'm not sure what the best solution will be.
 
-2 Looks like I will need an event to signal all the other threads to stop.
+2 IMPORTANT: there is likely a fatal issue in the data aggregator, since all the data is being saved to memory. Eventually, we will run out, and the aggragator will fail. We should only save a certain amount of data. This will probably be the ratio of the slowest send rate to the highest send rate plus a little bit of cushion.
