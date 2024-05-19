@@ -86,8 +86,8 @@ def listenerT(port, partNum):
 
 def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
 
-    # List of most recent row sent from each partition
-    recentRow = [0 for i in range(len(sendFromPartitionNum))]
+    # List of most recent row sent from each partition for every existing partition
+    recentRow = [0 for i in range(len(receiverStopList))]
 
     while senderStopList[partNum].is_set() == False:
 
@@ -96,15 +96,20 @@ def senderT(sock, partNum, sendFromPartitionNum, sendFromFieldIndices, rate):
         arraysToSend = []
         numRows = []
         # For each partition, assemble the numpy array to send
-        for partitionNum in sendFromPartitionNum:
+        for sendIndex, partitionNum in enumerate(sendFromPartitionNum):
+            # Get lock for the partition
             with lockList[partitionNum]:
+                # Check if there is new data to send from the partition
                 if rowList[partitionNum] > recentRow[partitionNum]:
-                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], sendFromFieldIndices[partitionNum]])
-                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])                    
+                    # Get the data from the partition, in the order that it is requested
+                    arraysToSend.append(cvtList[partitionNum][recentRow[partitionNum]:rowList[partitionNum], sendFromFieldIndices[sendIndex]])
+                    # Get the number of rows added to the array
+                    numRows.append(rowList[partitionNum] - recentRow[partitionNum])
+                    # Update the most recent row sent
                     recentRow[partitionNum] = rowList[partitionNum]
 
                 else:
-                    arraysToSend.append(np.full((1, len(sendFromFieldIndices[partitionNum])), np.nan, dtype=np.float64))
+                    arraysToSend.append(np.full((1, len(sendFromFieldIndices[sendIndex])), np.nan, dtype=np.float64))
                     numRows.append(1)
                 
         # Data will consist of two bytes for the number of rows, then the data from the first partition, 
