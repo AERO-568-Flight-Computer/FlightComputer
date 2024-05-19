@@ -57,11 +57,11 @@ def main():
     # Bind the socket to the port
     sockReceive.bind(("localhost", portReceive))
 
-    internalDataStore = np.full((100,1), np.nan, dtype=np.float64)
+    internalDataStore = np.full((100,2), np.nan, dtype=np.float64)
 
     recentRow = 0
 
-    externalDataStore = np.full((100,1), np.nan, dtype=np.float64)
+    externalDataStore = np.full((100,2), np.nan, dtype=np.float64)
 
     recentRowExternal = 0
 
