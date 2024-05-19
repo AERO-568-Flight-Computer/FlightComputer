@@ -40,20 +40,21 @@ def dataDecode(data, partNum):
 def listenerT(port, partNum):
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server.bind(("0.0.0.0", port))
+    # Set the socket to non-blocking
     print(f"[*] Listening on port {port}")
 
     while receiverStopList[partNum].is_set() == False:
 
-        # Set the socket to non-blocking
-        server.setblocking(False)
-
-        while True:  # Assuming this is inside a loop
-            try:
-                # Get data from the port
-                data, addr = server.recvfrom(65507)
-            except BlockingIOError:
-                # If there is no data, continue to next loop iteration (i.e. check for more data)
-                continue
+        # recvfrom is a blocking call, so we need to check if there is data available first before calling it. That way the 
+        # thread can be stopped by setting the stop event.
+        ready_to_read, _, _ = server.select([server], [], [], 0)
+        if ready_to_read:
+            # Get data from the port
+            data, addr = server.recvfrom(65507)
+            # Process the data...
+        else:
+            # If there is no data, continue to next loop iteration (i.e. check for more data)
+            continue
 
         timeRecv = time.time()
         

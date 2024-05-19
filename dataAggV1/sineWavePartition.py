@@ -131,7 +131,7 @@ def main():
         print("Connections closed")
 
     # Graph the data recorded as a sliding graph of time
-    currentRow = 0
+    currentRow = 1
 
     while currentRow < internalDataStore.shape[0]:
         numPlotPoints = 100
