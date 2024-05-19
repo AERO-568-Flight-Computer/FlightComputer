@@ -10,10 +10,6 @@ from time import sleep
 # Port 11111: Receives data from NGI
 # Port 12300: Sends data to Servo
 
-trimSum = 0 # degrees
-maxTrimSum = 20 # degrees
-minTrimSum = -20 # degrees
-
 # Translate hex data from servo to force in Newtons
 def decodeMsg10(msg):
     # TODO: make this self.msg10.msgId, etc?
@@ -60,18 +56,32 @@ def convertPositionToDegrees(position):
 
 # Function to update trim
 delayInterval = 1
-lastTrim = time.time()
+lastTrim_elv = time.time()
+lastTrim_ail = time.time()
+trimSum_elv = 0 # degrees
+trimSum_ail = 0
+maxTrimSum = 20 # degrees
+minTrimSum = -20 # degrees
 
-def updateTrim(trimup, trimdwn):
-    global trimSum, lastTrim
-    # Trim only for elevator so far
+def updateTrim_elv(trimup, trimdwn):
+    global trimSum_elv, lastTrim_elv
     current = time.time()
-    if current - lastTrim >= delayInterval:
-        if trimup == 1 and trimSum < maxTrimSum:
-            trimSum += 1
-        if trimdwn == 1 and trimSum > minTrimSum:
-            trimSum -= 1
-    return trimSum
+    if current - lastTrim_elv >= delayInterval:
+        if trimup == 1 and trimSum_elv < maxTrimSum:
+            trimSum_elv += 1
+        if trimdwn == 1 and trimSum_elv > minTrimSum:
+            trimSum_elv -= 1
+    return trimSum_elv
+
+def updateTrim_ail(trimlft, trimrht):
+    global trimSum_ail, lastTrim_ail
+    current = time.time()
+    if current - lastTrim_ail >= delayInterval:
+        if trimlft == 1 and trimSum_ail < maxTrimSum:
+            trimSum_ail += 1
+        if trimrht == 1 and trimSum_ail > minTrimSum:
+            trimSum_ail -= 1
+    return trimSum_ail
 
 # Function to return NGI pitch position
 def main():
@@ -101,13 +111,24 @@ def main():
             if axis == 0:
                 # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
                 pitchPosition = pos[0]
-                print("Position: ", pitchPosition)
+                print("Pitch Position: ", pitchPosition)
                 angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
-                print("Angle before trim: ", angle)
+                print("Pitch Angle before trim: ", angle)
 
-                updateTrim(trimup, trimdwn)
-                angle += trimSum
-                print("Angle after trim: ", angle)
+                updateTrim_elv(trimup, trimdwn)
+                angle += trimSum_elv
+                print("Pitch Angle after trim: ", angle)
+
+            if axis == 1:
+                # print(f"axis: roll | position: {pos[0]} | force: {force[0]}")
+                rollPosition = pos[0]
+                print("Roll Position: ", rollPosition)
+                ail_angle = convertPositionToDegrees(rollPosition)
+                print("Roll Angle before trim: ", ail_angle)
+
+                updateTrim_ail(trimlft, trimrht)
+                ail_angle += trimSum_ail
+                print("Roll Angle after trim: ", ail_angle)
 
             # Create a socket object using UDP (not TCP)
             client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
