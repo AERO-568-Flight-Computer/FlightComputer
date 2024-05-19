@@ -405,10 +405,6 @@ if __name__ == "__main__":
 
 # General TODO:
 
-# Don't hardcode the save interval time
-
-# Get sender working
-
 # Maybe take in command line arguments for the setup file or the save interval time or other stuff
 
 # Make sure that you can bind to the port before starting the listener thread
@@ -422,4 +418,4 @@ if __name__ == "__main__":
 
 # Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate
 
-# COnsider not sending nan when there is no data to send
+# Consider not sending nan when there is no data to send
