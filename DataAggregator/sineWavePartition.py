@@ -31,15 +31,29 @@ def main():
     with open("sineWaveTest.json") as f:
         setup = json.load(f)
 
-    name = "sineWavePartition"
+    # Take in the name as a command line argument
+    if len(sys.argv) > 1:
+        name = sys.argv[1]
+    else:
+        raise ValueError("No name provided")
     
     # TODO: Make this more compact
     # Extract the relevant port
-    portSend = setup[0]["portSend"]
+    # portSend = setup[0]["portSend"]
 
-    portReceive = setup[0]["portReceive"]
+    # portReceive = setup[0]["portReceive"]
 
-    rate = setup[0]["rate"]
+    # rate = setup[0]["rate"]
+
+    # Read the file to get the ports and rate
+    for partition in setup:
+        if partition["name"] == name:
+            portSend = partition["portSend"]
+            portReceive = partition["portReceive"]
+            rateInternal = partition["rate"]
+            break
+    else:
+        raise ValueError("Name not found in setup file")
 
     rateInternal = 1000
 
@@ -139,28 +153,30 @@ def main():
     # Check the type of numpy array
     print(type(internalDataStore[1000, 1]))
     print(type(externalDataStore[1000, 0]))
-    np.savetxt("internalData.csv", internalDataStore, delimiter=",")
-    np.savetxt("externalData.csv", externalDataStore, delimiter=",")
+    np.savetxt(f"internalData_{name}.csv", internalDataStore, delimiter=",")
+    np.savetxt(f"externalData_{name}.csv", externalDataStore, delimiter=",")
 
-    # Graph the data recorded as a sliding graph of time
-    currentRow = 1
 
-    line1, = plt.plot([], [], label="Internal")
-    line2, = plt.plot([], [], label="External")
+    # This stuff below doesn't work yet
+    # # Graph the data recorded as a sliding graph of time
+    # currentRow = 1
 
-    while currentRow < internalDataStore.shape[0]:
-        numPlotPoints = 100
-        if currentRow >= numPlotPoints:
-            line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
-            line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
-        else:
-            line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
-            line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
-        plt.legend()
-        plt.draw()
-        plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
-        plt.pause(0.005)
-        currentRow += 20
+    # line1, = plt.plot([], [], label="Internal")
+    # line2, = plt.plot([], [], label="External")
+
+    # while currentRow < internalDataStore.shape[0]:
+    #     numPlotPoints = 100
+    #     if currentRow >= numPlotPoints:
+    #         line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
+    #         line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
+    #     else:
+    #         line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
+    #         line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
+    #     plt.legend()
+    #     plt.draw()
+    #     plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
+    #     plt.pause(0.005)
+    #     currentRow += 20
     
 
 
