@@ -4,6 +4,7 @@ import numpy as np
 import time
 import json
 import os
+import select
 
 
 def setupPartitions(partitionInfo):
@@ -47,7 +48,7 @@ def listenerT(port, partNum):
 
         # recvfrom is a blocking call, so we need to check if there is data available first before calling it. That way the 
         # thread can be stopped by setting the stop event.
-        ready_to_read, _, _ = server.select([server], [], [], 0)
+        ready_to_read, _, _ = select.select([server], [], [], 0)
         if ready_to_read:
             # Get data from the port
             data, addr = server.recvfrom(65507)
