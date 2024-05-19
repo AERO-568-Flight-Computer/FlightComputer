@@ -246,7 +246,7 @@ def main():
     partitionInfo = 0
 
     # Load the setup file
-    with open("sineWaveTest.json") as f:
+    with open("sineWaveMulti.json") as f:
         partitionInfo = json.load(f)
 
 
