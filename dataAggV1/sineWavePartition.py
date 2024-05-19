@@ -43,7 +43,7 @@ def main():
 
     rateInternal = 1000
 
-    numPoints = int(rateInternal/rate)
+    numPoints = 1
 
     # Print the port
     print("Port: ", portSend)
@@ -68,16 +68,19 @@ def main():
     plt.ion()
     # Generate random numbers and send them to the data aggregator
     try:
-        for i in range(3000):
+        for i in range(30000):
 
             # Attempt to receive data while it is available
             while select.select([sockReceive], [], [], 0)[0]:
                 data, addr = sockReceive.recvfrom(65000)
-                print("Received data")
-                print(len(data))
 
                 # Decode the data
                 externalData, numRows = dataDecode(data)
+
+                # Every 500 iterations, print length of data
+
+                if i % 500 == 0:
+                    print("Length of data: ", len(data))
 
                 while recentRowExternal + numRows > externalDataStore.shape[0]:
                     bufferArray = np.full((externalDataStore.shape[0],2), np.nan, dtype=np.float64)
@@ -85,8 +88,10 @@ def main():
 
                 # Store the data
                 externalDataStore[recentRowExternal:recentRowExternal+numRows] = externalData
+                # Change the first column to be the time received
+                externalDataStore[recentRowExternal:recentRowExternal+numRows, 0] = time.time()
                 recentRowExternal += numRows
-            
+            time.sleep(1/rateInternal)
             # Generate 10 points of a sine wave
             for i in range(numPoints):
                 internalTime = time.time()
@@ -98,7 +103,7 @@ def main():
                 internalDataStore[recentRow, 1] = np.sin(internalTime)
                 internalDataStore[recentRow, 0] = internalTime
                 recentRow += 1
-                time.sleep(1/rateInternal)
+                
 
             # Format data as 16 bit unsigned integers, array
             dataToSend = b''
@@ -130,29 +135,32 @@ def main():
         plt.close()
         print("Connections closed")
 
-    # Save the external data and internal data to a file
-    np.save("externalData.npy", externalDataStore)
-    np.save("internalData.npy", internalDataStore)
+    # Save the external data and internal data csv file
+    # Check the type of numpy array
+    print(type(internalDataStore[1000, 1]))
+    print(type(externalDataStore[1000, 0]))
+    np.savetxt("internalData.csv", internalDataStore, delimiter=",")
+    np.savetxt("externalData.csv", externalDataStore, delimiter=",")
 
-    # # Graph the data recorded as a sliding graph of time
-    # currentRow = 1
+    # Graph the data recorded as a sliding graph of time
+    currentRow = 1
 
-    # line1, = plt.plot([], [], label="Internal")
-    # line2, = plt.plot([], [], label="External")
+    line1, = plt.plot([], [], label="Internal")
+    line2, = plt.plot([], [], label="External")
 
-    # while currentRow < internalDataStore.shape[0]:
-    #     numPlotPoints = 100
-    #     if currentRow >= numPlotPoints:
-    #         line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
-    #         line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
-    #     else:
-    #         line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
-    #         line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
-    #     plt.legend()
-    #     plt.draw()
-    #     plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
-    #     plt.pause(0.005)
-    #     currentRow += 20
+    while currentRow < internalDataStore.shape[0]:
+        numPlotPoints = 100
+        if currentRow >= numPlotPoints:
+            line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
+            line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
+        else:
+            line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
+            line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
+        plt.legend()
+        plt.draw()
+        plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
+        plt.pause(0.005)
+        currentRow += 20
     
 
 
