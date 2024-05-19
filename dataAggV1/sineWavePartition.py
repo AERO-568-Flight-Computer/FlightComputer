@@ -133,18 +133,21 @@ def main():
     # Graph the data recorded as a sliding graph of time
     currentRow = 1
 
+    line1, = plt.plot([], [], label="Internal")
+    line2, = plt.plot([], [], label="External")
+
     while currentRow < internalDataStore.shape[0]:
         numPlotPoints = 100
         if currentRow >= numPlotPoints:
-            plt.plot(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1], label="Internal")
-            plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal, 0], externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal, 1], label="External")
+            line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
+            line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
         else:
-            plt.plot(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1], label="Internal")
-            plt.plot(externalDataStore[:recentRowExternal, 0], externalDataStore[:recentRowExternal, 1], label="External")
+            line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
+            line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
         plt.legend()
         plt.draw()
         plt.pause(0.005)
-        currentRow += 1
+        currentRow += 20
     
 
 
