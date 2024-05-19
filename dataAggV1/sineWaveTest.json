@@ -6,11 +6,13 @@
         "rate": 100,
         "sendDict":
             {
-                "0": "sineWave"
+                "0": "timeRec",
+                "1": "sineWave"
             },
         "receiveDict":
             {
-                "0": ["sineWave", "sineWave"]
+                "0": ["sineWave", "timeRec"],
+                "1": ["sineWave", "sineWave"]
             }
     }
 ]
