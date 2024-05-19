@@ -421,3 +421,5 @@ if __name__ == "__main__":
 # Connections closed check if actually worked
 
 # Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate
+
+# COnsider not sending nan when there is no data to send
