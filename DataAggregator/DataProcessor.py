@@ -166,28 +166,28 @@ class DataProcessor:
 
 
 
-processor = DataProcessor("AirDC")
-print(processor.name)
-print(processor.portSend)
-print(processor.portReceive)
-print(processor.rate)
-print(processor.sendDict)
-print(processor.receiveDict)
+# processor = DataProcessor("AirDC")
+# print(processor.name)
+# print(processor.portSend)
+# print(processor.portReceive)
+# print(processor.rate)
+# print(processor.sendDict)
+# print(processor.receiveDict)
 
-dataDictionaryList = [
-    {
-        "yaw": 10.5,
-        "pitch": 5.2,
-        "roll": 2.8,
-        "militime": 1000,
-        "absPressure": 101325.0,
-        "absSenseTemp": 25.0,
-        "diffPressure": 50.0,
-        "diffSenseTemp": 2.0,
-        "rearFlagAOA": 3.0,
-        "frontFlagYaw": 1.0
-    }
-]
+# dataDictionaryList = [
+#     {
+#         "yaw": 10.5,
+#         "pitch": 5.2,
+#         "roll": 2.8,
+#         "militime": 1000,
+#         "absPressure": 101325.0,
+#         "absSenseTemp": 25.0,
+#         "diffPressure": 50.0,
+#         "diffSenseTemp": 2.0,
+#         "rearFlagAOA": 3.0,
+#         "frontFlagYaw": 1.0
+#     }
+# ]
 
-dataBytes = processor.sendData(dataDictionaryList)
-print(dataBytes)
+# dataBytes = processor.sendData(dataDictionaryList)
+# print(dataBytes)
