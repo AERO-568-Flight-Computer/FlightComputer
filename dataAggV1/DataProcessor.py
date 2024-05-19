@@ -164,7 +164,8 @@ class DataProcessor:
     def close(self):
         
 
-# Usage example
+
+
 processor = DataProcessor("AirDC")
 print(processor.name)
 print(processor.portSend)

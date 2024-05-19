@@ -5,6 +5,8 @@ import binascii
 
 ser = serial.Serial('/dev/cu.usbserial-A9087BP2', 115200, timeout=1)
 
+
+
 while True:
     pitot = ser.read(1)
     # print(pitot)
@@ -22,6 +24,7 @@ while True:
 
         # Time in miliseconds (4 byte int)
         militime = int.from_bytes(byteArray[1:5], byteorder='little')
+        print(militime)
 
         # Abs Pressure in Pascals (4 byte float)
         absPressure = struct.unpack('f', byteArray[5:9])[0]
@@ -41,8 +44,11 @@ while True:
         # Yaw from front pitot flag
         frontFlagYaw = struct.unpack('f', byteArray[25:29])[0]
 
+        sysTimeStamp = getSysTime()
+
         # Create the dataDictionary
         dataDictionary = {
+            "sysTimeStamp": sysTimeStamp,
             "militime": militime,
             "absPressure": absPressure,
             "absSenseTemp": absSenseTemp,
