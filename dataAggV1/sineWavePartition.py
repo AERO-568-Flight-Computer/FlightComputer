@@ -146,6 +146,7 @@ def main():
             line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
         plt.legend()
         plt.draw()
+        plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
         plt.pause(0.005)
         currentRow += 20
     
