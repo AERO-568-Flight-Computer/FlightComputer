@@ -130,25 +130,29 @@ def main():
         plt.close()
         print("Connections closed")
 
-    # Graph the data recorded as a sliding graph of time
-    currentRow = 1
+    # Save the external data and internal data to a file
+    np.save("externalData.npy", externalDataStore)
+    np.save("internalData.npy", internalDataStore)
 
-    line1, = plt.plot([], [], label="Internal")
-    line2, = plt.plot([], [], label="External")
+    # # Graph the data recorded as a sliding graph of time
+    # currentRow = 1
 
-    while currentRow < internalDataStore.shape[0]:
-        numPlotPoints = 100
-        if currentRow >= numPlotPoints:
-            line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
-            line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
-        else:
-            line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
-            line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
-        plt.legend()
-        plt.draw()
-        plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
-        plt.pause(0.005)
-        currentRow += 20
+    # line1, = plt.plot([], [], label="Internal")
+    # line2, = plt.plot([], [], label="External")
+
+    # while currentRow < internalDataStore.shape[0]:
+    #     numPlotPoints = 100
+    #     if currentRow >= numPlotPoints:
+    #         line1.set_data(internalDataStore[currentRow-numPlotPoints:currentRow, 0], internalDataStore[currentRow-numPlotPoints:currentRow, 1])
+    #         line2.set_data(externalDataStore[currentRow-numPlotPoints:currentRow, 0], externalDataStore[currentRow-numPlotPoints:currentRow, 1])
+    #     else:
+    #         line1.set_data(internalDataStore[:currentRow, 0], internalDataStore[:currentRow, 1])
+    #         line2.set_data(externalDataStore[:currentRow, 0], externalDataStore[:currentRow, 1])
+    #     plt.legend()
+    #     plt.draw()
+    #     plt.xlim([internalDataStore[currentRow - numPlotPoints, 0], internalDataStore[currentRow, 0]])
+    #     plt.pause(0.005)
+    #     currentRow += 20
     
 
 
