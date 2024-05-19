@@ -15,7 +15,7 @@ def dataDecode(data):
     numRows = int.from_bytes(data[0:2], byteorder='big')
 
     # Get the number of fields from the partitionInfo global variable
-    numFields = 1
+    numFields = 2
 
     # If the amount of data is not correct, error out
     if len(data) != 2 + numRows * numFields * 8:
@@ -68,7 +68,7 @@ def main():
     plt.ion()
     # Generate random numbers and send them to the data aggregator
     try:
-        while True:
+        for i in range(30000):
 
             # Attempt to receive data while it is available
             while select.select([sockReceive], [], [], 0)[0]:
@@ -80,8 +80,8 @@ def main():
                 externalData, numRows = dataDecode(data)
 
                 while recentRowExternal + numRows > externalDataStore.shape[0]:
-                    joe = np.full((externalDataStore.shape[0],1), np.nan, dtype=np.float64)
-                    externalDataStore = np.concatenate((externalDataStore, joe), axis=0)
+                    bufferArray = np.full((externalDataStore.shape[0],2), np.nan, dtype=np.float64)
+                    externalDataStore = np.concatenate((externalDataStore, bufferArray), axis=0)
 
                 # Store the data
                 externalDataStore[recentRowExternal:recentRowExternal+numRows] = externalData
@@ -92,10 +92,11 @@ def main():
                 internalTime = time.time()
                 
                 if recentRow >= internalDataStore.shape[0]:
-                    joe = np.full((internalDataStore.shape[0],1), np.nan, dtype=np.float64)
-                    internalDataStore = np.concatenate((internalDataStore, joe), axis=0)
+                    bufferArray = np.full((internalDataStore.shape[0],2), np.nan, dtype=np.float64)
+                    internalDataStore = np.concatenate((internalDataStore, bufferArray), axis=0)
                 
-                internalDataStore[recentRow] = np.sin(internalTime)
+                internalDataStore[recentRow, 1] = np.sin(internalTime)
+                internalDataStore[recentRow, 0] = internalTime
                 recentRow += 1
                 time.sleep(1/rateInternal)
 
@@ -113,14 +114,14 @@ def main():
 
             numPlotPoints = 1000
 
-            if recentRow > numPlotPoints:
-                plt.plot(internalDataStore[recentRow-numPlotPoints:recentRow], label="Internal")
-            if recentRowExternal > numPlotPoints:
-                plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal], label="External")
-            plt.legend()
-            plt.draw()  # Draw the plot
-            plt.pause(0.001)  # Pause for a short period (this also allows the plot to update)
-            plt.gca().clear()  # Clear the axes for the next iteration
+            # if recentRow > numPlotPoints:
+            #     plt.plot(internalDataStore[recentRow-numPlotPoints:recentRow], label="Internal")
+            # if recentRowExternal > numPlotPoints:
+            #     plt.plot(externalDataStore[recentRowExternal-numPlotPoints:recentRowExternal], label="External")
+            # plt.legend()
+            # plt.draw()  # Draw the plot
+            # plt.pause(0.001)  # Pause for a short period (this also allows the plot to update)
+            # plt.gca().clear()  # Clear the axes for the next iteration
             
     except KeyboardInterrupt:
         # Close the connection on Ctrl+C
@@ -128,6 +129,19 @@ def main():
         sockReceive.close()
         plt.close()
         print("Connections closed")
+
+    # Graph the data recorded as a sliding graph of time
+    currentRow = 0
+
+    while currentRow <= internalDataStore.shape[0]:
+        plt.plot(internalDataStore[currentRow-1000:currentRow, 0], internalDataStore[currentRow-1000:currentRow, 1], label="Internal")
+        plt.plot(externalDataStore[recentRowExternal-1000:recentRowExternal, 0], externalDataStore[recentRowExternal-1000:recentRowExternal, 1], label="External")
+        plt.legend()
+        plt.draw()
+        currentRow += 1
+    
+
+
 
     return
 
