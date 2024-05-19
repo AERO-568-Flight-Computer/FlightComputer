@@ -12,7 +12,7 @@ from time import sleep
 
 trimSum = 0 # degrees
 maxTrimSum = 20 # degrees
-mimTrimSum = -20 # degrees
+minTrimSum = -20 # degrees
 
 # Translate hex data from servo to force in Newtons
 def decodeMsg10(msg):
@@ -60,19 +60,18 @@ def convertPositionToDegrees(position):
 
 # Function to update trim
 delayInterval = 1
+lastTrim = time.time()
 
-def updateTrim():
-    global trimSum
+def updateTrim(trimup, trimdwn):
+    global trimSum, lastTrim
     # Trim only for elevator so far
-    if trimup == 1 or trimdwn == 1:
-        if trimup == 1:
-            if trimSum < maxTrimSum:
-                trimSum += 1
-        if trimdwn == 1:
-            if trimSum > mimTrimSum:
-                trimSum -= 1
-
-    print('Trim Sum: ', trimSum)
+    current = time.time()
+    if current - lastTrim >= delayInterval:
+        if trimup == 1 and trimSum < maxTrimSum:
+            trimSum += 1
+        if trimdwn == 1 and trimSum > minTrimSum:
+            trimSum -= 1
+    return trimSum
 
 # Function to return NGI pitch position
 def main():
@@ -106,6 +105,7 @@ def main():
                 angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
                 print("Angle before trim: ", angle)
 
+                updateTrim(trimup, trimdwn)
                 angle += trimSum
                 print("Angle after trim: ", angle)
 
@@ -119,12 +119,6 @@ def main():
 
         except ValueError:
             print("Error: Received data is not valid.")
-
-# Start the trim update in a separate thread
-import threading
-trim_thread = threading.Thread(target=updateTrim)
-trim_thread.daemon = True  # Daemonize thread to ensure it exits when the main program does
-trim_thread.start()
 
 if __name__ == '__main__':
     main()
