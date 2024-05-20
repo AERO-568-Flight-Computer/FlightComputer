@@ -38,14 +38,15 @@ while running:
     # determine what the clutch status is - powered on or off?
     pwr_servo, pwr_clutch = get_pwr_status(ser)
 
-    if startup == 0 and pwr_clutch > 20:
-        # Get the initial position of the actuator
-        startPosition = get_pos(ser)
-        print("Initial position:", startPosition)
-        startCommand = build_pos_command(startPosition)
-        ser.write(bytearray(startCommand))
-        startup = 1
-
+    while startup == 0 and pwr_clutch < 20:
+        current_pos = get_pos(ser)
+        print("Current position:", current_pos)
+        if pwr_clutch > 20:
+            startCommand = build_pos_command(current_pos)
+            ser.write(bytearray(startCommand))
+            startup = 1
+        else:
+            print("Waiting for clutch to be powered on")
 
     try:
         # Convert data to integer or float
