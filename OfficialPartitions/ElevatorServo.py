@@ -42,8 +42,8 @@ while running:
         current_pos = get_pos(ser)
         print("Current position:", current_pos)
         if pwr_clutch > 9:
-            startCommand = build_pos_command(current_pos)
-            ser.write(bytearray(startCommand))
+            startCommand_deg = build_pos_command(current_pos)[0]
+            ser.write(bytearray(startCommand_deg))
             startup = 1
         else:
             print("Waiting for clutch to be powered on")
