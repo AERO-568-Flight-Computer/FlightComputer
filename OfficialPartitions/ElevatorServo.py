@@ -36,7 +36,8 @@ while running:
     data, address = sock.recvfrom(4096)
 
     # determine what the clutch status is - powered on or off?
-    pwr_clutch = get_pwr_status(ser)[1]
+    if startup == 0:
+        pwr_clutch = get_pwr_status(ser)[1]
 
     while startup == 0 and pwr_clutch < 20:
         joystick_position = struct.unpack('f', data)[0]
