@@ -57,17 +57,17 @@ while running:
         joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
 
         # Check if position is within range
-        if -90 <= joystick_position <= 90:
-            print("Moving servo to position:", joystick_position_zeroed)
+        # if -90 <= joystick_position <= 90:
+        print("Moving servo to position:", joystick_position_zeroed)
 
-            # Build command for the actuator
-            command = build_pos_command(joystick_position_zeroed)
+        # Build command for the actuator
+        command = build_pos_command(joystick_position_zeroed)
 
-            # Send command to the actuator
-            ser.write(bytearray(command))
-            print("Command sent to actuator")
-        else:
-            print("Error: Angle must be between -90 and 90 degrees")
+        # Send command to the actuator
+        ser.write(bytearray(command))
+        print("Command sent to actuator")
+        #else:
+            #print("Error: Angle must be between -90 and 90 degrees")
     except ValueError:
         print("Error: Received data is not a valid position")
         continue
