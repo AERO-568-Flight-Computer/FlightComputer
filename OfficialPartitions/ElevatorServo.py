@@ -36,7 +36,7 @@ while running:
     data, address = sock.recvfrom(4096)
 
     # determine what the clutch status is - powered on or off?
-    pwr_servo, pwr_clutch = get_pwr_status(ser)
+    pwr_clutch = get_pwr_status(ser)[1]
 
     while startup == 0 and pwr_clutch < 20:
         current_pos = get_pos(ser)
@@ -47,6 +47,8 @@ while running:
             startup = 1
         else:
             print("Waiting for clutch to be powered on")
+        # update clutch status
+        pwr_clutch = get_pwr_status(ser)[1]
 
     try:
         # Convert data to integer or float
