@@ -39,30 +39,29 @@ while running:
     pwr_clutch = get_pwr_status(ser)[1]
 
     while startup == 0 and pwr_clutch < 20:
-        current_pos_deg = get_pos(ser)[0]
-        print("Current position:", current_pos_deg)
+        joystick_position = struct.unpack('f', data)[0]
+        servo_current_pos_deg = get_pos(ser)[0]
+        print("Servo Current position:", servo_current_pos_deg)
+        pwr_clutch = get_pwr_status(ser)[1]
         if pwr_clutch > 9:
-            startCommand = build_pos_command(current_pos_deg)
+            zero_position = servo_current_pos_deg + joystick_position
+            print("Setting zero position:", zero_position)
+            startCommand = build_pos_command(zero_position)
             ser.write(bytearray(startCommand))
             startup = 1
         else:
             print("Waiting for clutch to be powered on")
-        # update clutch status
-        pwr_clutch = get_pwr_status(ser)[1]
 
     try:
-        # Convert data to integer or float
-        position = struct.unpack('f', data)[0]
 
-        # Debugging: Print received position
-        print("Received position:", position)
+        joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
 
         # Check if position is within range
-        if -90 <= position <= 90:
-            print("Moving servo to position:", position)
+        if -90 <= joystick_position <= 90:
+            print("Moving servo to position:", joystick_position_zeroed)
 
             # Build command for the actuator
-            command = build_pos_command(position)
+            command = build_pos_command(joystick_position_zeroed)
 
             # Send command to the actuator
             ser.write(bytearray(command))
