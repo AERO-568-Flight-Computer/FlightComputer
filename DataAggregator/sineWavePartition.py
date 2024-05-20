@@ -106,7 +106,7 @@ def main():
                 externalDataStore[recentRowExternal:recentRowExternal+numRows, 0] = time.time()
                 recentRowExternal += numRows
             time.sleep(1/rateInternal)
-            # Generate 10 points of a sine wave
+            # Generate 1 points of a sine wave
             for i in range(numPoints):
                 internalTime = time.time()
                 

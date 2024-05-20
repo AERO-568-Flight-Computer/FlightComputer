@@ -2,8 +2,8 @@ clear; close all; clc;
 
 
 % Load data
-internalData = readmatrix("internalData.csv");
-externalData = readmatrix("externalData.csv");
+internalData = readmatrix("internalData_name3.csv");
+externalData = readmatrix("externalData_name3.csv");
 
 externalData(:,1) = externalData(:,1) - internalData(1,1);
 internalData(:,1) = internalData(:,1) - internalData(1,1);
@@ -11,7 +11,7 @@ internalData(:,1) = internalData(:,1) - internalData(1,1);
 % Plot 100 points of data, increasing the starting index by 100 each time
 
 startIndex = 101;
-endIndex = 600;
+endIndex = 300;
 
 while endIndex <= length(internalData)
     % Plot internal data
@@ -30,11 +30,11 @@ while endIndex <= length(internalData)
     legend("Internal Data", "External Data");
     ax = gca;
     ax.XAxis.Exponent = 0;
-    ylim([-1,1])
-    xlim([0,1])
+%     ylim([-1,1])
+    xlim([0,0.3])
 
     hold off;
     
-    startIndex = startIndex + 100;
-    endIndex = endIndex + 100;
+    startIndex = startIndex + 20;
+    endIndex = endIndex + 20;
 end
