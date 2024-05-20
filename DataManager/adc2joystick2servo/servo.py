@@ -12,7 +12,6 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Set the socket option to allow reusing the address
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-'''
 # Close any existing socket on port 12345
 try:
     existing_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -22,7 +21,6 @@ try:
     print("Closed existing socket on port 12345")
 except OSError:
     pass
-'''
 
 # Bind the socket to the specified port
 server_address = ('localhost', 12300)
