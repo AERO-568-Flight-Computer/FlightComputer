@@ -107,8 +107,8 @@ def get_pwr_status(ser, actuator_ID=0x01):
     
     pwr_servo = int(hex(rx[8]), 16) * 0.2   # 200 mV per val, volts
     pwr_clutch = int(hex(rx[9]), 16) * 0.2 
-    print("servo input voltage: ", pwr_servo, "V")
-    print("clutch input voltage: ", pwr_clutch, "V")
+    #print("servo input voltage: ", pwr_servo, "V")
+    #print("clutch input voltage: ", pwr_clutch, "V")
     return pwr_servo, pwr_clutch
 
 

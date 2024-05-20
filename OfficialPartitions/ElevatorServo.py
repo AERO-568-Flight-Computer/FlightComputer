@@ -41,7 +41,7 @@ while running:
     while startup == 0 and pwr_clutch < 20:
         current_pos = get_pos(ser)
         print("Current position:", current_pos)
-        if pwr_clutch > 20:
+        if pwr_clutch > 9:
             startCommand = build_pos_command(current_pos)
             ser.write(bytearray(startCommand))
             startup = 1
