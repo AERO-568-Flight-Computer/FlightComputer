@@ -1,0 +1,25 @@
+{
+    "partitions": [
+        {
+            "name": "partition1",
+            "port": 12351,
+            "delay": 1,
+            "rangeLow": 0,
+            "rangeHigh": 99
+        },
+        {
+            "name": "partition2",
+            "port": 12352,
+            "delay": 0.5,
+            "rangeLow": 100,
+            "rangeHigh": 199
+        },
+        {
+            "name": "partition3",
+            "port": 12353,
+            "delay": 0.1,
+            "rangeLow": 200,
+            "rangeHigh": 299
+        }
+    ]
+}

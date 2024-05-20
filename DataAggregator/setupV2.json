@@ -1,0 +1,40 @@
+[
+    {
+        "name": "partition1",
+        "portSend": 12351,
+        "portReceive": 12361,
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "yaw",
+                "1": "pitch",
+                "2": "roll"
+            },
+        "receiveDict":
+            {
+                "0": ["partition1", "yaw"],
+                "1": ["partition1", "pitch"],
+                "2": ["partition1", "roll"]
+            }
+    },
+    {
+        "name": "partition2",
+        "portSend": "FALSE",
+        "portReceive": 12362,
+        "rate": 1,
+        "receiveDict":
+            {
+                "0": ["partition1", "pitch"]
+            }
+    },
+    {
+        "name": "partition3",
+        "portSend": "FALSE",
+        "portReceive": 12363,
+        "rate": 1,
+        "receiveDict":
+            {
+                "0": ["partition1", "roll"]
+            }
+    }
+]

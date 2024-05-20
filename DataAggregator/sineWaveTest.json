@@ -1,0 +1,18 @@
+[
+    {
+        "name": "sineWave",
+        "portSend": 12353,
+        "portReceive": 12363,
+        "rate": 900,
+        "sendDict":
+            {
+                "0": "timeRec",
+                "1": "sineWave"
+            },
+        "receiveDict":
+            {
+                "0": ["sineWave", "timeRec"],
+                "1": ["sineWave", "sineWave"]
+            }
+    }
+]

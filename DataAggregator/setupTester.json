@@ -1,0 +1,84 @@
+[
+    {
+        "name": "vectorNav",
+        "portSend": 12351,
+        "portReceive": "FALSE",
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "yaw",
+                "1": "pitch",
+                "2": "roll"
+            }
+    },
+    {
+        "name": "servo",
+        "portSend": 12352,
+        "portReceive": 12362,
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "servoStatus"
+            },
+        "receiveDict":
+            {
+                "0": ["flightControl", "elevatorPosition"],
+                "1": ["flightControl", "elevatorTrim"]
+            }
+    },
+    {
+        "name": "flightControl",
+        "portSend": 12353,
+        "portReceive": 12363,
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "elevatorPosition",
+                "1": "aileronPosition",
+                "2": "elevatorTrim",
+                "3": "aileronTrim",
+                "4": "joystickStiffness"
+            },
+        "receiveDict":
+            {
+                "0": ["vectorNav", "roll"],
+                "1": ["vectorNav", "pitch"],
+                "2": ["airDC", "IAS"],
+                "3": ["joystick", "yaw"],
+                "4": ["joystick", "pitch"],
+                "5": ["joystick", "rollControl"],
+                "6": ["joystick", "elevatorTrim"],
+                "7": ["joystick", "aileronTrim"]
+            }
+    },
+    {
+        "name": "joystick",
+        "portSend": 12354,
+        "portReceive": 12364,
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "yaw",
+                "1": "pitch",
+                "2": "rollControl",
+                "3": "elevatorTrim",
+                "4": "aileronTrim"
+            },
+        "receiveDict":
+            {
+                "0": ["airDC", "IAS"],
+                "1": ["flightControl", "joystickStiffness"]
+
+            }
+    },
+    {
+        "name": "airDC",
+        "portSend": 12355,
+        "portReceive": "FALSE",
+        "rate": 1,
+        "sendDict":
+            {
+                "0": "IAS"
+            }
+    }
+]
