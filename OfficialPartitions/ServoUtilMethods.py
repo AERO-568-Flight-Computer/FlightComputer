@@ -100,7 +100,7 @@ def get_pwr_status(ser, actuator_ID=0x01):
     cmd = [0xB1, actuator_ID, 0X00, 0X00]
     # generate checksum
     cmd = generate_crc(cmd)
-
+    
     ser.write(bytearray(cmd))
     rx = ser.read(12)  # cmd echo is first 6 bytes, response is second set of 6 bytes
     #print(rx)

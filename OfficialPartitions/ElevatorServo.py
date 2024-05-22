@@ -49,6 +49,7 @@ while running:
             print("Setting zero position:", zero_position)
             startCommand = build_pos_command(zero_position)
             ser.write(bytearray(startCommand))
+            rx = ser.read(12)
             startup = 1
         else:
             print("Waiting for clutch to be powered on")
@@ -66,6 +67,7 @@ while running:
 
         # Send command to the actuator
         ser.write(bytearray(command))
+        rx = ser.read(12)
         #print("Command sent to actuator")
         #else:
             #print("Error: Angle must be between -90 and 90 degrees")
@@ -73,9 +75,9 @@ while running:
         if count % 5 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
             print("Clutch voltage:", pwr_clutch)
-            if pwr_clutch == 0:
-                print("Clutch is not powered on")
-                startup = 0
+            # if pwr_clutch == 0:
+            #     print("Clutch is not powered on")
+            #     startup = 0
 
         count += 1
         print("Count:", count)
