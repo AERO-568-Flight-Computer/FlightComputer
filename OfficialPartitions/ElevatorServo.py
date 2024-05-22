@@ -33,14 +33,13 @@ count = 0
 
 running = True
 while running:
-    print('\nWaiting to receive message')
     data, address = sock.recvfrom(4096)
 
     # determine what the clutch status is - powered on or off?
     if startup == 0:
         pwr_clutch = get_pwr_status(ser)[1]
 
-    while startup == 0 and pwr_clutch < 9:
+    while startup == 0 and pwr_clutch < 20:
         joystick_position = struct.unpack('f', data)[0]
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
@@ -56,7 +55,7 @@ while running:
 
     try:
 
-        if count % 100 == 0:
+        if count % 5 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
             print("Clutch voltage:", pwr_clutch)
             if pwr_clutch == 0:
