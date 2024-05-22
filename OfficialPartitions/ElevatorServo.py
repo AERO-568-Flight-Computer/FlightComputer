@@ -55,13 +55,6 @@ while running:
 
     try:
 
-        if count % 5 == 0:
-            pwr_clutch = get_pwr_status(ser)[1]
-            print("Clutch voltage:", pwr_clutch)
-            if pwr_clutch == 0:
-                print("Clutch is not powered on")
-                startup = 0
-
         joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
 
         # Check if position is within range
@@ -76,6 +69,13 @@ while running:
         #print("Command sent to actuator")
         #else:
             #print("Error: Angle must be between -90 and 90 degrees")
+
+        if count % 5 == 0:
+            pwr_clutch = get_pwr_status(ser)[1]
+            print("Clutch voltage:", pwr_clutch)
+            if pwr_clutch == 0:
+                print("Clutch is not powered on")
+                startup = 0
 
         count += 1
         print("Count:", count)
