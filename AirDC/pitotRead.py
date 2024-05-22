@@ -25,7 +25,7 @@ while True:
     if pitot == bytes([sync_byte]):
 
         print("Received sync byte:", sync_byte)
-        byteArray = ser.read(30)
+        byteArray = ser.read(38)
 
         # Time in miliseconds (4 byte int)
         militime = int.from_bytes(byteArray[0:4], byteorder='little')
@@ -40,26 +40,34 @@ while True:
         print("Abs Temp [C]: ", absSenseTemp)
 
         # Pressure difference in Pascals (4 byte float)
-        diffPressure = struct.unpack('f', byteArray[12:16])[0]
-        print("deltaPres [Pa]: ", diffPressure)
+        diffPressureMS = struct.unpack('f', byteArray[12:16])[0]
+        print("deltaPres [Pa]: ", diffPressureMS)
 
         # Temperature difference in Celcius (4 byte float)
-        diffSenseTemp = struct.unpack('f', byteArray[16:20])[0]
-        print("deltaTemp [C]: ", diffSenseTemp)
+        diffSenseTempMS = struct.unpack('f', byteArray[16:20])[0]
+        print("deltaTemp [C]: ", diffSenseTempMS)
+
+        # Pressure difference in Pascals (4 byte float)
+        diffPressureDL = struct.unpack('f', byteArray[20:24])[0]
+        print("deltaPres [Pa]: ", diffPressureDL)
+
+        # Temperature difference in Celcius (4 byte float)
+        diffSenseTempDL = struct.unpack('f', byteArray[24:28])[0]
+        print("deltaTemp [C]: ", diffSenseTempDL)
 
         # AOA from rear pitot flag
-        rearFlagAOA = struct.unpack('f', byteArray[20:24])[0]
+        rearFlagAOA = struct.unpack('f', byteArray[28:32])[0]
         print("AOA [degs]: ", rearFlagAOA)
 
         # Yaw from front pitot flag
-        frontFlagYaw = struct.unpack('f', byteArray[24:28])[0]
+        frontFlagYaw = struct.unpack('f', byteArray[32:36])[0]
         print("Yaw [degs]: ", frontFlagYaw)
 
         crcArray = bytes([255]) + byteArray[:-2]
         crc_calculated = crc16_custom(crcArray)
         print(crc_calculated)
         # CRC check
-        crcCheck = int.from_bytes(byteArray[28:30], byteorder='little')
+        crcCheck = int.from_bytes(byteArray[36:38], byteorder='little')
         print(crcCheck)
 
         # dataDictionary = {
