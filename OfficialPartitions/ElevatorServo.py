@@ -40,7 +40,7 @@ while running:
     if startup == 0:
         pwr_clutch = get_pwr_status(ser)[1]
 
-    while startup == 0 and pwr_clutch < 20:
+    while startup == 0 and pwr_clutch < 9:
         joystick_position = struct.unpack('f', data)[0]
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
@@ -58,7 +58,8 @@ while running:
 
         if count % 100 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
-            if pwr_clutch < 20:
+            print("Clutch voltage:", pwr_clutch)
+            if pwr_clutch == 0:
                 print("Clutch is not powered on")
                 startup = 0
 
