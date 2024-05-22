@@ -29,6 +29,7 @@ server_address = ('localhost', 12300)
 sock.bind(server_address)
 
 startup = 0
+count = 0
 
 running = True
 while running:
@@ -55,20 +56,30 @@ while running:
 
     try:
 
+        if count % 100 == 0:
+            pwr_clutch = get_pwr_status(ser)[1]
+            if pwr_clutch < 20:
+                print("Clutch is not powered on")
+                startup = 0
+
         joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
 
         # Check if position is within range
         # if -90 <= joystick_position <= 90:
-        print("Moving servo to position:", joystick_position_zeroed)
+        #print("Moving servo to position:", joystick_position_zeroed)
 
         # Build command for the actuator
         command = build_pos_command(joystick_position_zeroed)
 
         # Send command to the actuator
         ser.write(bytearray(command))
-        print("Command sent to actuator")
+        #print("Command sent to actuator")
         #else:
             #print("Error: Angle must be between -90 and 90 degrees")
+
+        count += 1
+        print("Count:", count)
+
     except ValueError:
         print("Error: Received data is not a valid position")
         continue
