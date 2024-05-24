@@ -44,7 +44,7 @@ while running:
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
         pwr_clutch = get_pwr_status(ser)[1]
-        if pwr_clutch > 20:
+        if pwr_clutch >= 20:
             zero_position = servo_current_pos_deg + joystick_position
             print("Setting zero position:", zero_position)
             startCommand = build_pos_command(zero_position)
@@ -88,3 +88,4 @@ while running:
 
 # Close socket
 sock.close()
+
