@@ -7,33 +7,14 @@ from time import sleep
 # Data Aggregator: Receives data from the NGI and sends it to Servo.
 # Translates hex data from servo to force in Newtons. Then converts to degrees for servo, sends command after time.
 
-# Port 11111: Receives data from NGI
-# Port 12300: Sends data to Servo
-
-# Translate hex data from servo to force in Newtons
-def decodeMsg10(msg):
-    # TODO: make this self.msg10.msgId, etc?
-    msgId = msg[0]
-    axis = msg[1]
-    inceptorNumber = msg[2]
-    # status = struct.unpack("L", msg[4:8])  # TODO: further unpack each bit
-    # status = struct.unpack("I", msg[4:8])  # Assuming status is a 4-byte unsigned integer
-    pos = struct.unpack("f", msg[8:12])
-    force = struct.unpack("f", msg[12:16])
-    motorDemand = struct.unpack("f", msg[16:20])
-    # switchState1 = struct.unpack("L", msg[20:24])
-    switch09 = (msg[21] >> 0) & 1  # switch left
-    switch10 = (msg[21] >> 1) & 1  # switch forward
-    switch11 = (msg[21] >> 2) & 1  # switch right
-    switch12 = (msg[21] >> 3) & 1  # switch back
-    # switchState2 = struct.unpack("L", msg[24:28])
-    analogueSwitch1 = struct.unpack("f", msg[28:32])
-    analogueSwitch2 = struct.unpack("f", msg[32:36])
-    analogueSwitch3 = struct.unpack("f", msg[36:40])
-    ver = struct.unpack("f", msg[40:44])
-    rawForceSensorOut = struct.unpack("f", msg[44:48])
-
-    return axis, pos, force, switch09, switch10, switch11, switch12
+# Port 11111: Receives pitch position from NGI
+# Port 11112: Receives pitch trim up from NGI
+# Port 11113: Receives pitch trim down from NGI
+# Port 11114: Receives roll position from NGI
+# Port 11115: Receives roll trim left from NGI
+# Port 11116: Receives roll trim right from NGI
+# Port 12300: Sends Pitch Angle to Servo
+# Port 12301: Sends Roll Angle to Servo
 
 # Function to convert position to degrees
 def convertPositionToDegrees(position):
@@ -85,58 +66,94 @@ def updateTrim_ail(trimlft, trimrht):
 
 # Function to return NGI pitch position
 def main():
-    # Create UDP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    # Bind socket to specified port
-    server_address = ('localhost', 11111)
-    sock.bind(server_address)
-
     running = True
     while running:
+
+        # Port 11111
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11111)
+        sock.bind(server_address)       
         print("Waiting to receive data")
         data, address = sock.recvfrom(4096)
+        pitchPosition = struct.unpack('f', data)[0]
+
+        # Port 11112
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11112)
+        sock.bind(server_address)       
+        print("Waiting to receive data")
+        data, address = sock.recvfrom(4096)
+        trimup = struct.unpack('f', data)[0]
+
+        # Port 11113
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11113)
+        sock.bind(server_address)       
+        print("Waiting to receive data")
+        data, address = sock.recvfrom(4096)
+        trimdwn = struct.unpack('f', data)[0]    
+
+        # Port 11114
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11114)
+        sock.bind(server_address)       
+        print("Waiting to receive data")
+        data, address = sock.recvfrom(4096)
+        rollPosition = struct.unpack('f', data)[0]   
+
+        # Port 11115
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11115)
+        sock.bind(server_address)       
+        print("Waiting to receive data")
+        data, address = sock.recvfrom(4096)
+        trimlft = struct.unpack('f', data)[0]
+
+        # Port 11116
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server_address = ('localhost', 11116)
+        sock.bind(server_address)       
+        print("Waiting to receive data")
+        data, address = sock.recvfrom(4096)
+        trimrht = struct.unpack('f', data)[0]
 
         try:
             PITCH_MIN = -20.0
             PITCH_MAX = 20.0
             ROLL_MIN = -20.0
             ROLL_MAX = 20.0
-
-            """ RECEIVE FROM PORT 7004"""
-
-            axis, pos, force, trimlft, trimup, trimrht, trimdwn = decodeMsg10(data)
-            # print(f"Axis {axis} | Position {pos[0]}")
             
-            if axis == 0:
-                # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
-                pitchPosition = pos[0]
-                print("Pitch Position: ", pitchPosition)
-                angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
-                print("Pitch Angle before trim: ", angle)
+            print("Pitch Position: ", pitchPosition)
+            elv_angle = convertPositionToDegrees(pitchPosition)
+            print("Pitch Angle before trim: ", elv_angle)
 
-                updateTrim_elv(trimup, trimdwn)
-                angle += trimSum_elv
-                print("Pitch Angle after trim: ", angle)
+            updateTrim_elv(trimup, trimdwn)
+            elv_angle += trimSum_elv
+            print("Pitch Angle after trim: ", elv_angle)
 
-            if axis == 1:
-                # print(f"axis: roll | position: {pos[0]} | force: {force[0]}")
-                rollPosition = pos[0]
-                print("Roll Position: ", rollPosition)
-                ail_angle = convertPositionToDegrees(rollPosition)
-                print("Roll Angle before trim: ", ail_angle)
+            print("Roll Position: ", rollPosition)
+            ail_angle = convertPositionToDegrees(rollPosition)
+            print("Roll Angle before trim: ", ail_angle)
 
-                updateTrim_ail(trimlft, trimrht)
-                ail_angle += trimSum_ail
-                print("Roll Angle after trim: ", ail_angle)
+            updateTrim_ail(trimlft, trimrht)
+            ail_angle += trimSum_ail
+            print("Roll Angle after trim: ", ail_angle)
 
-            # Create a socket object using UDP (not TCP)
+            # Create a socket object using UDP
             client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-            # Convert the float to bytes, as we can only send bytes
-            message_bytes = struct.pack('f', angle)
-            client.sendto(message_bytes, ('localhost', 12300))
-            print("Sending: ", angle, "to port 12300")
+            # Convert the float to bytes
+            message_bytes1 = struct.pack('f', elv_angle)
+            client.sendto(message_bytes1, ('localhost', 12300))
+            print("Sending: ", elv_angle, "to port 12300")
+
+            # Create a socket object using UDP
+            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+            # Convert the float to bytes
+            message_bytes2 = struct.pack('f', ail_angle)
+            client.sendto(message_bytes2, ('localhost', 12301))
+            print("Sending: ", ail_angle, "to port 12301")           
 
         except ValueError:
             print("Error: Received data is not valid.")

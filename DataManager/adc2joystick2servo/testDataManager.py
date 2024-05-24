@@ -34,29 +34,24 @@ def main():
     # Create UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    # Bind socket to specified port
-    server_address = ('localhost', 11111)
-    sock.bind(server_address)
-
     running = True
     while running:
         print("Waiting to receive data")
-        data, address = sock.recvfrom(4096)
+        
+        # Pitch Position Data
+        server_address = ('localhost', 11111)
+        sock.bind(server_address)
+        pitchPositiondata, address = sock.recvfrom(4096)
+        pitchPosition = struct.unpack('f', pitchPositiondata)[0]
+
+        # Trim Pitch Data
 
         try:
             """ RECEIVE FROM PORT 7004"""
-
             
-            if axis == 0:
-                # print(f"axis: pitch | position: {pos[0]} | force: {force[0]}")
-                pitchNorm = 2 * (pos[0] - PITCH_MIN) / (PITCH_MAX - PITCH_MIN) - 1
-                if pitchNorm > 1:
-                    pitchNorm = 1.0
-                elif pitchNorm < -1.0:
-                    pitchNorm = -1.0
-                pitchPosition = pos[0]
 
             print("Position: ", pitchPosition)
+
             angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
 
             # Create a socket object using UDP (not TCP)
