@@ -37,7 +37,11 @@ while running:
 
     # determine what the clutch status is - powered on or off?
     if startup == 0:
-        pwr_clutch = get_pwr_status(ser)[1]
+        try:
+            pwr_clutch = get_pwr_status(ser)[1]
+        except:
+            print("Error: Could not get clutch status... Servo may not be turned on.")
+            continue
 
     while startup == 0 and pwr_clutch < 20:
         joystick_position = struct.unpack('f', data)[0]
@@ -57,30 +61,21 @@ while running:
     try:
 
         joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
-
-        # Check if position is within range
-        # if -90 <= joystick_position <= 90:
-        #print("Moving servo to position:", joystick_position_zeroed)
-
-        # Build command for the actuator
-        command = build_pos_command(joystick_position_zeroed)
-
-        # Send command to the actuator
-        ser.write(bytearray(command))
-        rx = ser.read(12)
-        #print("Command sent to actuator")
-        #else:
-            #print("Error: Angle must be between -90 and 90 degrees")
+        servo_current_pos_deg = get_pos(ser)[0]
+        print("Servo Current position:", servo_current_pos_deg)
+        
+        if servo_current_pos_deg > -55 and servo_current_pos_deg < 55:
+            command = build_pos_command(joystick_position_zeroed)
+            ser.write(bytearray(command))
+            rx = ser.read(12)
 
         if count % 2 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
-            print("Clutch voltage:", pwr_clutch)
             if pwr_clutch == 0:
                 print("Clutch is not powered on")
                 startup = 0
 
         count += 1
-        print("Count:", count)
 
     except ValueError:
         print("Error: Received data is not a valid position")
