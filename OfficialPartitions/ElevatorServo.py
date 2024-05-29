@@ -44,7 +44,11 @@ while running:
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
         pwr_clutch = get_pwr_status(ser)[1]
+<<<<<<< HEAD
         if pwr_clutch >= 20:
+=======
+        if pwr_clutch > 9:
+>>>>>>> parent of 6152513 (Testing full loop)
             zero_position = servo_current_pos_deg + joystick_position
             print("Setting zero position:", zero_position)
             startCommand = build_pos_command(zero_position)
@@ -75,9 +79,9 @@ while running:
         if count % 5 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
             print("Clutch voltage:", pwr_clutch)
-            if pwr_clutch == 0:
-                print("Clutch is not powered on")
-                startup = 0
+            # if pwr_clutch == 0:
+            #     print("Clutch is not powered on")
+            #     startup = 0
 
         count += 1
         print("Count:", count)
