@@ -3,6 +3,7 @@ import json
 import numpy as np
 import binascii
 import socket
+import select
 
 class DataProcessor:
     JSON_STRING = '''
@@ -72,6 +73,8 @@ class DataProcessor:
         self.rate = False
         self.sendDict = False
         self.receiveDict = False
+        self.dataPointsPerPartition = None
+        self.currentRow = None
         
         self.initVariables()
     
@@ -95,13 +98,18 @@ class DataProcessor:
 
                 if self.receiveDict:
                     dataPointsPerPartition = {}
+                    self.currentRow = {}
                     for key, value in self.receiveDict.items():
                         partition = value[0]
                         if partition not in dataPointsPerPartition:
                             dataPointsPerPartition[partition] = 0
+                            self.currentRow[partition] = 0
                         dataPointsPerPartition[partition] += 1
 
-                    self.dataPointsPerPartition = list(dataPointsPerPartition.values())
+                self.numpyArraysDict = {}
+
+                for partition, numPoints in dataPointsPerPartition.items():
+                    self.numpyArraysDict[partition] = np.zeros((numPoints, 2000))
 
                 break
     
@@ -151,43 +159,50 @@ class DataProcessor:
                 partitionBytes.append(partitionData)
                 byteOffset += payloadSize
 
-            for partitionData in partitionBytes:
+            for i, (partitionName, numColumns) in enumerate(self.dataPointsPerPartition.items()):
 
-                receivedData = np.frombuffer(dataArray, dtype=np.float64)
+                receivedData = np.frombuffer(partitionData, dtype=np.float64)
+                receivedData = receivedData.reshape(-1, numColumns)  # Reshape the data based on the number of columns
 
-                # Reshape the array to have numRows rows and numFields columns
-                receivedData = receivedData.reshape(numRows, numFields)
+                currentRow = self.currentRow.get(partitionName, 0)
+                
+                remainingSpace = 2000 - currentRow
 
-        return receivedData, numRows
+                if numRows <= remainingSpace:
+                    # If the received data fits within the remaining space, write it directly
+                    self.numpyArraysDict[partitionName][currentRow:currentRow+numRows] = receivedData
+                else:
+                    # If the received data exceeds the remaining space, write in two parts
+                    # First, write the data that fits within the remaining space
+                    self.numpyArraysDict[partitionName][currentRow:] = receivedData[:remainingSpace]
+                    
+                    # Then, write the remaining data from the beginning of the array
+                    self.numpyArraysDict[partitionName][:numRows-remainingSpace] = receivedData[remainingSpace:]
 
-        
-    def close(self):
-        
+                # Update the current row for the partition
+                self.currentRow[partitionName] = (currentRow + numRows) % 2000
+        return
 
+    def getRecentData(self, partitionName, numRows):
+        if partitionName not in self.numpyArraysDict:
+            raise ValueError(f"Partition '{partitionName}' not found.")
 
+        currentRow = self.currentRow.get(partitionName, 0)
+        numpyArray = self.numpyArraysDict[partitionName]
+        numColumns = numpyArray.shape[1]
 
-# processor = DataProcessor("AirDC")
-# print(processor.name)
-# print(processor.portSend)
-# print(processor.portReceive)
-# print(processor.rate)
-# print(processor.sendDict)
-# print(processor.receiveDict)
+        if numRows > 2000:
+            raise ValueError("Number of rows requested exceeds the array size.")
 
-# dataDictionaryList = [
-#     {
-#         "yaw": 10.5,
-#         "pitch": 5.2,
-#         "roll": 2.8,
-#         "militime": 1000,
-#         "absPressure": 101325.0,
-#         "absSenseTemp": 25.0,
-#         "diffPressure": 50.0,
-#         "diffSenseTemp": 2.0,
-#         "rearFlagAOA": 3.0,
-#         "frontFlagYaw": 1.0
-#     }
-# ]
+        if currentRow >= numRows:
+            # If the current row is greater than or equal to the number of rows requested,
+            # we can retrieve the data directly from the array
+            recentData = numpyArray[currentRow - numRows:currentRow]
+        else:
+            # If the current row is less than the number of rows requested,
+            # we need to retrieve data from the end of the array and the beginning
+            dataFromEnd = numpyArray[2000 - (numRows - currentRow):]
+            dataFromStart = numpyArray[:currentRow]
+            recentData = np.vstack((dataFromEnd, dataFromStart))
 
-# dataBytes = processor.sendData(dataDictionaryList)
-# print(dataBytes)
+        return recentData
