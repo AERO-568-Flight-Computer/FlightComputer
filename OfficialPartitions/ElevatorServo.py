@@ -75,9 +75,9 @@ while running:
         else:
             print("Servo is at its limit. Cannot move further.")
             if servo_current_pos_deg <= -55:
-                command = build_pos_command(-53)
+                command = build_pos_command(joystick_position_zeroed + 1)
             else:
-                command = build_pos_command(53)
+                command = build_pos_command(joystick_position_zeroed - 1)
             ser.write(bytearray(command))
             rx = ser.read(12)
             continue
