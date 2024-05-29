@@ -68,6 +68,9 @@ while running:
             command = build_pos_command(joystick_position_zeroed)
             ser.write(bytearray(command))
             rx = ser.read(12)
+        else:
+            print("Servo is at its limit. Cannot move further.")
+            continue
 
         if count % 2 == 0:
             pwr_clutch = get_pwr_status(ser)[1]
