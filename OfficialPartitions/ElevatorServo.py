@@ -45,6 +45,7 @@ while running:
 
     while startup == 0 and pwr_clutch < 20:
         try:
+            data, address = sock.recvfrom(4096)
             joystick_position, trimup, trimdwn = struct.unpack('fff', data)
             print("Joystick position:", joystick_position)
             print("Trim up:", trimup)
