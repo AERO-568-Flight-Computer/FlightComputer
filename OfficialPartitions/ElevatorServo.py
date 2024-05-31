@@ -33,16 +33,14 @@ sock.bind(server_address)
 delayInterval = 1
 lastTrim_elv = time.time()
 trimSum_elv = 0 # degrees
-maxTrimSum = 55 # degrees
-minTrimSum = -55 # degrees
 
 def updateTrim_elv(trimup, trimdwn):
     global trimSum_elv, lastTrim_elv
     current = time.time()
     if current - lastTrim_elv >= delayInterval:
-        if trimup == 1 and trimSum_elv < maxTrimSum:
+        if trimup == 1:
             trimSum_elv += 1
-        if trimdwn == 1 and trimSum_elv > minTrimSum:
+        if trimdwn == 1:
             trimSum_elv -= 1
     return trimSum_elv
 
