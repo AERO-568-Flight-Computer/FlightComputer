@@ -85,7 +85,9 @@ while running:
     try:
 
         joystick_position, trimup, trimdwn = struct.unpack('fff', data)
-        trimSum_elv = updateTrim_elv(trimup, trimdwn)
+        check = joystick_position + trimSum_elv
+        if -55 < check < 55:
+            trimSum_elv = updateTrim_elv(trimup, trimdwn)
         joystick_position_zeroed = joystick_position + zero_position + trimSum_elv
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)

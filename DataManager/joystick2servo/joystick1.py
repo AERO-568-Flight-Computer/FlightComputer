@@ -25,8 +25,8 @@ def adjustForce(ngi, axis, ias):
 
     # print(f"ias: {ias} | force: {force}")
 
-    ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 2*scale*force], [15, 3*scale*force], [20, 4*scale*force]]
-    ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 2*scale*force], [15, 3*scale*force], [20, 4*scale*force]]
+    ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+    ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
     ngi.txSock.sendto(ngi.msg02(ngi.POS_FORCE_COORDS, ngi.NEG_FORCE_COORDS, axis),
                       (ngi.UDP_IP_NGI, ngi.UDP_PORT_ROTCHAR))
 
