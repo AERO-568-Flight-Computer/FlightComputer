@@ -51,7 +51,10 @@ while running:
             pwr_clutch = get_pwr_status(ser)[1]
             if pwr_clutch > 20:
                 zero_position = servo_current_pos_deg + joystick_position
-                print("Setting zero position:", zero_position)
+                if zero_position < -55:
+                    zero_position = -55
+                elif zero_position > 55:
+                    zero_position = 55
                 startCommand = build_pos_command(zero_position)
                 ser.write(bytearray(startCommand))
                 rx = ser.read(12)
