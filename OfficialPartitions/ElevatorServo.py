@@ -63,8 +63,7 @@ while running:
 
     while startup == 0 and pwr_clutch < 20:
         try:
-            data, address = sock.recvfrom(4096)
-            joystick_position, trimup, trimdwn = struct.unpack('fff', data)
+            joystick_position, trimup, trimdwn = 0, 0, 0
             trimSum_elv = 0
             servo_current_pos_deg = get_pos(ser)[0]
             print("Servo Current position:", servo_current_pos_deg)
