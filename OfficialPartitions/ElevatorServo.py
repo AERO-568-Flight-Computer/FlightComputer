@@ -45,11 +45,9 @@ while running:
 
     while startup == 0 and pwr_clutch < 20:
         try:
-            joystick_position = struct.unpack('f', data)[0]
+            joystick_position, trimup, trimdwn = struct.unpack('fff', data)
             print("Joystick position:", joystick_position)
-            trimup = struct.unpack('f', data)[1]
             print("Trim up:", trimup)
-            trimdwn = struct.unpack('f', data)[2]
             print("Trim down:", trimdwn)
             servo_current_pos_deg = get_pos(ser)[0]
             print("Servo Current position:", servo_current_pos_deg)
