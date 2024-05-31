@@ -2,6 +2,7 @@ import socket
 from ServoUtilMethods import *
 import serial
 import struct
+import time
 
 # Initialize serial connection to the actuator
 ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
@@ -28,6 +29,23 @@ except OSError:
 server_address = ('localhost', 12300)
 sock.bind(server_address)
 
+# Function to update trim
+delayInterval = 1
+lastTrim_elv = time.time()
+trimSum_elv = 0 # degrees
+maxTrimSum = 55 # degrees
+minTrimSum = -55 # degrees
+
+def updateTrim_elv(trimup, trimdwn):
+    global trimSum_elv, lastTrim_elv
+    current = time.time()
+    if current - lastTrim_elv >= delayInterval:
+        if trimup == 1 and trimSum_elv < maxTrimSum:
+            trimSum_elv += 1
+        if trimdwn == 1 and trimSum_elv > minTrimSum:
+            trimSum_elv -= 1
+    return trimSum_elv
+
 startup = 0
 count = 0
 
@@ -47,9 +65,7 @@ while running:
         try:
             data, address = sock.recvfrom(4096)
             joystick_position, trimup, trimdwn = struct.unpack('fff', data)
-            print("Joystick position:", joystick_position)
-            print("Trim up:", trimup)
-            print("Trim down:", trimdwn)
+            trimSum_elv = 0
             servo_current_pos_deg = get_pos(ser)[0]
             print("Servo Current position:", servo_current_pos_deg)
             pwr_clutch = get_pwr_status(ser)[1]
@@ -71,7 +87,9 @@ while running:
         
     try:
 
-        joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
+        joystick_position, trimup, trimdwn = struct.unpack('fff', data)
+        trimSum_elv = updateTrim_elv(trimup, trimdwn)
+        joystick_position_zeroed = joystick_position + zero_position + trimSum_elv
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
         
