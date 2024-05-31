@@ -26,6 +26,22 @@ class DataProcessor:
             }
         },
         {
+            "name": "name1",
+            "portSend": 12353,
+            "portReceive": 12363,
+            "rate": 900,
+            "sendDict":
+                {
+                    "0": "timeRec",
+                    "1": "sineWave"
+                },
+            "receiveDict":
+                {
+                    "0": ["name1", "timeRec"],
+                    "1": ["name1", "sineWave"]
+                }
+        },
+        {
             "name": "partition2",
             "portSend": "FALSE",
             "portReceive": 12362,
@@ -133,7 +149,7 @@ class DataProcessor:
         packet = struct.pack('>H', numRows) + dataBytes
 
         # Send the packet over UDP
-        self.sock.sendto(packet, ('localhost', self.portSend))
+        self.sendSock.sendto(packet, ('localhost', self.portSend))
 
     def receiveData(self):
         if not self.receiveSock:
