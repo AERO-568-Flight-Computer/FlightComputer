@@ -86,10 +86,10 @@ while running:
 
         joystick_position, trimup, trimdwn = struct.unpack('fff', data)
         check = joystick_position + trimSum_elv
-        if check <= -55:
-            trimSum_elv = updateTrim_elv(0, trimdwn)
-        elif check >= 55:
+        if check < -55:
             trimSum_elv = updateTrim_elv(trimup, 0)
+        elif check > 55:
+            trimSum_elv = updateTrim_elv(0, trimdwn)
         else :
             trimSum_elv = updateTrim_elv(trimup, trimdwn)
         joystick_position_zeroed = joystick_position + zero_position + trimSum_elv
