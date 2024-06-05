@@ -29,20 +29,12 @@ except OSError:
 server_address = ('localhost', 12300)
 sock.bind(server_address)
 
-# Function to update trim
-delayInterval = 1
-lastTrim_elv = time.time()
-trimSum_elv = 0 # degrees
-
 def updateTrim_elv(trimup, trimdwn):
-    global trimSum_elv, lastTrim_elv
-    current = time.time()
-    if current - lastTrim_elv >= delayInterval:
-        if trimup == 1:
-            trimSum_elv += 1
-        if trimdwn == 1:
-            trimSum_elv -= 1
-    return trimSum_elv
+    if trimup == 1:
+        trim = 1
+    elif trimdwn == 1:
+        trim = -1
+    return trim
 
 startup = 0
 count = 0
@@ -61,8 +53,7 @@ while running:
 
     while startup == 0 and pwr_clutch < 20:
         try:
-            joystick_position, trimup, trimdwn = 0, 0, 0
-            trimSum_elv = 0
+            joystick_position, trimup, trimdwn = struct.unpack('fff', data)
             servo_current_pos_deg = get_pos(ser)[0]
             print("Servo Current position:", servo_current_pos_deg)
             pwr_clutch = get_pwr_status(ser)[1]
@@ -85,14 +76,8 @@ while running:
     try:
 
         joystick_position, trimup, trimdwn = struct.unpack('fff', data)
-        check = joystick_position + trimSum_elv
-        if check < -55:
-            trimSum_elv = updateTrim_elv(trimup, 0)
-        elif check > 55:
-            trimSum_elv = updateTrim_elv(0, trimdwn)
-        else :
-            trimSum_elv = updateTrim_elv(trimup, trimdwn)
-        joystick_position_zeroed = joystick_position + zero_position + trimSum_elv
+        
+        joystick_position_zeroed = joystick_position + zero_position + updateTrim_elv(trimup, trimdwn)
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
         
