@@ -3,7 +3,34 @@ import struct
 from NGIcalibration1 import *
 from time import sleep, time
 
-# Recieves data from the NGI and sends it to the Data Manager through UDP.\
+# Calculates force based on speed
+def calcForce(airspeed):
+    if airspeed < 5:
+        airspeed = 5
+    return airspeed / 4
+
+# Sends force value to the NGI
+def adjustForce(ngi, axis, ias):
+    # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
+    # if negative, send the first pos/force coordinate on the neg schedule
+
+    if ias < 5:
+        ias = 5
+    force = calcForce(ias)
+
+    if axis == 'pitch':
+        scale = 1.5
+    else:
+        scale = 1
+
+    # print(f"ias: {ias} | force: {force}")
+
+    ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+    ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+    ngi.txSock.sendto(ngi.msg02(ngi.POS_FORCE_COORDS, ngi.NEG_FORCE_COORDS, axis),
+                      (ngi.UDP_IP_NGI, ngi.UDP_PORT_ROTCHAR))
+
+# Recieves data from the NGI and sends it to the Data Manager through UDP.
 
 def interact(ngi, writer=None):
     rollNorm = 0
@@ -20,6 +47,15 @@ def interact(ngi, writer=None):
     next_send_time = time() + 10  # Set the initial time to send data after 10 seconds
 
     while True:
+        
+        ias = 130  # Placeholder for IAS
+
+        # Adjust Force Schedule Based on IAS
+        if count > 20:
+            adjustForce(ngi, 'pitch', ias)
+            adjustForce(ngi, 'roll', ias)
+            count = 0
+        count += 1
 
         """ RECEIVE FROM PORT 7004"""
 

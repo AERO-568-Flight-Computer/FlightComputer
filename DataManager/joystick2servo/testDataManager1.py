@@ -113,29 +113,29 @@ def main():
                 pitchPosition = pos[0]
                 print("Pitch Position: ", pitchPosition)
                 angle = convertPositionToDegrees(pitchPosition) # Convert Position to degrees
-                print("Pitch Angle before trim: ", angle)
+                #print("Pitch Angle before trim: ", angle)
 
-                updateTrim_elv(trimup, trimdwn)
-                angle += trimSum_elv
-                print("Pitch Angle after trim: ", angle)
+                #updateTrim_elv(trimup, trimdwn)
+                #angle += trimSum_elv
+                #print("Pitch Angle after trim: ", angle)
 
             if axis == 1:
                 # print(f"axis: roll | position: {pos[0]} | force: {force[0]}")
                 rollPosition = pos[0]
                 print("Roll Position: ", rollPosition)
                 ail_angle = convertPositionToDegrees(rollPosition)
-                print("Roll Angle before trim: ", ail_angle)
+               # print("Roll Angle before trim: ", ail_angle)
 
-                updateTrim_ail(trimlft, trimrht)
-                ail_angle += trimSum_ail
-                print("Roll Angle after trim: ", ail_angle)
+                #updateTrim_ail(trimlft, trimrht)
+                #ail_angle += trimSum_ail
+                #print("Roll Angle after trim: ", ail_angle)
 
             # Create a socket object using UDP (not TCP)
             client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
             # Convert the float to bytes, as we can only send bytes
-            message_bytes = struct.pack('f', angle)
-            client.sendto(message_bytes, ('localhost', 12300))
+            message_bytes = struct.pack('fff', angle, trimup, trimdwn) #trimlft, trimrht)
+            client.sendto(message_bytes, ('localhost', 12300)) 
             print("Sending: ", angle, "to port 12300")
 
         except ValueError:

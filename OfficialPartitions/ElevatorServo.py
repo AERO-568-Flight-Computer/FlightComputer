@@ -2,9 +2,12 @@ import socket
 from ServoUtilMethods import *
 import serial
 import struct
+import time
 
 # Initialize serial connection to the actuator
-ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
+
+time.sleep(2)
 
 # Create UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,8 +31,22 @@ except OSError:
 server_address = ('localhost', 12300)
 sock.bind(server_address)
 
+def updateTrim_elv(trimup, trimdwn):
+    trim=0
+    if trimup == 1:
+        trim = 1
+    elif trimdwn == 1:
+        trim = -1
+    return trim
+	
 startup = 0
 count = 0
+currentTrim = 0
+
+# Angle limits to keep the servo within (so it doesn't hit capstan limits)
+angleLimMin = -55
+angleLimMax = 55
+
 
 running = True
 while running:
@@ -40,35 +57,58 @@ while running:
         try:
             pwr_clutch = get_pwr_status(ser)[1]
         except:
-            print("Error: Could not get clutch status... Servo may not be turned on.")
+            print("Error: Could not get clutch status... Servo may not be turned on.1")
             continue
 
     while startup == 0 and pwr_clutch < 20:
         try:
-            joystick_position = struct.unpack('f', data)[0]
+            joystick_position, trimup, trimdwn = struct.unpack('fff', data)
             servo_current_pos_deg = get_pos(ser)[0]
             print("Servo Current position:", servo_current_pos_deg)
             pwr_clutch = get_pwr_status(ser)[1]
             if pwr_clutch > 20:
                 zero_position = servo_current_pos_deg + joystick_position
-                print("Setting zero position:", zero_position)
+                if zero_position < angleLimMin:
+                    zero_position = angleLimMin
+                elif zero_position > angleLimMax:
+                    zero_position = angleLimMax
                 startCommand = build_pos_command(zero_position)
                 ser.write(bytearray(startCommand))
                 rx = ser.read(12)
                 startup = 1
+                currentTrim = 0
             else:
                 print("Waiting for clutch to be powered on")
+                print(pwr_clutch) 
         except:
-            print("Error: Could not get clutch status... Servo may not be turned on.")
+            print("Error: Could not get clutch status... Servo may not be turned on.2")
             continue
         
     try:
 
-        joystick_position_zeroed = struct.unpack('f', data)[0] + zero_position
+        joystick_position, trimup, trimdwn = struct.unpack('fff', data)
+        print(joystick_position)
+        print(zero_position)
+        print(trimup)
+        print(trimdwn)
+        
+        # Don't add trim if already at limit
+        if (joystick_position + zero_position + currentTrim) > angleLimMax and updateTrim_elv(trimup, trimdwn) == 1:
+            currentTrim = currentTrim
+        else:
+            currentTrim += updateTrim_elv(trimup, trimdwn)
+
+        if (joystick_position + zero_position + currentTrim) < angleLimMin and updateTrim_elv(trimup, trimdwn) == -1:
+            currentTrim = currentTrim
+        else:
+            currentTrim += updateTrim_elv(trimup, trimdwn)
+
+        joystick_position_zeroed = joystick_position + zero_position + currentTrim
+
         servo_current_pos_deg = get_pos(ser)[0]
         print("Servo Current position:", servo_current_pos_deg)
         
-        if -55 < joystick_position_zeroed < 55:
+        if angleLimMin < joystick_position_zeroed < angleLimMax:
             command = build_pos_command(joystick_position_zeroed)
             ser.write(bytearray(command))
             rx = ser.read(12)
@@ -84,7 +124,7 @@ while running:
         count += 1
 
     except:
-        print("Error: Could not get clutch status... Servo may not be turned on.")
+        print("Error: Could not get clutch status... Servo may not be turned on.3")
         continue
 
 # Close socket
