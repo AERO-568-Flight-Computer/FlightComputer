@@ -5,7 +5,7 @@ import struct
 import time
 
 # Initialize serial connection to the actuator
-ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
 
 time.sleep(2)
 
