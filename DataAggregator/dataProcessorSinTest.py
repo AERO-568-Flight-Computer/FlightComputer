@@ -84,8 +84,8 @@ def main():
         
     except KeyboardInterrupt:
         # Close the connection on Ctrl+C
-        processor.sockSend.close()
-        processor.sockReceive.close()
+        processor.sendSock.close()
+        processor.receiveSock.close()
         print("Connections closed")
 
     # Save the external data and internal data csv file
