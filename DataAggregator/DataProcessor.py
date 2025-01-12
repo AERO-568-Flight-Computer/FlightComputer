@@ -5,6 +5,11 @@ import binascii
 import socket
 import select
 
+# Description: This class helps a partition to send and receive data to and from the data aggregator.
+# Inside the class, we have the JSON string that contains the information about the partitions. This
+# JSON string can be used by any part of the code to get the information about the partitions. 
+
+
 class DataProcessor:
     JSON_STRING = '''
     [
@@ -95,8 +100,15 @@ class DataProcessor:
         self.initVariables()
     
     def initVariables(self):
+
+        # Iterate through the JSON data to find the partition with the same name as the input (this is the string 
+        # that is passed to the constructor of the class)
         for partition in self.jsonData:
             if partition["name"] == self.partitionName:
+                # Below, actions that happen when the partition is found
+
+                # Assign the values from the JSON data to the class variables. Values are set to False if they are not
+                # present in the JSON data
                 self.name = partition["name"]
                 self.portSend = partition.get("portSend", False)
                 self.portReceive = partition.get("portReceive", False)
@@ -104,6 +116,7 @@ class DataProcessor:
                 self.sendDict = partition.get("sendDict", False)
                 self.receiveDict = partition.get("receiveDict", False)
 
+                # If the partition needs to send data, initialize a socket for sending data
                 if self.portSend:
                     self.sendSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -112,6 +125,7 @@ class DataProcessor:
                     self.receiveSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.receiveSock.bind(("localhost", self.portReceive))
 
+                # If the partition needs to receive data, find the number of data points per partition
                 if self.receiveDict:
                     dataPointsPerPartition = {}
                     self.currentRow = {}
@@ -124,6 +138,7 @@ class DataProcessor:
 
                 self.numpyArraysDict = {}
 
+                # Create a dictionary that stores the data received from other partitions
                 for partition, numPoints in dataPointsPerPartition.items():
                     self.numpyArraysDict[partition] = np.zeros((numPoints, 2000))
 
