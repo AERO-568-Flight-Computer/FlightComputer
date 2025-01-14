@@ -396,6 +396,9 @@ def main():
         for i in range(len(sendPorts)):
             senderStopList[i].set()
 
+        print()
+        print("Threads stopped, connections closed (most likely)")
+
 
         return
 
