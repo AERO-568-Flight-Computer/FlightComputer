@@ -64,21 +64,22 @@ def main():
 
 #     plt.ion()
 #     # Generate random numbers and send them to the data aggregator
+    dataDictionaryList = [
+        {
+            "timeRec": None,
+            "sinWave": None,
+        }
+    ]
+
     try:
-        for i in range(30000):
-
+        for _ in range(30000):
             time.sleep(1/rateInternal)
-            # Generate 1 points of a sine wave
+            # Generate 1 point of a sine wave
             internalTime = time.time()
-
             sinWave = np.sin(internalTime)
             
-            dataDictionaryList = [
-                {
-                    "timeRec": internalTime,
-                    "sinWave": sinWave,
-                }
-            ]
+            dataDictionaryList[0]["timeRec"] = internalTime
+            dataDictionaryList[0]["sinWave"] = sinWave
 
             processor.sendData(dataDictionaryList)
         
