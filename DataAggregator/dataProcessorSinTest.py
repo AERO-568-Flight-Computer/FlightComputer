@@ -55,6 +55,8 @@ def main():
         # Close the connection on Ctrl+C
         processor.sendSock.close()
         processor.receiveSock.close()
+
+        print()
         print("Connections closed")
 
 
