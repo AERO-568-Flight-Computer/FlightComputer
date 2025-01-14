@@ -8,6 +8,8 @@ Each partition is described by a dictionary.
 
 For each partition that you want the data aggregator to communicate with, add an entry to the dictionary.
 
+Think of sending and reciving as from the perspective of the partition, the portSend is the port that the partition sends data to the data agregator on and the portRecive is the port that the partition recives data from the data agregator NOT the port that the data agrergator expects to recive data on.
+
 Necessary dictionary entries:
 - name: "name"
     unique (to this file) name of partition
