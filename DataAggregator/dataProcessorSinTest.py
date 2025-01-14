@@ -35,7 +35,7 @@ def main():
     dataDictionaryList = [
         {
             "timeRec": None,
-            "sinWave": None,
+            "sineWave": None,
         }
     ]
 
@@ -47,7 +47,7 @@ def main():
             sinWave = np.sin(internalTime)
             
             dataDictionaryList[0]["timeRec"] = internalTime
-            dataDictionaryList[0]["sinWave"] = sinWave
+            dataDictionaryList[0]["sineWave"] = sinWave
 
             processor.sendData(dataDictionaryList)
         
