@@ -42,6 +42,7 @@ def interact(ngi, writer=None):
     trimStep = 0.01
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+   
     # rxSockStatus = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
     next_send_time = time() + 10  # Set the initial time to send data after 10 seconds
@@ -60,8 +61,9 @@ def interact(ngi, writer=None):
         """ RECEIVE FROM PORT 7004"""
 
         print("Waiting to receive data")
+        
         data, addr = ngi.rxSockStatus.recvfrom(4096)
-
+        client.sendto( 1  , ('localhost', 22222))
         # print(data)
         # Check if it's time to send data to port 11111
         if time() >= next_send_time:
@@ -87,6 +89,7 @@ def main():
 
         """ STIRLING INTERACTION """
         interact(ngi)
+
 
     except KeyboardInterrupt as e:
         print(e)
