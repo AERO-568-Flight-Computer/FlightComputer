@@ -9,18 +9,18 @@ def main():
     # Bind socket to specified port
     server_address = ('localhost', 22222)
     sock.bind(server_address)
-    
-    os.system("joystick1.py") #may require file path
+
+    os.system("DataManager\joystick2servo\joystick1.py") #may require file path
 
     data, address = sock.recvfrom(4096) #TODO verify that less buffer can be allocated
 
     if data == 1:
-
-        os.system("testdatamanager1.py") #may require file path
+        print("joystick1.py started")
+        os.system("DataManager\joystick2servo\testDataManager1.py") #may require file path
 
         #TODO check if testdatamanager1.py is running correctly 
 
-        os.system("elevatorservo.py") #may require file path
+        os.system("OfficialPartitions\ElevatorServo.py") #may require file path
 
         #TODO check if elevatorservo.py is running correctly
     else:
