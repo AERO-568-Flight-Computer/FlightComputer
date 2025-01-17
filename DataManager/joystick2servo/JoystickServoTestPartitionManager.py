@@ -1,19 +1,31 @@
-import socket 
+import socket
 import subprocess
 import time
+import platform
 
 # starts all processes to run joystick servo demo
 # does not verify processes are running properly
 # is having serial and/or sockets errors for me
 
 def main():
-    subprocess.Popen(["python3", "DataManager/joystick2servo/joystick1.py"])
+    if platform.system() == "Windows":
+        new_window_command = "cmd.exe /c start"
+    elif platform.system() == "Darwin": 
+        new_window_command = "ttab" #you need to install ttab
+    else:  #XXX this can be made more portable
+        new_window_command = "gnome-terminal -e"
+
+    # print((new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"))
+
+    # subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
+
+    subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/joystick1.py"], shell=True)
     print('joystick1 opened')
-    time.sleep(2)
-    subprocess.Popen(["python3", "DataManager/joystick2servo/testDataManager1.py"])
+    time.sleep(3)
+    subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
     print('testDataManager1 opened')
-    time.sleep(2)
-    subprocess.Popen(["python3", "OfficialPartitions/ElevatorServo.py"])
+    time.sleep(3)
+    subprocess.Popen([new_window_command+" python3 "+"OfficialPartitions/ElevatorServo.py"], shell=True)
     print('ElevatorServo opened')
 
 # def main():
