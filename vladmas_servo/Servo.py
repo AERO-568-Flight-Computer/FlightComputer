@@ -1,6 +1,5 @@
 import serial
 import time
-import socket
 class Servo:
     def __init__(self,port_string,actuator_id = 0x01):
         #port string is the port at which the servo is going to be.
@@ -164,3 +163,22 @@ class Servo:
             pos_hex = rx[8:10]
             pos_deg = Servo.hex2deg(pos_hex)
             return pos_deg, pos_hex
+
+def main():
+    #Runs test if directly called
+    elevator_servo_port = '/dev/ttyS4'
+    elevator_servo_id = 0x01
+    ElevatorServo = Servo(elevator_servo_port, elevator_servo_id)
+
+    positions = [-50, -25, 0, 25, 50]
+    delay = 2
+
+    while True:
+        for pos in positions:
+            set_pos_err_code = ElevatorServo.set_pos(pos)
+            if set_pos_err_code != 0:
+                print("set_pos failed with exit code?:")
+                print(set_pos_err_code)
+                time.sleep(delay)      
+if __name__ == "__main__":
+    main()
