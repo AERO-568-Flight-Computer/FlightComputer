@@ -8,25 +8,25 @@ import platform
 # is having serial and/or sockets errors for me
 
 def main():
-    if platform.system() == "Windows":
-        new_window_command = "cmd.exe /c start"
-    elif platform.system() == "Darwin": 
-        new_window_command = "ttab" #you need to install ttab
-    else:  #XXX this can be made more portable
-        new_window_command = "gnome-terminal -e"
+    #if platform.system() == "Windows":
+    #    new_window_command = "cmd.exe /c start"
+    #elif platform.system() == "Darwin": 
+    #   new_window_command = "ttab" #you need to install ttab
+    #else:  #XXX this can be made more portable
+    new_window_command = "gnome-terminal -e"
 
     # print((new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"))
 
     # subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
 
-    subprocess.Popen(["py3 DataManager\joystick2servo\joystick1.py"], shell=True)
-    # print('joystick1 opened')
-    # time.sleep(3)
-    # subprocess.Popen(["DataManager\joystick2servo\testDataManager1.py"], shell=True)
-    # print('testDataManager1 opened')
-    # time.sleep(3)
-    # subprocess.Popen(["OfficialPartitions\ElevatorServo.py"], shell=True)
-    # print('ElevatorServo opened')
+    subprocess.Popen(["DataManager/joystick2servo/joystick1.py"], shell=True)
+    print('joystick1 opened')
+    time.sleep(3)
+    subprocess.Popen(["DataManager/joystick2servo/testDataManager1.py"], shell=True)
+    print('testDataManager1 opened')
+    time.sleep(3)
+    subprocess.Popen(["OfficialPartitions/ElevatorServo.py"], shell=True)
+    print('ElevatorServo opened')
 
 # def main():
 
