@@ -19,14 +19,14 @@ def main():
 
     # subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
 
-    subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/joystick1.py"], shell=True)
-    print('joystick1 opened')
-    time.sleep(3)
-    subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
-    print('testDataManager1 opened')
-    time.sleep(3)
-    subprocess.Popen([new_window_command+" python3 "+"OfficialPartitions/ElevatorServo.py"], shell=True)
-    print('ElevatorServo opened')
+    subprocess.Popen(["py3 DataManager\joystick2servo\joystick1.py"], shell=True)
+    # print('joystick1 opened')
+    # time.sleep(3)
+    # subprocess.Popen(["DataManager\joystick2servo\testDataManager1.py"], shell=True)
+    # print('testDataManager1 opened')
+    # time.sleep(3)
+    # subprocess.Popen(["OfficialPartitions\ElevatorServo.py"], shell=True)
+    # print('ElevatorServo opened')
 
 # def main():
 
