@@ -188,17 +188,21 @@ def saveCVT(saveTime, numPartitions):
 
     for i in range(numPartitions):
 
-        # Get the field names from partitionInfo global variable
-        fieldnames = ",".join(list(partitionInfo[i]["sendDict"].values()))
+        try:
+            # Get the field names from partitionInfo global variable
+            fieldnames = ",".join(list(partitionInfo[i]["sendDict"].values()))
 
-        # Ensure that the DataAggRecords directory exists
-        os.makedirs('DataAggRecords', exist_ok=True)
+            # Ensure that the DataAggRecords directory exists
+            os.makedirs('DataAggRecords', exist_ok=True)
 
-        # Check if the file exists
-        if not os.path.isfile(f"DataAggRecords/CVT{i}.csv"):
-            # If the file doesn't exist, write the field names
-            with open(f"DataAggRecords/CVT{i}.csv", 'w') as f:
-                f.write(fieldnames + '\n')
+            # Check if the file exists
+            if not os.path.isfile(f"DataAggRecords/CVT{i}.csv"):
+                # If the file doesn't exist, write the field names
+                with open(f"DataAggRecords/CVT{i}.csv", 'w') as f:
+                    f.write(fieldnames + '\n')
+
+        except Exception as e:
+            print(f"Error processing partition {i}: {e}")
 
     while True:
         # Save the data every saveTime seconds
@@ -396,6 +400,9 @@ def main():
         for i in range(len(sendPorts)):
             senderStopList[i].set()
 
+        print()
+        print("Threads stopped, connections closed (most likely)")
+
 
         return
 
@@ -414,11 +421,13 @@ if __name__ == "__main__":
 
 # Check the size of the data that is being sent, don't let it be too big
 
-# Check why the sine wave partition keeps crashing. Seems like there is a build up on the buffer
-# I figured it out nvm
-
 # Connections closed check if actually worked
 
 # Don't store all the data. Store a certain amount of data, it should be based on the ratio of the lowest rate to the highest rate
 
 # Consider not sending nan when there is no data to send
+
+# 1/14/2025: We will need a better way of saving, it is interrupting the other
+#            threads. We may need to make the CVT copy itself over time in memory
+#            and then write to a file with the other version. I want to work on
+#            implementing the changes to the size of the CVT first though.
