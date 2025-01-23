@@ -130,7 +130,7 @@ def get_pos(ser, actuator_ID=0x01):
 if __name__ == '__main__':
     # set up serial connection
     # change to the serial port of device
-    ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
+    ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
     time.sleep(2)  # Wait for the device to initialize
     increment = 1
 

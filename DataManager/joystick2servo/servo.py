@@ -4,7 +4,7 @@ import serial
 import struct
 
 # Initialize serial connection to the actuator
-ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
 
 # Create UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
