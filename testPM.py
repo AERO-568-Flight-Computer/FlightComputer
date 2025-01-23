@@ -13,19 +13,22 @@ def main():
     #elif platform.system() == "Darwin": 
     #   new_window_command = "ttab" #you need to install ttab
     #else:  #XXX this can be made more portable
-    new_window_command = "gnome-terminal -e"
+    new_window_command = " " #"gnome-terminal -e"
 
     # print((new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"))
 
     # subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
 
-    subprocess.Popen(["DataManager/joystick2servo/joystick1.py"], shell=True)
+    subprocess.Popen([new_window_command +" DataManager/joystick2servo/joystick1.py"], shell=True)
+    time.sleep(1)
     print('joystick1 opened')
-    time.sleep(3)
-    subprocess.Popen(["DataManager/joystick2servo/testDataManager1.py"], shell=True)
+    time.sleep(1)
+    subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
+    time.sleep(1)
     print('testDataManager1 opened')
-    time.sleep(3)
-    subprocess.Popen(["OfficialPartitions/ElevatorServo.py"], shell=True)
+    time.sleep(1)
+    subprocess.Popen([new_window_command+" python3 "+"OfficialPartitions/ElevatorServo.py"], shell=True)
+    time.sleep(1)
     print('ElevatorServo opened')
 
 # def main():
@@ -64,3 +67,4 @@ def main():
 if __name__ == '__main__':
     main()
 
+pass 
