@@ -49,7 +49,7 @@ def interact(ngi, writer=None):
 
     while True:
         
-        ias = 130  # Placeholder for IAS
+        ias = 20  # Placeholder for IAS
 
         # Adjust Force Schedule Based on IAS
         if count > 20:
@@ -77,7 +77,7 @@ def main():
     try:
 
         """ IBIT """
-        # ngi.IBIT()
+        ngi.IBIT()
 
         """ ACTIVATION """
         ngi.activate()
