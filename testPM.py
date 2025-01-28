@@ -6,14 +6,32 @@ import platform
 # starts all processes to run joystick servo demo
 # does not verify processes are running properly
 # is having serial and/or sockets errors for me
+ 
+import psutil
 
-def main():
+
+def close_all_sockets():
+    for proc in psutil.process_iter(['pid', 'name', 'connections']):
+        if proc.info['name'] == 'python':  # Filter for Python processes
+            for conn in proc.info['connections']:
+                if conn.status == 'ESTABLISHED':  # Check if connection is established
+                    try:
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, conn.fd)
+                        sock.close()
+                    except OSError:
+                        pass  # Ignore if the socket is already closed
+
+
+def main(): 
     #if platform.system() == "Windows":
     #    new_window_command = "cmd.exe /c start"
     #elif platform.system() == "Darwin": 
     #   new_window_command = "ttab" #you need to install ttab
     #else:  #XXX this can be made more portable
-    new_window_command = " " #"gnome-terminal -e"
+    close_all_sockets() 
+
+    
+    new_window_command = "gnome-terminal -e"
 
     # print((new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"))
 
