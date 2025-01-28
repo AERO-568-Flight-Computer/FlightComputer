@@ -63,7 +63,7 @@ def interact(ngi, writer=None):
         print("Waiting to receive data")
         
         data, addr = ngi.rxSockStatus.recvfrom(4096)
-        client.sendto( 1  , ('localhost', 22222))
+        # client.sendto( 1  , ('localhost', 22222))
         # print(data)
         # Check if it's time to send data to port 11111
         if time() >= next_send_time:
