@@ -40,7 +40,6 @@ def updateTrim_elv(trimup, trimdwn):
     return trim
 	
 startup = 0
-count = 0
 currentTrim = 0
 
 # Angle limits to keep the servo within (so it doesn't hit capstan limits)
@@ -60,7 +59,7 @@ while running:
             print("Error: Could not get clutch status... Servo may not be turned on.1")
             continue
 
-    while startup == 0 and pwr_clutch < 20:
+    while startup == 0:
         try:
             joystick_position, trimup, trimdwn = struct.unpack('fff', data)
             servo_current_pos_deg = get_pos(ser)[0]
@@ -87,10 +86,10 @@ while running:
     try:
 
         joystick_position, trimup, trimdwn = struct.unpack('fff', data)
-        print(joystick_position)
-        print(zero_position)
-        print(trimup)
-        print(trimdwn)
+        print("Joystick position: ", joystick_position)
+        print("Zero position: ", zero_position)
+        print("Trim up: ", trimup)
+        print("Trim down: ", trimdwn)
         
         # Don't add trim if already at limit
         if (joystick_position + zero_position + currentTrim) > angleLimMax and updateTrim_elv(trimup, trimdwn) == 1:
@@ -106,7 +105,9 @@ while running:
         joystick_position_zeroed = joystick_position + zero_position + currentTrim
 
         servo_current_pos_deg = get_pos(ser)[0]
+        print("Joystick position zeroed: ", joystick_position_zeroed)
         print("Servo Current position:", servo_current_pos_deg)
+        print("Startup", startup)
         
         if angleLimMin < joystick_position_zeroed < angleLimMax:
             command = build_pos_command(joystick_position_zeroed)
@@ -115,13 +116,9 @@ while running:
         else:
             print("Joystick position out of range")
 
-        if count % 2 == 0:
-            pwr_clutch = get_pwr_status(ser)[1]
-            if pwr_clutch == 0:
-                print("Clutch is not powered on")
-                startup = 0
-
-        count += 1
+        if pwr_clutch == 0:
+            print("Clutch is not powered on")
+            startup = 0
 
     except:
         print("Error: Could not get clutch status... Servo may not be turned on.3")
