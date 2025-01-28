@@ -11,9 +11,9 @@ import psutil
 
 
 def close_all_sockets():
-    for proc in psutil.process_iter(['pid', 'name', 'connections']):
+    for proc in psutil.process_iter(['pid', 'name', 'username']):
         if proc.info['name'] == 'python':  # Filter for Python processes
-            for conn in proc.info['connections']:
+            for conn in proc.info['username']:
                 if conn.status == 'ESTABLISHED':  # Check if connection is established
                     try:
                         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, conn.fd)
@@ -23,19 +23,9 @@ def close_all_sockets():
 
 
 def main(): 
-    #if platform.system() == "Windows":
-    #    new_window_command = "cmd.exe /c start"
-    #elif platform.system() == "Darwin": 
-    #   new_window_command = "ttab" #you need to install ttab
-    #else:  #XXX this can be made more portable
     close_all_sockets() 
-
     
-    new_window_command = "gnome-terminal -e"
-
-    # print((new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"))
-
-    # subprocess.Popen([new_window_command+" python3 "+"DataManager/joystick2servo/testDataManager1.py"], shell=True)
+    new_window_command = "xterm -e"
 
     subprocess.Popen([new_window_command +" python3 "+"DataManager/joystick2servo/joystick1.py"], shell=True)
     time.sleep(1)
@@ -49,39 +39,7 @@ def main():
     time.sleep(1)
     print('ElevatorServo opened')
 
-# def main():
-
-#     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-#     # Bind socket to specified port
-#     server_address = ('localhost', 22222)
-#     sock.bind(server_address)
-
-#     os.system("DataManager\joystick2servo\joystick1.py") #may require file path
-
-#     data, address = sock.recvfrom(4096) #TODO verify that less buffer can be allocated
-
-#     if data == 1:
-#         print("joystick1.py started")
-#         os.system("DataManager\joystick2servo\testDataManager1.py") #may require file path
-
-#         #TODO check if testdatamanager1.py is running correctly 
-
-#         os.system("OfficialPartitions\ElevatorServo.py") #may require file path
-
-#         #TODO check if elevatorservo.py is running correctly
-#     else:
-#         print("Error Starting joystick1.py")
-
-
-
-
-
-
-
-
-
+    
 if __name__ == '__main__':
     main()
 
