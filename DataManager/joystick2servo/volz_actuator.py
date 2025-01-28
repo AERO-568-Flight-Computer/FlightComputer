@@ -37,12 +37,12 @@ def generate_crc(command):
 # Index 4: CRC High-Byte
 # Index 5: CRC Low Byte
 def deg2hex(deg):
-    decimal_command_num = 19.2 * deg + 2048
-    bin_str = format(int(decimal_command_num), '#014b')
+    decimal_command_num = 19.2 * deg + 2048 #degrees to number that correlates with angle
+    bin_str = format(int(round(decimal_command_num)), '#014b') #converts number to 14 bit binary
 
     # split binary string
     indices = [2, 7, 14]
-    bin_arg_lst = [bin_str[i:j] for i, j in zip(indices, indices[1:] + [None])]
+    bin_arg_lst = [bin_str[i:j] for i, j in zip(indices, indices[1:] + [None])] #extract each argument using a zip, converted into a list
 
     # convert binary -> int
     arg1 = int(bin_arg_lst[0], 2)
@@ -130,7 +130,7 @@ def get_pos(ser, actuator_ID=0x01):
 if __name__ == '__main__':
     # set up serial connection
     # change to the serial port of device
-    ser = serial.Serial('/dev/ttyS6', 115200, timeout=1)
+    ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
     time.sleep(2)  # Wait for the device to initialize
     increment = 1
 
