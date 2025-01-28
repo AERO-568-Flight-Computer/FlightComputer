@@ -22,7 +22,11 @@ class Servo:
         #Checking power
         servo_power_status, clutch_power_status = self.run_power_diag()
         if (servo_power_status == 0) or (clutch_power_status == 0):
-            print("Trying to set servo pos, cant, servo or clutch insufficient power")
+            print("Trying to set servo pos, cant:")
+            if servo_power_status == 0:
+                print("Servo power out")
+            if clutch_power_status == 0:
+                print("Clutch power out")
             return -1
         
         #Checking servo position limits
