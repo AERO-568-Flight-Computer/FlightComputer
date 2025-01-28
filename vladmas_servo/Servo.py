@@ -40,25 +40,21 @@ class Servo:
     def run_power_diag(self):
         #Is the servo good to just leave be? or do I need to read from it constantly?
         #power_status is 1 if it's powered on, 0 if not
+        servo_power_status = 0
+        clutch_power_status = 0
         for i in range(100):
             try:
                 pwr_servo, pwr_clutch = self._get_pwr_status()
-                print(pwr_servo)
-                print(pwr_clutch)
-                time.sleep(0.01)
+                if pwr_servo > 20:
+                    servo_power_status = 1
+
+                if pwr_clutch > 20:
+                    clutch_power_status = 1
+
+                if servo_power_status and clutch_power_status:
+                    break
             except:
-                print("SERVO DRIVER: Cant get servo power status ", "Error: Could not get clutch status... Servo may not be turned on.")
-
-        if pwr_servo > 20:
-            servo_power_status = 1
-        else:
-            servo_power_status = 0
-
-        if pwr_clutch > 20:
-            clutch_power_status = 1
-        else:
-            clutch_power_status = 0
-
+                print("SERVO DRIVER: ", "Error: Could not power status... Servo may not be turned on.")
         return servo_power_status, clutch_power_status 
 
     @staticmethod
