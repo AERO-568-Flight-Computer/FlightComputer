@@ -3,7 +3,7 @@ import time
 class Servo:
     def __init__(self,port_string,actuator_id = 0x01):
         #port string is the port at which the servo is going to be.
-        #'/devv/ttyS4' is the port of the servo we run
+        #'/dev/ttyS4' is the port of the servo we run
         self.ser = serial.Serial(port_string, 115200, timeout=1)
         self.actuator_id = actuator_id
 
@@ -20,7 +20,7 @@ class Servo:
 
     def set_pos(self,servo_desired_pos_deg):
         #Checking power
-        servo_power_status, clutch_power_status = self.run_power_diagnostic()
+        servo_power_status, clutch_power_status = self.run_power_diag()
         if (servo_power_status == 0) or (clutch_power_status == 0):
             print("Trying to set servo pos, cant, servo or clutch insufficient power")
             return -1
@@ -40,10 +40,14 @@ class Servo:
     def run_power_diag(self):
         #Is the servo good to just leave be? or do I need to read from it constantly?
         #power_status is 1 if it's powered on, 0 if not
-        try:
-            pwr_servo, pwr_clutch = self._get_pwr_status()
-        except:
-            print("SERVO DRIVER: Cant get servo power status ", "Error: Could not get clutch status... Servo may not be turned on.")
+        for i in range(100):
+            try:
+                pwr_servo, pwr_clutch = self._get_pwr_status()
+                print(pwr_servo)
+                print(pwr_clutch)
+                time.sleep(0.01)
+            except:
+                print("SERVO DRIVER: Cant get servo power status ", "Error: Could not get clutch status... Servo may not be turned on.")
 
         if pwr_servo > 20:
             servo_power_status = 1
@@ -169,7 +173,7 @@ def main():
     elevator_servo_port = '/dev/ttyS4'
     elevator_servo_id = 0x01
     ElevatorServo = Servo(elevator_servo_port, elevator_servo_id)
-
+    time.sleep(2)
     positions = [-50, -25, 0, 25, 50]
     delay = 2
 
