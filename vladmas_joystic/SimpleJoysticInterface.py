@@ -3,7 +3,7 @@ import time
 class SimpleJoysticInteface():
     def __init__(self,run_self_calibration = True):
         self.ngi = StirlingInceptor()
-        self.get_pitch_roll_timeout = 1/6
+        self.get_pitch_roll_timeout = 1.0/6.0
         if run_self_calibration:
             self.ngi.IBIT()
 
@@ -60,3 +60,19 @@ class SimpleJoysticInteface():
         if airspeed < 5:
             airspeed = 5
         return airspeed / 4
+    
+def main():
+    JoysticInteface = SimpleJoysticInteface()
+    time.delay(1)
+    #Trying to print out positions every half second
+    t_delay = 0.5
+    while True:
+        pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
+        print("----------------------")
+        print("Error code: ",err_code)
+        print("Pitch:", pitchPosition,' idkunits')
+        print("Roll:", rollPosition,' idkunits')
+        time.delay(t_delay)
+
+if __name__ == "__main__":
+        main()
