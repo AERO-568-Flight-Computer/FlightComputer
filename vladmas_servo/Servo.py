@@ -29,7 +29,7 @@ class Servo:
         angleLimMin = -55
         angleLimMax = 55
         if angleLimMin < servo_desired_pos_deg < angleLimMax:
-            command = Servo.build_pos_command(servo_desired_pos_deg)
+            command = self._build_pos_command(servo_desired_pos_deg)
             self.ser.write(bytearray(command))
             rx = self.ser.read(12)
             return 0
@@ -124,7 +124,7 @@ class Servo:
     # define actuator set position command
     def _build_pos_command(self, degree):
         # 0x1F = broadcast
-        base_command = [0xDD, self.actuator_ID]
+        base_command = [0xDD, self.actuator_id]
 
         hex_val = Servo._deg2hex(degree)
         arg1 = hex_val[0]
@@ -142,13 +142,17 @@ class Servo:
 # get input voltage data
     def _get_pwr_status(self):
         #cmd = [0xB1, 0X01, 0X00, 0X00, 0x54, 0x05]
-        cmd = [0xB1, self.actuator_ID, 0X00, 0X00]
+        print(self.actuator_id)
+        cmd = [0xB1, self.actuator_id, 0X00, 0X00]
+        print("Hre?2 ")
         # generate checksum
         cmd = Servo.generate_crc(cmd)
-            
         self.ser.write(bytearray(cmd))
         rx = self.ser.read(12)  # cmd echo is first 6 bytes, response is second set of 6 bytes
-        #print(rx)
+        print("Get power status Command")
+        print(cmd)
+        print("Get power status Reply")
+        print(rx)
             
         pwr_servo = int(hex(rx[8]), 16) * 0.2   # 200 mV per val, volts
         pwr_clutch = int(hex(rx[9]), 16) * 0.2 
