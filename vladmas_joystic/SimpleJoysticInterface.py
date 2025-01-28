@@ -1,4 +1,4 @@
-from .joystic_related.NGIcalibration import StirlingInceptor
+from NGIcalibration import StirlingInceptor
 import time
 class SimpleJoysticInteface():
     def __init__(self,run_self_calibration = True):
