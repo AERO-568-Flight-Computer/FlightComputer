@@ -13,18 +13,18 @@ class SimpleJoysticInteface():
         #But everything uses message 10 to get pitch and roll.
         #So just get 4096 bytes from the apppropriate socket, and decode message 10 untill have pitch and roll.
         #Timeout if time passsed is more than timeout, return a fail.
-        time_start = time()
+        time_start = time.time()
         time_now = time_start
         runtime = 0
         pitch_found = False
         roll_found = False
         while (runtime < self.get_pitch_roll_timeout) :
             data, addr = self.ngi.rxSockStatus.recvfrom(4096)
-            axis, pos, force, switch09, switch10, switch11, switch12 = self.decodeMsg10_partmanager()
+            axis, pos, force, switch09, switch10, switch11, switch12 = self.__decodeMsg10_partmanager(data)
             print("------Data manager decode done-----------")
-            axis, pos, force, trimlft, trimup, trimrht, trimdwn = self.ngi.decodeMsg10(data)
-            print("----------Striling inceptor decode done----------")
-            time_now = time()
+            #axis, pos, force, trimlft, trimup, trimrht, trimdwn = self.ngi.decodeMsg10(data)
+            #print("----------Striling inceptor decode done----------")
+            time_now = time.time()
             runtime = time_now - time_start
             if axis == 0:
                 #pitch axis
@@ -58,8 +58,9 @@ class SimpleJoysticInteface():
             self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
             self.ngi.txSock.sendto(self.ngi.msg02(self.ngi.POS_FORCE_COORDS, self.ngi.NEG_FORCE_COORDS, axis),
                             (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))
-            
-    def decodeMsg10_partmanager(msg):
+        
+    @staticmethod        
+    def __decodeMsg10_partmanager(msg):
         #This is the method from partition manager, the one from current Stirling Inceptor breaks for some reason
         # TODO: make this self.msg10.msgId, etc?
         msgId = msg[0]
@@ -91,7 +92,7 @@ class SimpleJoysticInteface():
     
 def main():
     JoysticInteface = SimpleJoysticInteface()
-    time.delay(1)
+    time.sleep(1)
     #Trying to print out positions every half second
     t_delay = 0.5
     while True:
@@ -100,7 +101,7 @@ def main():
         print("Error code: ",err_code)
         print("Pitch:", pitchPosition,' idkunits')
         print("Roll:", rollPosition,' idkunits')
-        time.delay(t_delay)
+        time.sleep(t_delay)
 
 if __name__ == "__main__":
         main()
