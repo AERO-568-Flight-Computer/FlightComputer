@@ -1,5 +1,6 @@
 from NGIcalibration import StirlingInceptor
 import time
+import struct
 class SimpleJoysticInteface():
     def __init__(self,run_self_calibration = True):
         self.ngi = StirlingInceptor()
@@ -19,7 +20,10 @@ class SimpleJoysticInteface():
         roll_found = False
         while (runtime < self.get_pitch_roll_timeout) :
             data, addr = self.ngi.rxSockStatus.recvfrom(4096)
+            axis, pos, force, switch09, switch10, switch11, switch12 = self.decodeMsg10_partmanager()
+            print("------Data manager decode done-----------")
             axis, pos, force, trimlft, trimup, trimrht, trimdwn = self.ngi.decodeMsg10(data)
+            print("----------Striling inceptor decode done----------")
             time_now = time()
             runtime = time_now - time_start
             if axis == 0:
@@ -54,7 +58,31 @@ class SimpleJoysticInteface():
             self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
             self.ngi.txSock.sendto(self.ngi.msg02(self.ngi.POS_FORCE_COORDS, self.ngi.NEG_FORCE_COORDS, axis),
                             (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))
-        
+            
+    def decodeMsg10_partmanager(msg):
+        #This is the method from partition manager, the one from current Stirling Inceptor breaks for some reason
+        # TODO: make this self.msg10.msgId, etc?
+        msgId = msg[0]
+        axis = msg[1]
+        inceptorNumber = msg[2]
+        # status = struct.unpack("L", msg[4:8])  # TODO: further unpack each bit
+        # status = struct.unpack("I", msg[4:8])  # Assuming status is a 4-byte unsigned integer
+        pos = struct.unpack("f", msg[8:12])
+        force = struct.unpack("f", msg[12:16])
+        motorDemand = struct.unpack("f", msg[16:20])
+        # switchState1 = struct.unpack("L", msg[20:24])
+        switch09 = (msg[21] >> 0) & 1  # switch left
+        switch10 = (msg[21] >> 1) & 1  # switch forward
+        switch11 = (msg[21] >> 2) & 1  # switch right
+        switch12 = (msg[21] >> 3) & 1  # switch back
+        # switchState2 = struct.unpack("L", msg[24:28])
+        analogueSwitch1 = struct.unpack("f", msg[28:32])
+        analogueSwitch2 = struct.unpack("f", msg[32:36])
+        analogueSwitch3 = struct.unpack("f", msg[36:40])
+        ver = struct.unpack("f", msg[40:44])
+        rawForceSensorOut = struct.unpack("f", msg[44:48])
+        return axis, pos, force, switch09, switch10, switch11, switch12
+
     @staticmethod
     def __calcForce(airspeed):
         if airspeed < 5:
