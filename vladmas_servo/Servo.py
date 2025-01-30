@@ -96,7 +96,7 @@ class Servo:
     @staticmethod
     def _deg2hex(deg):
         decimal_command_num = 19.2 * deg + 2048
-        bin_str = format(int(decimal_command_num), '#014b')
+        bin_str = format(int(round(decimal_command_num)), '#014b')
 
         # split binary string
         indices = [2, 7, 14]
