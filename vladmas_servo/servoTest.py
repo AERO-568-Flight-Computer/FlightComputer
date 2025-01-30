@@ -11,7 +11,7 @@ def main():
     while True:
         command = input("Please input angle: ")
         print("Trying to set postion")
-        if -55 < command < 55:
+        if -55 < float(command) < 55:
             set_pos_err_code = TestServo.set_pos(command)
             if set_pos_err_code != 0:
                 print("set_pos failed with exit code?:")
