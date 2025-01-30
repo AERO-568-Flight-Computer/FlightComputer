@@ -95,13 +95,15 @@ def main():
     time.sleep(1)
     #Trying to print out positions every half second
     t_delay = 0.5
+    count = 0
     while True:
         pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
         print("----------------------")
         print("Error code: ",err_code)
         print("Pitch:", pitchPosition,' idkunits')
         print("Roll:", rollPosition,' idkunits')
-        time.sleep(t_delay)
-
+        count = count+1
+        if count == 20:
+            SimpleJoysticInteface.adjustForce(20)
 if __name__ == "__main__":
-        main()
+    main()
