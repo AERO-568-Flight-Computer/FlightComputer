@@ -7,6 +7,12 @@ class SimpleJoysticInteface():
         self.get_pitch_roll_timeout = 1.0/6.0
         if run_self_calibration:
             self.ngi.IBIT()
+        """ ACTIVATION """
+        self.ngi.activate()
+        """ ADJUST CALIBRATION FORCE OFFSET """
+        time.sleep(2)
+        self.ngi.configSetup()
+        time.sleep(2)
 
     def get_pitch_roll(self):
         #So there is message 11 which should have rotary characteristics?
