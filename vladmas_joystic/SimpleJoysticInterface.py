@@ -52,13 +52,36 @@ class SimpleJoysticInteface():
             else:
                 scale = 1
 
-            # print(f"ias: {ias} | force: {force}")
+            print(f"ias: {ias} | force: {force}")
 
-            self.ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
-            self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
-            self.ngi.txSock.sendto(self.ngi.msg02(self.ngi.POS_FORCE_COORDS, self.ngi.NEG_FORCE_COORDS, axis),
-                            (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))
-        
+            #self.ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+            #self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+            #self.ngi.txSock.sendto(self.ngi.msg02(self.ngi.POS_FORCE_COORDS, self.ngi.NEG_FORCE_COORDS, axis),
+            #                (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))
+            self.adjustForce_old(self.ngi,axis,ias)
+    
+    @staticmethod
+    def adjustForce_old(ngi, axis, ias):
+        print("Trying to run the old method")
+            # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
+            # if negative, send the first pos/force coordinate on the neg schedule
+
+        if ias < 5:
+            ias = 5
+        force = SimpleJoysticInteface.__calcForce(ias)
+
+        if axis == 'pitch':
+            scale = 1.5
+        else:
+            scale = 1
+
+        # print(f"ias: {ias} | force: {force}")
+
+        ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+        ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
+        ngi.txSock.sendto(ngi.msg02(ngi.POS_FORCE_COORDS, ngi.NEG_FORCE_COORDS, axis),
+                          (ngi.UDP_IP_NGI, ngi.UDP_PORT_ROTCHAR))
+
     @staticmethod        
     def __decodeMsg10_partmanager(msg):
         #This is the method from partition manager, the one from current Stirling Inceptor breaks for some reason
@@ -102,8 +125,11 @@ def main():
         print("Error code: ",err_code)
         print("Pitch:", pitchPosition,' idkunits')
         print("Roll:", rollPosition,' idkunits')
+        print(count)
         count = count+1
-        if count == 20:
-            SimpleJoysticInteface.adjustForce(20)
+        if count > 20:
+            print("Trying to adjust the force")
+            JoysticInteface.adjustForce(130)
+            count = 0
 if __name__ == "__main__":
     main()
