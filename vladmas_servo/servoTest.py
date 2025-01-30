@@ -5,7 +5,7 @@ def main():
     #Runs test if directly called
     test_servo_port = '/dev/ttyS4'
     test_servo_id = 0x01
-    TestServo = Servo(test_servo_port, test_servo_id)
+    TestServo = Servo.Servo(test_servo_port, test_servo_id)
     time.sleep(2)
 
     while True:
