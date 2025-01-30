@@ -13,6 +13,9 @@ This is capable of receiving numpy 2D 64 bit float arrays from partitions. The c
 # What is sent:
 The aggregator sends data to the partition at the rate listed in the json setup file for the partition. This packet will contain a numpy array for each partition from which a given partition is requesting data. It will only send the fields that are requested from the partitions, in the order which they are requested. If the requested data doesn't exist yet, the packet will be padded with a nan array to be the same amount of columns requested. 
 
+TODO: It seems like there needs to be more explanation here about exactly how the ordering of the packet works.
+I think the answer here is that the partition data will be sent in the order that the partitions appear in the receive dict, and then within that, each field will be in order of appearance in the receive dict, such that each partition will appear once in the packet, and occupy a contiguous space in the packet.
+
 # How is data stored:
 The data aggregator maintains a CVT for each partition (2D numpy 64bit float array). It also retains a time table that records when each data point was obtained (2D numpy 64bit float array). The aggregator also intermittently stores all the data in csv files. These are updated at the rate the user specifies. These are for archival/data acquisition/debugging purposes, they are not referenced by any FC software. A folder "DataAggRecords" will be created in the current directory. If there are already save files there, more data will likely be added to the end of then, not overwritten. Please delete or move the files each time you start the data aggregator, so your data is not tampered with.
 
