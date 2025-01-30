@@ -196,7 +196,7 @@ class StirlingInceptor():
         ba = ba + self.float2byte(self.PITCH_OFFSET)  # bytes 21 - 24
         ba = ba + self.float2byte(self.ROLL_GAIN)  # bytes 25 - 28
         ba = ba + self.float2byte(self.ROLL_OFFSET)  # bytes 29 - 32
-        ba = ba + bytearray(struct.pack("L", 1))  # bytes 33 - 36: Inceptor Number
+        ba = ba + bytearray(struct.pack("i", 1))  # bytes 33 - 36: Inceptor Number
 
         return ba
 

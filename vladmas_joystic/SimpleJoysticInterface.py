@@ -135,7 +135,7 @@ def main():
         count = count+1
         if count > 20:
             print("Trying to adjust the force")
-            JoysticInteface.adjustForce(130)
+            JoysticInteface.adjustForce(20)
             count = 0
 if __name__ == "__main__":
     main()
