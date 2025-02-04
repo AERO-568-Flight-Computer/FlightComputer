@@ -1,58 +1,17 @@
 [
     {
-        "name": "partition1",
-        "portSend": 12351,
-        "portReceive": 12361,
-        "rate": 1,
-        "sendDict":
-            {
-                "0": "yaw",
-                "1": "pitch",
-                "2": "roll"
-            },
-        "receiveDict":
-            {
-                "0": ["partition1", "yaw"],
-                "1": ["partition1", "pitch"],
-                "2": ["partition1", "roll"]
-            }
+        "name": "Test Data Manager",
+        "path": "DataManager/joystick2servo/testDataManager1.py",
+        "priority": 2
     },
     {
-        "name": "partition2",
-        "portSend": "FALSE",
-        "portReceive": 12362,
-        "rate": 1,
-        "receiveDict":
-            {
-                "0": ["partition1", "pitch"]
-            }
+        "name": "Joystick 1",
+        "path": "DataManager/joystick2servo/joystick1.py",
+        "priority": 1
     },
     {
-        "name": "partition3",
-        "portSend": 12353,
-        "portReceive": 12363,
-        "rate": 1,
-        "receiveDict":
-            {
-                "0": ["partition1", "roll"]
-            }
-    },
-    {
-        "name": "AirDC",
-        "portSend": 12351,
-        "portReceive": "FALSE",
-        "rate": 1,
-        "sendDict": {
-            "0": "yaw",
-            "1": "pitch",
-            "2": "roll",
-            "3": "militime",
-            "4": "absPressure",
-            "5": "absSenseTemp",
-            "6": "diffPressure",
-            "7": "diffSenseTemp",
-            "8": "rearFlagAOA",
-            "9": "frontFlagYaw"
-        }
+        "name": "Elevator Servo",
+        "path": "OfficialPartitions/ElevatorServo.py",
+        "priority": 3
     }
 ]
