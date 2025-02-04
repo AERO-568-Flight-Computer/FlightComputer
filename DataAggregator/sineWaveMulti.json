@@ -12,7 +12,15 @@
         "receiveDict":
             {
                 "0": ["name1", "timeRec"],
-                "1": ["name1", "sineWave"]
+                "1": ["name1", "sineWave"], 
+                "2": ["name2", "timeRec"],
+                "3": ["name2", "sineWave"],
+		"4": ["name3", "timeRec"],
+		"5": ["name3", "sineWave"],
+		"6": ["name4", "timeRec"],
+		"7": ["name4", "sineWave"],
+		"8": ["name5", "timeRec"],
+		"9": ["name5", "sineWave"]
             }
     },
     {

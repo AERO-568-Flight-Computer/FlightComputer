@@ -18,7 +18,7 @@ def main():
 
     # Consider making filepath a command line argument
     name = "name1"
-    filepath = "DataAggregator/sineWaveMulti.json"
+    filepath = "./sineWaveMulti.json"
 
     # Create an instance of the DataProcessor class specified by the name and filepath
     processor = DataProcessor(name, filepath)
@@ -65,13 +65,27 @@ def main():
                 # The second argument is the number of rows to get, it will always include the most recent row
                 recentData = processor.getRecentData("name1", 1)
 
+                #timeSent = dataDictionaryList[0]["timeRec"]
+                #sineSent = dataDictionaryList[0]["sineWave"]
+                #timeRecReceived = recentData[0, 0]
+                #sineWaveReceived = recentData[0, 1]
+
+
+               # print(f"Time sent    : {timeSent}, Sine sent:     {sineSent}")
+               # print(f"Time received: {timeRecReceived}, Sine received: {sineWaveReceived}")
+
+                recentData = processor.getRecentData("name5", 1)
+
+
                 timeSent = dataDictionaryList[0]["timeRec"]
                 sineSent = dataDictionaryList[0]["sineWave"]
                 timeRecReceived = recentData[0, 0]
                 sineWaveReceived = recentData[0, 1]
 
-                print(f"Time sent    : {timeSent}, Sine sent:     {sineSent}")
+
+
                 print(f"Time received: {timeRecReceived}, Sine received: {sineWaveReceived}")
+
 
         
     except KeyboardInterrupt:
