@@ -1,0 +1,35 @@
+[
+    {
+        "name": "name1joystick",
+        "portSend": 12353,
+        "portReceive": 12363,
+        "rate": 900,
+        "sendDict":
+            {
+                "0": "PitchCommand",
+                "1": "RollCommand",
+                "2": "PitchTrim"
+            },
+        "receiveDict":
+            {
+                "0": ["fc_demo", "Airspeed"]
+            }
+    },
+
+    {
+        "name": "fc_demo",
+        "portSend": 12354,
+        "portReceive": 12364,
+        "rate": 900,
+        "sendDict":
+            {
+                "0": "Airspeed"
+            },
+        "receiveDict":
+            {
+                "0": ["name1joystick", "PitchCommand"],
+                "1": ["name1joystick", "RollCommand"],
+                "2": ["name1joystick", "PitchTrim"]
+            }
+    }
+]
