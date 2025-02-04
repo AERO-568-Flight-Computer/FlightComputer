@@ -6,89 +6,22 @@ import socket
 import select
 
 # Description: This class helps a partition to send and receive data to and from the data aggregator in the proper format.
-# Inside the class, we have the JSON string that contains the information about the partitions. This
-# JSON string can be used by any part of the code to get the information about the partitions.
+# When inializing, provide the name of the partition and the path to the JSON file that contains the partition information.
+# THis should be the same json path that the data aggregator uses.
 
 
 class DataProcessor:
 
-    JSON_STRING = '''
-    [
-        {
-            "name": "partition1",
-            "portSend": 12351,
-            "portReceive": 12361,
-            "rate": 1,
-            "sendDict": {
-                "0": "yaw",
-                "1": "pitch",
-                "2": "roll"
-            },
-            "receiveDict": {
-                "0": ["partition1", "yaw"],
-                "1": ["partition1", "pitch"],
-                "2": ["partition1", "roll"],
-                "3": ["partition2", "roll"]
-            }
-        },
-        {
-            "name": "name1",
-            "portSend": 12353,
-            "portReceive": 12363,
-            "rate": 900,
-            "sendDict":
-                {
-                    "0": "timeRec",
-                    "1": "sineWave"
-                },
-            "receiveDict":
-                {
-                    "0": ["name1", "timeRec"],
-                    "1": ["name1", "sineWave"]
-                }
-        },
-        {
-            "name": "partition2",
-            "portSend": "FALSE",
-            "portReceive": 12362,
-            "rate": 1,
-            "receiveDict": {
-                "0": ["partition1", "pitch"]
-            }
-        },
-        {
-            "name": "partition3",
-            "portSend": 12353,
-            "portReceive": 12363,
-            "rate": 1,
-            "receiveDict": {
-                "0": ["partition1", "roll"]
-            }
-        },
-        {
-            "name": "AirDC",
-            "portSend": 12351,
-            "portReceive": "FALSE",
-            "rate": 1,
-            "sendDict": {
-                "0": "yaw",
-                "1": "pitch",
-                "2": "roll",
-                "3": "militime",
-                "4": "absPressure",
-                "5": "absSenseTemp",
-                "6": "diffPressure",
-                "7": "diffSenseTemp",
-                "8": "rearFlagAOA",
-                "9": "frontFlagYaw"
-            }
-        }
-    ]
-    '''
+    def __init__(self, partitionName, jsonFilePath=None):
 
-    def __init__(self, partitionName):
+        # Load the JSON data from the file
+        if jsonFilePath:
+            with open(jsonFilePath) as jsonFile:
+                self.jsonData = json.load(jsonFile)
+        else:
+            # Error
+            raise ValueError("JSON file path not provided.")
 
-        self.jsonData = json.loads(DataProcessor.JSON_STRING)
         self.partitionName = partitionName
         self.name = False
         self.portSend = False

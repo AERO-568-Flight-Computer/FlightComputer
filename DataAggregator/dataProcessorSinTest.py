@@ -16,16 +16,12 @@ from DataProcessor import DataProcessor
 
 def main():
 
-    # TODO: Replace back to command line later
+    # Consider making filepath a command line argument
     name = "name1"
-    # # Take in the name as a command line argument
-    # if len(sys.argv) > 1:
-    #     name = sys.argv[1]
-    # else:
-    #     raise ValueError("No name provided")
+    filepath = "DataAggregator/sineWaveMulti.json"
 
-    # Create an instance of the DataProcessor class specified by the name
-    processor = DataProcessor(name)
+    # Create an instance of the DataProcessor class specified by the name and filepath
+    processor = DataProcessor(name, filepath)
 
     # Display the attributes of the processor
     print(processor.name)
