@@ -17,7 +17,7 @@ def main():
         time.sleep(0.01)
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
-
+    
     channel.basic_consume(queue='idk',
                         on_message_callback=callback)
     print("[*] Waiting for messages.")
