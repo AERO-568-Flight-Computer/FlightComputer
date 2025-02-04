@@ -5,7 +5,7 @@ import socket
 import psutil
 
 def main():
-    # close_all_sockets() #ensures all sockets are closed
+    close_all_sockets() #ensures all sockets are closed
 
     with open("PartitionManager/setupTest.json") as f: #loads in data
         partitionInfo = json.load(f)
@@ -14,7 +14,7 @@ def main():
 
     for partition in partitionInfo:
         subprocess.Popen(['xterm -e python3 '+partition['path']], shell=True) #opens partition
-        print(partition['name']+' has been launched')
+        print(partition['name']+' has been launched') #confirms attempt to launch
         time.sleep(0.1)
 
 
