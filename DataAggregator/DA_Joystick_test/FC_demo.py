@@ -57,10 +57,10 @@ def main():
             time.sleep(1/rateInternal)
             # Generate 1 point of a sine wave
             internalTime = time.time()
-            sinWave = np.sin(internalTime)
+            Airspeed = 20+np.sin(internalTime)
             
             dataDictionaryList[0]["timeRec"] = internalTime
-            dataDictionaryList[0]["sineWave"] = sinWave
+            dataDictionaryList[0]["Airspeed"] = Airspeed
 
             processor.sendData(dataDictionaryList)
 
@@ -75,15 +75,15 @@ def main():
                 # The first argument is the name of the partition to get data from, it must have been
                 # listed in the JSON text as a receive from partition for the current partition
                 # The second argument is the number of rows to get, it will always include the most recent row
-                recentData = processor.getRecentData("name1", 1)
+                recentData = processor.getRecentData("name1joystick", 1)
 
                 timeSent = dataDictionaryList[0]["timeRec"]
-                sineSent = dataDictionaryList[0]["sineWave"]
+                Airspeed = dataDictionaryList[0]["Airspeed"]
                 timeRecReceived = recentData[0, 0]
-                sineWaveReceived = recentData[0, 1]
+                PitchCommandReceived = recentData[0, 1]
 
-                print(f"Time sent    : {timeSent}, Sine sent:     {sineSent}")
-                print(f"Time received: {timeRecReceived}, Sine received: {sineWaveReceived}")
+                print(f"Time sent    : {timeSent}, Sine sent:     {Airspeed}")
+                print(f"Time received: {timeRecReceived}, Sine received: {PitchCommandReceived}")
 
         
     except KeyboardInterrupt:

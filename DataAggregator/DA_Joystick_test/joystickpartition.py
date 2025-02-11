@@ -140,9 +140,7 @@ def interact(ngi, writer=None):
     dataDictionaryList = [
         {
             "timeRec": None,
-            "pitchCommand": None,
-            "rollCommand": None,
-            "pitchTrim": None
+            "pitchCommand": None
         }
     ]
 
@@ -154,6 +152,7 @@ def interact(ngi, writer=None):
     next_send_time = time() + 10  # Set the initial time to send data after 10 seconds
 
     while True:
+        processor.receiveData()
         recentData = processor.getRecentData("fc_demo", 1)
         timeRecRecieved = recentData[0, 0]
         iasReceived = recentData[0, 1]
@@ -185,14 +184,11 @@ def interact(ngi, writer=None):
             #updateTrim_elv(trimup, trimdwn)
             #angle += trimSum_elv
             #print("Pitch Angle after trim: ", angle)
-
-        dataDictionaryList[0]["pitchCommand"] = pitchPosition
+        
         dataDictionaryList[0]["timeRec"] = time.time()
+        dataDictionaryList[0]["pitchCommand"] = pitchPosition
+        
         processor.sendData(dataDictionaryList)
-
-        
-        
-
 
 
 def main():
