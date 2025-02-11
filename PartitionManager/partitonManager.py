@@ -6,7 +6,10 @@ import psutil
 from colorama import Fore, Back, Style
 
 def main():
-    # close_all_sockets() #ensures all sockets are closed
+    # close_all_sockets() #ensures all sockets are closed (does not work on MacOs)
+
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based server
+    server.bind(('localhost', 54321)) #puts the socket on a local port
 
     with open("PartitionManager/joystickTest.json") as f: #loads in data
         partitionInfo = json.load(f)
@@ -16,15 +19,36 @@ def main():
     p = []
     nameList = []
 
-    for partition in partitionInfo:
+    for partition in partitionInfo: #open all partitions
         p.append(subprocess.Popen(['xterm -e python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to a list
 
         nameList.append(partition['name'])       
        
-        print(partition['name']+' has been launched') #confirms attempt to launch
-        time.sleep(0.1)
+        print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
 
-    openPrograms = nameList.copy();
+        server.listen() #tells the server to wait for a client to connect
+
+        print('hi')
+
+        client, address = server.accept() #waits for it to connect and creates objects for client and address
+
+        print('hi2')
+        
+        data = client.recv(1024) #tells server to expect a certian size packet and to assign that to data
+        print('hi3')
+        client.close() #closes the socket for the client, keeps it open for the server so someone else could connect
+        print('hi4')
+
+        print(data.decode('utf8')) #prints the decoded data
+
+        if data.decode('utf8') == 'success':
+            print(Fore.GREEN+partition['name']+' has been initialized') #confirms attempt to launch
+        else:
+            print(Fore.RED+partition['name']+' has failed initialization, please retry starting partitons') #confirms attempt to launch
+            time.sleep(10)
+
+
+    openPrograms = nameList.copy()
 
     while len(openPrograms) is not 0: #checks to see if all processes are closed
         for item in range(0, len(nameList)): #runs through all the processes
@@ -34,7 +58,7 @@ def main():
             else:
                 if nameList[item] in openPrograms: openPrograms.remove(nameList[item]) #sees what processes are still open
                 print(Fore.YELLOW+nameList[item]+' has closed')
-            time.sleep(0.4)
+            time.sleep(0.5)
 
     print(Fore.RED+'ALL PROGRAMS HAVE EXITED')
 
