@@ -7,9 +7,9 @@
         "sendDict":
             {
                 "0": "timeRec",
-                "1": "PitchCommand",
-                "2": "RollCommand",
-                "3": "PitchTrim"
+                "1": "pitchCommand",
+                "2": "rollCommand",
+                "3": "pitchTrim"
             },
         "receiveDict":
             {
@@ -29,9 +29,11 @@
             },
         "receiveDict":
             {
-                "0": ["name1joystick", "PitchCommand"],
-                "1": ["name1joystick", "RollCommand"],
-                "2": ["name1joystick", "PitchTrim"]
+                "0": ["name1joystick", "pitchCommand"],
+                "1": ["name1joystick", "rollCommand"],
+                "2": ["name1joystick", "pitchTrim"],
+                "3": ["servo_demo", "position"],
+                "4": ["servo_demo", "clutchStatus"]
             }
     },
     {
