@@ -29,8 +29,8 @@ from DataProcessor import DataProcessor
 def main():
 
     # Consider making filepath a command line argument
-    name = "name1"
-    filepath = "./sineWaveMulti.json"
+    name = "fc_demo"
+    filepath = "./joystick_DA_i.json"
 
     # Create an instance of the DataProcessor class specified by the name and filepath
     processor = DataProcessor(name, filepath)
@@ -45,7 +45,7 @@ def main():
     dataDictionaryList = [
         {
             "timeRec": None,
-            "sineWave": None,
+            "Airspeed": None,
         }
     ]
 

@@ -6,9 +6,10 @@
         "rate": 900,
         "sendDict":
             {
-                "0": "PitchCommand",
-                "1": "RollCommand",
-                "2": "PitchTrim"
+                "0": "timeRec",
+                "1": "PitchCommand",
+                "2": "RollCommand",
+                "3": "PitchTrim"
             },
         "receiveDict":
             {
@@ -23,13 +24,30 @@
         "rate": 900,
         "sendDict":
             {
-                "0": "Airspeed"
+                "0": "timeRec",
+                "1": "Airspeed"
             },
         "receiveDict":
             {
                 "0": ["name1joystick", "PitchCommand"],
                 "1": ["name1joystick", "RollCommand"],
                 "2": ["name1joystick", "PitchTrim"]
+            }
+    },
+    {
+        "name": "servo_demo",
+        "portSend": 12355,
+        "portReceive": 12365,
+        "rate": 900,
+        "sendDict":
+            {
+                "0": "timeRec",
+                "1": "position",
+                "2": "clutchStatus"
+            },
+        "receiveDict":
+            {
+                "0": ["fc_demo", "servo_command"]
             }
     }
 ]
