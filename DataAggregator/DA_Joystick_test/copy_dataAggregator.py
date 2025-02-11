@@ -267,6 +267,7 @@ def main():
 
     # Get partition names, receive ports, and send ports
     # These should also be used read only
+    
     # TODO: The receive ports and send ports have been swapped here to 
     # make the names from the perspective of the data aggregator. This is
     # getting confusing and I probably need to decide on a different convention.
