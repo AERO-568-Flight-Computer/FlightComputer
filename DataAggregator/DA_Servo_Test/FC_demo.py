@@ -1,3 +1,15 @@
+
+# flight computer process to send dummy airspeed to joystick, recieve trim and position
+
+
+
+
+
+
+
+#dataProcessorSinTest for modification
+
+
 import random
 import socket
 import sys
@@ -17,8 +29,8 @@ from DataProcessor import DataProcessor
 def main():
 
     # Consider making filepath a command line argument
-    name = "servo_demo"
-    filepath = "./DataAggregator/DA_Servo_Test/servo_DA_test.json"
+    name = "fc_demo"
+    filepath = "./joystick_DA_i.json"
 
     # Create an instance of the DataProcessor class specified by the name and filepath
     processor = DataProcessor(name, filepath)
@@ -33,25 +45,22 @@ def main():
     dataDictionaryList = [
         {
             "timeRec": None,
-            "position": None,
-            "clutchStatus": None,
+            "Airspeed": None,
         }
     ]
 
     timeRecReceived = None
-    positionReceived = None
-    clutchStatusReceived = None
+    sineWaveReceived = None
 
     try:
         for _ in range(30000):
             time.sleep(1/rateInternal)
             # Generate 1 point of a sine wave
             internalTime = time.time()
-            sinWave = np.sin(internalTime)
+            Airspeed = 20+np.sin(internalTime)
             
             dataDictionaryList[0]["timeRec"] = internalTime
-            dataDictionaryList[0]["position"] = position
-            dataDictionaryList[0]["clutchStatus"] = clutchStatus
+            dataDictionaryList[0]["Airspeed"] = Airspeed
 
             processor.sendData(dataDictionaryList)
 
@@ -66,31 +75,15 @@ def main():
                 # The first argument is the name of the partition to get data from, it must have been
                 # listed in the JSON text as a receive from partition for the current partition
                 # The second argument is the number of rows to get, it will always include the most recent row
-                recentData = processor.getRecentData("servo_demo", 1)
-
-                #timeSent = dataDictionaryList[0]["timeRec"]
-                #sineSent = dataDictionaryList[0]["sineWave"]
-                #timeRecReceived = recentData[0, 0]
-                #sineWaveReceived = recentData[0, 1]
-
-
-               # print(f"Time sent    : {timeSent}, Sine sent:     {sineSent}")
-               # print(f"Time received: {timeRecReceived}, Sine received: {sineWaveReceived}")
-
-               # recentData = processor.getRecentData("name5", 1)
-
+                recentData = processor.getRecentData("name1joystick", 1)
 
                 timeSent = dataDictionaryList[0]["timeRec"]
-                positionSent = dataDictionaryList[0]["position"]
-                clutchStatusSent = dataDictionaryList[0]["clutchStatus"]
+                Airspeed = dataDictionaryList[0]["Airspeed"]
                 timeRecReceived = recentData[0, 0]
-                positionReceived = recentData[0, 1]
-                clutchStatusReceived = recentData[0, 2]
+                PitchCommandReceived = recentData[0, 1]
 
-
-
-                print(f"Time received: {timeRecReceived}, Position received: {positionReceived}, Clutch Status received: {clutchStatusReceived}")
-
+                print(f"Time sent    : {timeSent}, Sine sent:     {Airspeed}")
+                print(f"Time received: {timeRecReceived}, Sine received: {PitchCommandReceived}")
 
         
     except KeyboardInterrupt:
@@ -108,3 +101,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
