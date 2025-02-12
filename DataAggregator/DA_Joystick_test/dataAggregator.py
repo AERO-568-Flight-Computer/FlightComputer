@@ -389,7 +389,7 @@ def main():
 
     try:
         # Save the data every so often to a file
-        saveTime = 30 # [s]
+        saveTime = 5 # [s]
         saveCVT(saveTime, numPartitions)
     except KeyboardInterrupt:
         

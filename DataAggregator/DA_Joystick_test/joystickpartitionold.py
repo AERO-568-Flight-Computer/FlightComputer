@@ -1,4 +1,4 @@
-import serial
+#import serial
 import random
 import socket
 import sys
@@ -149,7 +149,7 @@ def interact(ngi, writer=None):
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    next_send_time = time() + 10  # Set the initial time to send data after 10 seconds
+    next_send_time = time.time() + 10  # Set the initial time to send data after 10 seconds
 
     while True:
         processor.receiveData()
@@ -172,7 +172,6 @@ def interact(ngi, writer=None):
         
         data, addr = ngi.rxSockStatus.recvfrom(4096)
 
-        
         axis, pos, force, trimlft, trimup, trimrht, trimdwn = decodeMsg10(data)
 
         if axis == 0:
@@ -184,10 +183,13 @@ def interact(ngi, writer=None):
             #updateTrim_elv(trimup, trimdwn)
             #angle += trimSum_elv
             #print("Pitch Angle after trim: ", angle)
+        internaltime  = time.time() 
         
-        dataDictionaryList[0]["timeRec"] = time.time()
-        dataDictionaryList[0]["pitchCommand"] = pitchPosition
+        dataDictionaryList[0]["timeRec"] = internaltime
+        dataDictionaryList[0]["pitchCommand"] = angle
         
+        print(dataDictionaryList)
+
         processor.sendData(dataDictionaryList)
 
 

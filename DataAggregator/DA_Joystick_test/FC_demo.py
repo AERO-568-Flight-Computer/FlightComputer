@@ -46,6 +46,7 @@ def main():
         {
             "timeRec": None,
             "Airspeed": None,
+            "servo_command": None,
         }
     ]
 
@@ -76,14 +77,14 @@ def main():
                 # listed in the JSON text as a receive from partition for the current partition
                 # The second argument is the number of rows to get, it will always include the most recent row
                 recentData = processor.getRecentData("name1joystick", 1)
-
+                print(recentData)
                 timeSent = dataDictionaryList[0]["timeRec"]
                 Airspeed = dataDictionaryList[0]["Airspeed"]
                 timeRecReceived = recentData[0, 0]
                 PitchCommandReceived = recentData[0, 1]
 
-                print(f"Time sent    : {timeSent}, Sine sent:     {Airspeed}")
-                print(f"Time received: {timeRecReceived}, Sine received: {PitchCommandReceived}")
+                print(f"Time sent    : {timeSent}, Airspeed sent:     {Airspeed}")
+                print(f"Time received: {timeRecReceived}, Pitch Command received: {PitchCommandReceived}")
 
         
     except KeyboardInterrupt:

@@ -7,13 +7,12 @@
         "sendDict":
             {
                 "0": "timeRec",
-                "1": "pitchCommand",
-                "2": "rollCommand",
-                "3": "pitchTrim"
+                "1": "pitchCommand"
             },
         "receiveDict":
             {
-                "0": ["fc_demo", "Airspeed"]
+                "0": ["fc_demo", "timeRec"],
+                "1": ["fc_demo", "Airspeed"]
             }
     },
 
@@ -25,16 +24,16 @@
         "sendDict":
             {
                 "0": "timeRec",
-                "1": "Airspeed"
+                "1": "Airspeed",
+		        "2": "servo_command"
+
             },
         "receiveDict":
             {
-                "0": ["name1joystick", "pitchCommand"],
-                "1": ["name1joystick", "rollCommand"],
-                "2": ["name1joystick", "pitchTrim"],
-                "3": ["servo_demo", "position"],
-                "4": ["servo_demo", "clutchStatus"]
-            }
+		        "0": ["name1joystick", "timeRec"],
+                "1": ["name1joystick", "pitchCommand"]
+	        }
+
     },
     {
         "name": "servo_demo",
@@ -53,3 +52,4 @@
             }
     }
 ]
+
