@@ -37,13 +37,13 @@ def main():
                 if nameList[item] not in openPrograms: openPrograms.append(nameList[item]) #add back into open programs if it reopens somehow
                 print(Style.RESET_ALL+nameList[item]+' is running')
             else:
-                if nameList[item] in openPrograms: openPrograms.remove(nameList[item]) #sees what processes are still open
                 print(Fore.YELLOW+nameList[item]+' has closed')
+                if nameList[item] in openPrograms: openPrograms.remove(nameList[item]) #sees what processes are still open
 
                 if partitionInfo[item]['restart'] == "True":
                     print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
 
-                    subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                    p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
 
                     print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
 
@@ -52,6 +52,8 @@ def main():
                     print(Style.RESET_ALL+'Will not restart '+nameList[item])
 
 
+
+    server.close()
     print(Fore.RED+'ALL PROGRAMS HAVE EXITED')
 
 def checkInitialized(server, partition):
