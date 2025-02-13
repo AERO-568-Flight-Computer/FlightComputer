@@ -134,7 +134,7 @@ class StirlingInceptor():
         msgIBIT = self.msg01(IBIT=False)
         self.txSock.sendto(msgIBIT, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
 
-        sleep(30)  # wait for IBIT to be done before allowing script to move on. TODO: check if I actually need this
+        # sleep(30)  # wait for IBIT to be done before allowing script to move on. TODO: check if I actually need this
 
     def activate(self):
         # Put both pitch and roll axes into active mode

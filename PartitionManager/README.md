@@ -2,16 +2,21 @@
 Written by Ajay Parikh
 
 ## Objective
-Start and manage all partitons
+Start and ensure running of all partitons
 
 ## Order of operations
-Read .json file (eventually sync with DataAggregator) with all partions their ports, and anything else that is relevant (file paths)
+Read .json file (eventually sync with DataAggregator) with the partitons you want to launch and some additonal relevant information
 
 Close all open ports
 
-Start all partitons in a new terminal window
+Start partiton in a new terminal window
+Ensure that said partiton has initilzed, see example client code in clientExample.py
+Repeat last 2 steps until all partitons are open 
 
-Ensure that all partitons have checked in
-    Need to have a standard way to check in
+Checks that partitons are still running
+If specifed in .json file, restarts partiton if it is no longer running
+Repeat last 2 steps until program ended
 
-Say "good to go" and proceed with the rest of the program
+## Debugging help
+
+If you have an error that Address already in use for the socket after trying to restart the progarm, type "fg" then "ctrl+c". Then, try running the program again.
