@@ -3,7 +3,7 @@
         "name": "name1joystick",
         "portSend": 12353,
         "portReceive": 12363,
-        "rate": 900,
+        "rate": 50,
         "sendDict":
             {
                 "0": "timeRec",
@@ -20,38 +20,18 @@
         "name": "fc_demo",
         "portSend": 12354,
         "portReceive": 12364,
-        "rate": 900,
+        "rate": 50,
         "sendDict":
             {
                 "0": "timeRec",
-                "1": "Airspeed",
-		        "2": "servo_command"
-
+                "1": "Airspeed"
             },
         "receiveDict":
             {
 		        "0": ["name1joystick", "timeRec"],
-                "1": ["name1joystick", "pitchCommand"],
-                "2": ["fc_demo", "timeRec"],
-                "3": ["fc_demo", "Airspeed"]
+                "1": ["name1joystick", "pitchCommand"]
 	        }
 
-    },
-    {
-        "name": "servo_demo",
-        "portSend": 12355,
-        "portReceive": 12365,
-        "rate": 900,
-        "sendDict":
-            {
-                "0": "timeRec",
-                "1": "position",
-                "2": "clutchStatus"
-            },
-        "receiveDict":
-            {
-                "0": ["fc_demo", "servo_command"]
-            }
     }
 ]
 

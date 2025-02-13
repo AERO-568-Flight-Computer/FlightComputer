@@ -54,11 +54,12 @@ def main():
     sineWaveReceived = None
 
     try:
-        for _ in range(30000):
+        for _ in range(90000):
+            
             time.sleep(1/rateInternal)
             # Generate 1 point of a sine wave
             internalTime = time.time()
-            Airspeed = 20+np.sin(internalTime)
+            Airspeed = 20 #+np.sin(internalTime)
             
             dataDictionaryList[0]["timeRec"] = internalTime
             dataDictionaryList[0]["Airspeed"] = Airspeed
