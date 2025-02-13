@@ -1,3 +1,6 @@
+## A branch that is a cleaned up develop branch with full documentation. Should only include what is currently necessary for proper functionality of the system.
+
+
 ## Project uses gitflow stucture.  This means:
 ### main:
 protected branch - only code that has been tested and reviewed gets merged into main.  And this only gets merges from the develop branch.
