@@ -11,7 +11,7 @@ TestServo = Servo.Servo(test_servo_port, test_servo_id) # Calls the Servo class 
 time.sleep(2)
 
 name = "servo_demo"
-filepath = "servo_DA_test.json"
+filepath = "./servo_DA_test.json"
 
 # Create an instance of the DataProcessor class specified by the name and filepath
 processor = DataProcessor(name, filepath)
