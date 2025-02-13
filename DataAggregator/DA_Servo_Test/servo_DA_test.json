@@ -1,5 +1,23 @@
 [
     {
+        "name": "angle_command",
+        "portSend": 12354,
+        "portReceive": 12364,
+        "rate": 900,
+        "sendDict":
+            {
+                "0": "timeRec",
+                "1": "angle"
+
+            },
+        "receiveDict":
+            {
+                "0": ["angle_command", "timeRec"],
+                "1": ["angle_command", "position"]
+            }
+
+    },
+    {
         "name": "servo_demo",
         "portSend": 12355,
         "portReceive": 12365,
@@ -12,7 +30,7 @@
             },
         "receiveDict":
             {
-                "0": ["fc_demo", "servo_command"]
+                "0": ["angle_command"]
             }
     }
 ]
