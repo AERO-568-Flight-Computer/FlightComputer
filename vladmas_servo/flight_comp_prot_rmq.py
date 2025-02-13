@@ -47,10 +47,6 @@ def main():
     def decode_servo_cmd(msg_body):
         time_msg_sent, servo_angle_req = struct.unpack('dd',msg_body)
         return time_msg_sent, servo_angle_req
-    
-    def send_joystic_pos(time_pos_read, jsk_pitch_deg, jsk_roll_deg):
-        msg = struct.pack('ddd',time_pos_read,jsk_pitch_deg,jsk_roll_deg)
-        channel.basic_publish(exchange="joystic_pos_exchange",routing_key='',body=msg)
 
     def close_networking():
         #I would like to delete exchange to let everyone know that this partition? failed.
@@ -59,16 +55,6 @@ def main():
         channel.exchange_delete(exchange="joystic_force_exchange")
         channel.close()
         
-    try:
-        JoysticInteface = SimpleJoysticInterface()
-        time.sleep(1)
-        print("Joystic inteface created")
-    except:
-        print("Joystic creation failed. Closing")
-        close_networking()
-        raise
-
-
     time_since_last_send = 0
     time_of_last_send = time.time()
     period_of_pos_send = 0.01
