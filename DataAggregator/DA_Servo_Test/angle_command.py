@@ -18,7 +18,7 @@ def main():
 
     # Consider making filepath a command line argument
     name = "angle_command"
-    filepath = "./servo_DA_i.json"
+    filepath = "./servo_DA_test.json"
 
     # Create an instance of the DataProcessor class specified by the name and filepath
     processor = DataProcessor(name, filepath)

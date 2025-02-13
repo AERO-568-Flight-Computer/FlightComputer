@@ -10,12 +10,8 @@ test_servo_id = 0x01
 TestServo = Servo.Servo(test_servo_port, test_servo_id) # Calls the Servo class and creates servo
 time.sleep(2)
 
-#Trying to print out positions every half second
-t_delay = 0.5
-count = 0
-
 name = "servo_demo"
-filepath = "servo_DA_i.json"
+filepath = "servo_DA_test.json"
 
 # Create an instance of the DataProcessor class specified by the name and filepath
 processor = DataProcessor(name, filepath)
