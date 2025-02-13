@@ -31,11 +31,13 @@ dataDictionaryList = [
 while True:
     int_time = time.time()
     processor.receiveData()
+
     recentData = processor.getRecentData("fc_demo", 1)
     timeRecRecieved = recentData[0, 0]
     iasReceived = recentData[0, 1]
     ias = iasReceived  # Placeholder for IAS
-
+    print("airspeed")
+    print(ias)
     pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
     
     count = count+1

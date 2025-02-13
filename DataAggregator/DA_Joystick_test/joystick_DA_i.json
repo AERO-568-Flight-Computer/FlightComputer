@@ -31,7 +31,9 @@
         "receiveDict":
             {
 		        "0": ["name1joystick", "timeRec"],
-                "1": ["name1joystick", "pitchCommand"]
+                "1": ["name1joystick", "pitchCommand"],
+                "2": ["fc_demo", "timeRec"],
+                "3": ["fc_demo", "Airspeed"]
 	        }
 
     },
