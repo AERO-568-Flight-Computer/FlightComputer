@@ -259,7 +259,7 @@ def main():
     partitionInfo = 0
 
     # Load the setup file
-    with open("joystick_DA_i.json") as f:
+    with open("joystick_servo.json") as f:
         partitionInfo = json.load(f)
 
 

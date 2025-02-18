@@ -11,7 +11,7 @@ TestServo = Servo.Servo(test_servo_port, test_servo_id) # Calls the Servo class 
 time.sleep(2)
 
 name = "servo_demo"
-filepath = "./servo_DA_test.json"
+filepath = "./joystick_servo.json"
 
 # Create an instance of the DataProcessor class specified by the name and filepath
 processor = DataProcessor(name, filepath)
@@ -40,7 +40,7 @@ while True:
     #print(clutch)
     processor.receiveData()
 
-    recentData = processor.getRecentData("angle_command", 1)
+    recentData = processor.getRecentData("fc_demo", 1)
     timeRecReceived = recentData[0, 0]
     AngleCommandReceived = recentData[0, 1]
     dataDictionaryList[0]["timeRec"] = int_time
