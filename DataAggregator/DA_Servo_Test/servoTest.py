@@ -1,4 +1,4 @@
-import Servo
+from servo_module import Servo
 import time
 import socket
 import serial
@@ -33,9 +33,9 @@ while True:
     int_time = time.time()
     
     
-    pos = TestServo._get_pos()
-    print(pos)
-    #pwrstatus, clutch = TestServo._get_pwr_status()
+    pos,_ = TestServo.get_pos()
+    #print(pos)
+    _, clutch = TestServo._get_pwr_status()
     
     #print(clutch)
     processor.receiveData()
