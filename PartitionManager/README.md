@@ -17,6 +17,13 @@ Checks that partitons are still running
 If specifed in .json file, restarts partiton if it is no longer running
 Repeat last 2 steps until program ended
 
+## json file feilds:
+* name: string that gives what the program is called in outputs
+* path: relative filepath from FlightComputer folder to partiton
+* priority: integer that gives the order to start program, lower number starts sooner
+* restart: string that says what to do upon partiton close, can be "True" (restarts program automatically) or "Ask" (creates dialog box asking if program should be restarted) with all other options (blank, "False", et cetera) not restarting the program
+
+
 ## Debugging help
 
 If you have an error that Address already in use for the socket after trying to restart the progarm, type "fg" then "ctrl+c". Then, try running the program again.
