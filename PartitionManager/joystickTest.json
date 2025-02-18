@@ -2,8 +2,7 @@
     {
         "name": "Test Data Manager",
         "path": "DataManager/joystick2servo/testDataManager1.py",
-        "priority": 2,
-        "restart": "False"
+        "priority": 2
     },
     {
         "name": "Joystick 1",
@@ -15,6 +14,6 @@
         "name": "Elevator Servo",
         "path": "OfficialPartitions/ElevatorServo.py",
         "priority": 3,
-        "restart": "True"
+        "restart": "ask"
     }
 ]

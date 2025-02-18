@@ -4,6 +4,7 @@ import subprocess
 import socket
 import psutil
 from colorama import Fore, Back, Style
+from tkinter import messagebox as mb
 
 def main():
     close_all_sockets() #ensures all sockets are closed (does not work on MacOs)
@@ -34,24 +35,33 @@ def main():
     while len(openPrograms) != 0: #checks to see if all processes are closed
         for item in range(0, len(nameList)): #runs through all the processes
             if p[item].poll() == None: #checks if item is closed
-                if nameList[item] not in openPrograms: openPrograms.append(nameList[item]) #add back into open programs if it reopens somehow
+                if nameList[item] not in openPrograms: openPrograms.append(nameList[item]) #add back into open programs if it reopens
                 print(Style.RESET_ALL+nameList[item]+' is running')
             else:
                 print(Fore.YELLOW+nameList[item]+' has closed')
                 if nameList[item] in openPrograms: openPrograms.remove(nameList[item]) #sees what processes are still open
+                try:
+                    if partitionInfo[item]['restart'].lower() == "true":
+                        print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
+                        p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                        print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
+                        checkInitialized(server, partitionInfo[item])
 
-                if partitionInfo[item]['restart'] == "True":
-                    print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
+                    elif partitionInfo[item]['restart'].lower() == "ask":
+                        print(Style.RESET_ALL+'Seeing if restart of '+nameList[item]+' is requested')
+                        option = mb.askyesno(title='Restart', message='Would you like to restart '+nameList[item]+'?')
 
-                    p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                        if option == 1:
+                            print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
+                            p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                            print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
+                            checkInitialized(server, partitionInfo[item])
 
-                    print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
+                        else:
+                            print(Style.RESET_ALL+nameList[item]+' not restarted per instructions')
 
-                    checkInitialized(server, partitionInfo[item])
-                else:
-                    print(Style.RESET_ALL+'Will not restart '+nameList[item])
-
-
+                except:
+                    print(Style.RESET_ALL+nameList[item]+' not restarted')
 
     server.close()
     print(Fore.RED+'ALL PROGRAMS HAVE EXITED')
