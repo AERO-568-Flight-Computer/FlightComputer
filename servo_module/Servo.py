@@ -173,7 +173,7 @@ class Servo:
         return pwr_servo, pwr_clutch
 
     def _get_pos(self):
-        cmd = [0x92, self.actuator_ID, 0x00, 0x00]
+        cmd = [0x92, self.actuator_id, 0x00, 0x00]
         cmd = Servo.generate_crc(cmd)
         self.ser.write(bytearray(cmd))
         rx = self.ser.read(12)   # cmd echo is first 6 bytes, response is second set of 6 bytes
@@ -181,7 +181,7 @@ class Servo:
             return
         else:
             pos_hex = rx[8:10]
-            pos_deg = Servo.hex2deg(pos_hex)
+            pos_deg = Servo._hex2deg(pos_hex)
             return pos_deg, pos_hex
 
 def main():

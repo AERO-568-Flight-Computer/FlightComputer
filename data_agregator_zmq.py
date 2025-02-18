@@ -34,6 +34,7 @@ def switchboard(input_sockets, output_sockets, routing_table):
                 if verbose: print(f"Routing messages from socket {i}")
                 message = sock.recv()
                 for output_index in routing_table[i]:
+                    print(f"To socket {output_index}")
                     output_sockets[output_index].send(message)
 
 def close_networking(rx_list, tx_list,context):

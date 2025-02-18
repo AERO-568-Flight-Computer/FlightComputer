@@ -3,7 +3,7 @@ from opa_msg_library import *
 import zmq
 import time
 import struct
-from servo_module.DummyServo import Servo
+from servo_module.Servo import Servo
 
 verbose = True
 def main():
@@ -40,6 +40,7 @@ def main():
         pos_deg, _ = servo.get_pos()
         msg_time = time.time()
         pos_msg = pack_servo_pos_msg(servo_id,msg_time,pos_deg)
+        print(f"Pos msg out: {unpack_servo_pos_msg(pos_msg)}")
         s1_pos_tx_sock.send(pos_msg)
 
         #Try to recieve position
@@ -50,10 +51,7 @@ def main():
 
         if set_pos_flag:
             servo_id_rxd, msg_type,time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
-            if (servo_id_rxd == servo_id) and (msg_type == 'SC'): valid_cmd_msg_recieved = True
-            else: raise Exception("Network is wrong, recieved unexpected message")
-
-        if valid_cmd_msg_recieved:
+            print(f"Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)}")
             servo.set_pos(servo_angle_req)
 
         time.sleep(1/servo_max_freq)

@@ -24,7 +24,7 @@ def unpack_servo_pos_msg(msg):
 
 #Joystic
 def pack_joystic_cmd_msg(jsk_id,time_msg_sent, ias):
-    msg = struct.pask('2s2sdd',jsk_id,b'JC',time_msg_sent,ias)
+    msg = struct.pack('2s2sdd',jsk_id,b'JC',time_msg_sent,ias)
     return msg
 
 def unpack_joystic_cmd_msg(msg):

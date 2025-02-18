@@ -54,7 +54,7 @@ def main():
     if verbose: print("Entering the main loop of the flight computer")
     while True:
         poller_dict = dict(poller.poll(no_msg_timeout)) 
-        if verbose: 
+        if False: 
             print("poller_dict: ", poller_dict)
             print("Is it empty? ", poller_dict == {})
         if poller_dict == {} : raise Exception("Timeout, poll did not return in time, no messages within the timeout period. Abnormal behavior.")
@@ -64,7 +64,6 @@ def main():
             if sock in poller_dict and poller_dict[sock] == zmq.POLLIN:
                 if verbose: print(f"Recieved message from socket {i}")
                 msg = sock.recv()
-                print(f"Raw message rxed {msg}")
                 if sock is fc_s1_pos_rx_sock:
                     s1_pos_rxed = True
                 else:
@@ -75,12 +74,13 @@ def main():
                     print(f"Servo pos msg: {servo_pos_msg_uncpacked}")
                 else:
                     jsk_pos_msg_unpacked = unpack_joystic_state_msg(msg)
-                    print(f"Jsk pos msg : {jsk_pos_msg_unpacked}")
-                    servo_cmd_msg = pack_servo_pos_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
-                    print(f"Servo cmd msg raw: {servo_cmd_msg}")
-                    print(f"Servo cmd msg:{('S1',time.time(),jsk_pos_msg_unpacked[3])}")
-
-
+                    print(f"Jsk pos msg in: {jsk_pos_msg_unpacked}")
+                    servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
+                    print(f"Servo cmd msg out:{('S1',time.time(),jsk_pos_msg_unpacked[3])}")
+                    fc_s1_cm_tx_sock.send(servo_cmd_msg)
+                    jsk_cmd_msg = pack_joystic_cmd_msg(b'JK',time.time(),120)
+                    print(f"Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
+                    fc_jsk_ias_tx_sock.send(jsk_cmd_msg)
 
 if __name__ == '__main__':
     main()
