@@ -3,7 +3,7 @@ from opa_msg_library import *
 import zmq
 import time
 import struct
-from servo_module.DummyServo import Servo
+from servo_module.Servo import Servo
 
 verbose = True
 def main():
@@ -15,16 +15,16 @@ def main():
     context = zmq.Context()
 
     s1_cmd_rx_sock = context.socket(zmq.PULL)
-    s1_cmd_rx_sock.connect('tcp://localhost:5560')
     s1_cmd_rx_sock.setsockopt(zmq.RCVTIMEO, socket_timeout)
     s1_cmd_rx_sock.setsockopt(zmq.LINGER, 0)
     s1_cmd_rx_sock.setsockopt(zmq.CONFLATE, 1)
+    s1_cmd_rx_sock.connect('tcp://localhost:5560')
 
     s1_pos_tx_sock = context.socket(zmq.PUSH)
-    s1_pos_tx_sock.connect('tcp://localhost:5561')
     s1_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
     s1_pos_tx_sock.setsockopt(zmq.LINGER, 0)
     s1_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
+    s1_pos_tx_sock.connect('tcp://localhost:5561')
 
     elevator_servo_port = '/dev/ttyS4'
     elevator_servo_id = 0x01

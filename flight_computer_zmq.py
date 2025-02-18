@@ -27,20 +27,20 @@ def main():
 
     if verbose: print("Setting up sockets")
     fc_s1_cm_tx_sock   = context.socket(zmq.PUSH)
-    fc_s1_cm_tx_sock.connect('tcp://localhost:5670')
     set_default_ops_push(fc_s1_cm_tx_sock,socket_timeout)
+    fc_s1_cm_tx_sock.connect('tcp://localhost:5670')
 
     fc_s1_pos_rx_sock = context.socket(zmq.PULL)
-    fc_s1_pos_rx_sock.connect('tcp://localhost:5671')
     set_default_ops_pull(fc_s1_pos_rx_sock,socket_timeout)
+    fc_s1_pos_rx_sock.connect('tcp://localhost:5671')
 
     fc_jsk_pos_rx_sock = context.socket(zmq.PULL)
-    fc_jsk_pos_rx_sock.connect('tcp://localhost:5672')
     set_default_ops_pull(fc_jsk_pos_rx_sock,socket_timeout)
+    fc_jsk_pos_rx_sock.connect('tcp://localhost:5672')
 
     fc_jsk_ias_tx_sock = context.socket(zmq.PUSH)
-    fc_jsk_ias_tx_sock.connect('tcp://localhost:5673')
     set_default_ops_push(fc_jsk_ias_tx_sock,socket_timeout)
+    fc_jsk_ias_tx_sock.connect('tcp://localhost:5673')
     if verbose: print("Sockets set up")
 
     #So, no what... For now, let's just poll, print recieved messages

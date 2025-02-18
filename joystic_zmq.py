@@ -2,7 +2,7 @@ import time
 import zmq
 
 from opa_msg_library import *
-from joystic_module.DummySimpleJoystickInterface import SimpleJoystickInterface
+from joystic_module.SimpleJoystickInterface import SimpleJoystickInterface
 
 verbose = True
 def main():
@@ -16,17 +16,17 @@ def main():
 
     #Socket for receiving ias (or maybe the only datain message type?)
     jsk_ias_rx_sock = context.socket(zmq.PULL)
-    jsk_ias_rx_sock.connect('tcp://localhost:5550')
     jsk_ias_rx_sock.setsockopt(zmq.RCVTIMEO, socket_timeout) #Raize zmq.error.Again if didnt manage to send message during the timeout
     jsk_ias_rx_sock.setsockopt(zmq.LINGER, 0) # Discard pending messages on close
     jsk_ias_rx_sock.setsockopt(zmq.CONFLATE, 1) # Only keep the last message
+    jsk_ias_rx_sock.connect('tcp://localhost:5550')
 
     #Sending socket
     jsk_pos_tx_sock = context.socket(zmq.PUSH)
-    jsk_pos_tx_sock.connect('tcp://localhost:5551')
     jsk_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
     jsk_pos_tx_sock.setsockopt(zmq.LINGER, 0)
     jsk_pos_tx_sock.setsockopt(zmq.CONFLATE, 1)
+    jsk_pos_tx_sock.connect('tcp://localhost:5551')
 
     if verbose: print("-------Joystick: socket creation done -----------")
 
