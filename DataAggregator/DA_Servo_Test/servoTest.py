@@ -31,13 +31,21 @@ dataDictionaryList = [
 
 while True:
     int_time = time.time()
+    
+    
+    pos = TestServo._get_pos()
+    print(pos)
+    #pwrstatus, clutch = TestServo._get_pwr_status()
+    
+    #print(clutch)
     processor.receiveData()
 
     recentData = processor.getRecentData("angle_command", 1)
     timeRecReceived = recentData[0, 0]
     AngleCommandReceived = recentData[0, 1]
-    ClutchStatusReceived = recentData[0, 2]
     dataDictionaryList[0]["timeRec"] = int_time
+    dataDictionaryList[0]["position"]  = pos
+    #dataDictionaryList[0]["clutchStatus"] = clutch
     print(dataDictionaryList)
     processor.sendData(dataDictionaryList)
 

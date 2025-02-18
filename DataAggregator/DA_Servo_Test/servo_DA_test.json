@@ -3,7 +3,7 @@
         "name": "angle_command",
         "portSend": 12354,
         "portReceive": 12364,
-        "rate": 50,
+        "rate": 1,
         "sendDict":
             {
                 "0": "timeRec",
