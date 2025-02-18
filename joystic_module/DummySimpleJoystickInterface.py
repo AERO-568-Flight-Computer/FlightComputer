@@ -1,6 +1,6 @@
 import time
 import struct
-class SimpleJoysticInterface():
+class SimpleJoystickInterface():
     def __init__(self,run_self_calibration = True):
         time.sleep(2)
 
@@ -17,7 +17,7 @@ class SimpleJoysticInterface():
     # if negative, send the first pos/force coordinate on the neg schedule
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInterface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         for axis in ['pitch','roll']:
             if axis == 'pitch':
@@ -39,7 +39,7 @@ class SimpleJoysticInterface():
 
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInterface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         if axis == 'pitch':
             scale = 1.5
@@ -85,7 +85,7 @@ class SimpleJoysticInterface():
         return airspeed / 4
     
 def main():
-    JoysticInteface = SimpleJoysticInterface()
+    JoysticInteface = SimpleJoystickInterface()
     time.sleep(1)
     #Trying to print out positions every half second
     t_delay = 0.5

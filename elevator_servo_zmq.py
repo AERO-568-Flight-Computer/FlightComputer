@@ -3,12 +3,12 @@ from opa_msg_library import *
 import zmq
 import time
 import struct
-from DummyServo import Servo
+from servo_module.DummyServo import Servo
 
 verbose = True
 def main():
     servo_id = b'S1'
-    socket_timeout = 1000 # in milliseconds
+    socket_timeout = 5000 # in milliseconds
     servo_max_freq = 10
 
     if verbose: print("Setting up sockets")
@@ -49,8 +49,8 @@ def main():
             set_pos_flag = False
 
         if set_pos_flag:
-            servo_id_rxd, time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
-            if servo_id_rxd == servo_id: valid_cmd_msg_recieved = True
+            servo_id_rxd, msg_type,time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
+            if (servo_id_rxd == servo_id) and (msg_type == 'SC'): valid_cmd_msg_recieved = True
             else: raise Exception("Network is wrong, recieved unexpected message")
 
         if valid_cmd_msg_recieved:

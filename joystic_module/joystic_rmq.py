@@ -1,7 +1,7 @@
 import pika
 import time
 import struct
-from DummySimpleJoysticInterface import SimpleJoysticInterface
+from vladmas_joystic.DummySimpleJoystickInterface import SimpleJoysticInterface
 
 def main():
     try:

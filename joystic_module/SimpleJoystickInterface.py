@@ -1,7 +1,7 @@
 from NGIcalibration import StirlingInceptor
 import time
 import struct
-class SimpleJoysticInteface():
+class SimpleJoystickInterface():
     def __init__(self,run_self_calibration = True):
         self.ngi = StirlingInceptor()
         self.get_pitch_roll_timeout = 1.0/6.0
@@ -50,7 +50,7 @@ class SimpleJoysticInteface():
     # if negative, send the first pos/force coordinate on the neg schedule
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInteface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         for axis in ['pitch','roll']:
             if axis == 'pitch':
@@ -74,7 +74,7 @@ class SimpleJoysticInteface():
 
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInteface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         if axis == 'pitch':
             scale = 1.5
@@ -120,7 +120,7 @@ class SimpleJoysticInteface():
         return airspeed / 4
     
 def main():
-    JoysticInteface = SimpleJoysticInteface()
+    JoysticInteface = SimpleJoystickInterface()
     time.sleep(1)
     #Trying to print out positions every half second
     t_delay = 0.5
