@@ -40,6 +40,19 @@ class Servo:
         else:
             print("Cant set desired position. Out of servo limits")
             return -1
+    
+    def get_pos(self):
+        #Checking power
+        servo_power_status, clutch_power_status = self.run_power_diag()
+        if (servo_power_status == 0) or (clutch_power_status == 0):
+            print("Trying to set servo pos, cant:")
+            if servo_power_status == 0:
+                print("Servo power out")
+            if clutch_power_status == 0:
+                print("Clutch power out")
+            return -1, -1 #First is the position, the second is error code.
+        pos_deg, pos_hex = self._get_pos()
+        return pos_deg, 0         
 
     def run_power_diag(self):
         #Is the servo good to just leave be? or do I need to read from it constantly?
@@ -160,7 +173,7 @@ class Servo:
         return pwr_servo, pwr_clutch
 
     def _get_pos(self):
-        cmd = [0x92, self.actuator_ID, 0x00, 0x00]
+        cmd = [0x92, self.actuator_id, 0x00, 0x00]
         cmd = Servo.generate_crc(cmd)
         self.ser.write(bytearray(cmd))
         rx = self.ser.read(12)   # cmd echo is first 6 bytes, response is second set of 6 bytes
@@ -168,7 +181,7 @@ class Servo:
             return
         else:
             pos_hex = rx[8:10]
-            pos_deg = Servo.hex2deg(pos_hex)
+            pos_deg = Servo._hex2deg(pos_hex)
             return pos_deg, pos_hex
 
 def main():
