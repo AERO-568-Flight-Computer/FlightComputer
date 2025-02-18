@@ -57,7 +57,7 @@ def main():
 
                         else:
                             print(Style.RESET_ALL+nameList[item]+' not restarted per instructions')
-                            partitionInfo[item]['restart'].lower() = "false" #does not ask to restart again
+                            partitionInfo[item]['restart'] = "false" #does not ask to restart again
 
                 except:
                     print(Style.RESET_ALL+nameList[item]+' not restarted')
