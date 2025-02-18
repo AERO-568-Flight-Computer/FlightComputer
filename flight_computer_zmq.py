@@ -62,7 +62,7 @@ def main():
             s1_pos_rxed = False
             jsk_pos_rxed = False
             if sock in poller_dict and poller_dict[sock] == zmq.POLLIN:
-                if verbose: print(f"Recieved message from socket {i}")
+                if False: print(f"Recieved message from socket {i}")
                 msg = sock.recv()
                 if sock is fc_s1_pos_rx_sock:
                     s1_pos_rxed = True
@@ -71,15 +71,15 @@ def main():
 
                 if s1_pos_rxed:
                     servo_pos_msg_uncpacked = unpack_servo_pos_msg(msg)
-                    print(f"Servo pos msg: {servo_pos_msg_uncpacked}")
+                    #print(f"Servo pos msg: {servo_pos_msg_uncpacked}")
                 else:
                     jsk_pos_msg_unpacked = unpack_joystic_state_msg(msg)
                     print(f"Jsk pos msg in: {jsk_pos_msg_unpacked}")
                     servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
-                    print(f"Servo cmd msg out:{('S1',time.time(),jsk_pos_msg_unpacked[3])}")
+                    print(f"Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
                     fc_s1_cm_tx_sock.send(servo_cmd_msg)
-                    jsk_cmd_msg = pack_joystic_cmd_msg(b'JK',time.time(),120)
-                    print(f"Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
+                    jsk_cmd_msg = pack_joystic_cmd_msg(b'JK',time.time(),20)
+                    #print(f"Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
                     fc_jsk_ias_tx_sock.send(jsk_cmd_msg)
 
 if __name__ == '__main__':

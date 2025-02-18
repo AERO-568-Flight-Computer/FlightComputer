@@ -20,13 +20,16 @@ class Servo:
 
     def set_pos(self,servo_desired_pos_deg):
         #Checking power
+        print(f"Desired position: {servo_desired_pos_deg}")
         servo_power_status, clutch_power_status = self.run_power_diag()
         if (servo_power_status == 0) or (clutch_power_status == 0):
-            print("Trying to set servo pos, cant:")
+            #print("Trying to set servo pos, cant:")
             if servo_power_status == 0:
-                print("Servo power out")
+                #print("Servo power out")
+                pass
             if clutch_power_status == 0:
-                print("Clutch power out")
+                #print("Clutch power out")
+                pass
             return -1
         
         #Checking servo position limits
@@ -38,18 +41,20 @@ class Servo:
             rx = self.ser.read(12)
             return 0
         else:
-            print("Cant set desired position. Out of servo limits")
+            #print("Cant set desired position. Out of servo limits")
             return -1
     
     def get_pos(self):
         #Checking power
         servo_power_status, clutch_power_status = self.run_power_diag()
         if (servo_power_status == 0) or (clutch_power_status == 0):
-            print("Trying to set servo pos, cant:")
+            #print("Trying to set servo pos, cant:")
             if servo_power_status == 0:
-                print("Servo power out")
+                #print("Servo power out")
+                pass
             if clutch_power_status == 0:
-                print("Clutch power out")
+                pass
+                #print("Clutch power out")
             return -1, -1 #First is the position, the second is error code.
         pos_deg, pos_hex = self._get_pos()
         return pos_deg, 0         
@@ -161,10 +166,10 @@ class Servo:
         cmd = Servo.generate_crc(cmd)
         self.ser.write(bytearray(cmd))
         rx = self.ser.read(12)  # cmd echo is first 6 bytes, response is second set of 6 bytes
-        print("Get power status Command")
-        print(cmd)
-        print("Get power status Reply")
-        print(rx)
+        #print("Get power status Command")
+        #print(cmd)
+        #print("Get power status Reply")
+        #print(rx)
             
         pwr_servo = int(hex(rx[8]), 16) * 0.2   # 200 mV per val, volts
         pwr_clutch = int(hex(rx[9]), 16) * 0.2 

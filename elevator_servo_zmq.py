@@ -3,7 +3,7 @@ from opa_msg_library import *
 import zmq
 import time
 import struct
-from servo_module.Servo import Servo
+from servo_module.DummyServo import Servo
 
 verbose = True
 def main():
@@ -32,7 +32,7 @@ def main():
     time.sleep(1)
 
     while True:
-        if verbose: print("Main loop")
+        if False: print("Main loop")
         set_pos_flag = True
         valid_cmd_msg_recieved = False
 
@@ -40,7 +40,7 @@ def main():
         pos_deg, _ = servo.get_pos()
         msg_time = time.time()
         pos_msg = pack_servo_pos_msg(servo_id,msg_time,pos_deg)
-        print(f"Pos msg out: {unpack_servo_pos_msg(pos_msg)}")
+        #print(f"Pos msg out: {unpack_servo_pos_msg(pos_msg)}")
         s1_pos_tx_sock.send(pos_msg)
 
         #Try to recieve position
