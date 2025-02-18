@@ -36,6 +36,7 @@ while True:
     recentData = processor.getRecentData("angle_command", 1)
     timeRecReceived = recentData[0, 0]
     AngleCommandReceived = recentData[0, 1]
+    ClutchStatusReceived = recentData[0, 2]
     dataDictionaryList[0]["timeRec"] = int_time
     print(dataDictionaryList)
     processor.sendData(dataDictionaryList)

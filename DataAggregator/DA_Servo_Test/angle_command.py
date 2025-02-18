@@ -28,7 +28,7 @@ def main():
     print(processor.portSend)
     print(processor.portReceive)
 
-    rateInternal = 1000
+    rateInternal = 0.5
 
     dataDictionaryList = [
         {
@@ -69,8 +69,9 @@ def main():
                 #Airspeed = dataDictionaryList[0]["Airspeed"]
                 timeRecReceived = recentData[0, 0]
                 PositionCommandReceived = recentData[0, 1]
+                ClutchStatusReceived = recentData[0, 2]
 
-                print(f"Time received: {timeRecReceived}, Position Command received: {PositionCommandReceived}")
+                print(f"Time received: {timeRecReceived}, Position Command received: {PositionCommandReceived}, Clutch Status received: {ClutchStatusReceived}")
         
     except KeyboardInterrupt:
         # Close the connection on Ctrl+C
