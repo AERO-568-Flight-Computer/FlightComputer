@@ -1,17 +1,7 @@
-from NGIcalibration import StirlingInceptor
 import time
 import struct
-class SimpleJoysticInteface():
+class SimpleJoystickInterface():
     def __init__(self,run_self_calibration = True):
-        self.ngi = StirlingInceptor()
-        self.get_pitch_roll_timeout = 1.0/6.0
-        if run_self_calibration:
-            self.ngi.IBIT()
-        """ ACTIVATION """
-        self.ngi.activate()
-        """ ADJUST CALIBRATION FORCE OFFSET """
-        time.sleep(2)
-        self.ngi.configSetup()
         time.sleep(2)
 
     def get_pitch_roll(self):
@@ -19,38 +9,15 @@ class SimpleJoysticInteface():
         #But everything uses message 10 to get pitch and roll.
         #So just get 4096 bytes from the apppropriate socket, and decode message 10 untill have pitch and roll.
         #Timeout if time passsed is more than timeout, return a fail.
-        time_start = time.time()
-        time_now = time_start
-        runtime = 0
-        pitch_found = False
-        roll_found = False
-        while (runtime < self.get_pitch_roll_timeout) :
-            data, addr = self.ngi.rxSockStatus.recvfrom(4096)
-            axis, pos, force, switch09, switch10, switch11, switch12 = self.__decodeMsg10_partmanager(data)
-            print("------Data manager decode done-----------")
-            #axis, pos, force, trimlft, trimup, trimrht, trimdwn = self.ngi.decodeMsg10(data)
-            #print("----------Striling inceptor decode done----------")
-            time_now = time.time()
-            runtime = time_now - time_start
-            if axis == 0:
-                #pitch axis
-                pitchPosition = pos[0]
-                pitch_found = True
-            if axis == 1:
-                #roll axis
-                rollPosition = pos[0]
-                roll_found = True
-            if (roll_found and pitch_found):
-                return pitchPosition, rollPosition, 0
-        print("Couldn't get Joystic location in time")
-        return -1,-1,-1
+        time.sleep(0.02)
+        return 10.0, 15.0, 0
     
     def adjustForce(self, ias):
     # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
     # if negative, send the first pos/force coordinate on the neg schedule
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInteface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         for axis in ['pitch','roll']:
             if axis == 'pitch':
@@ -59,13 +26,11 @@ class SimpleJoysticInteface():
                 scale = 1
 
             print(f"ias: {ias} | force: {force}")
-
+            time.sleep(0.01)
             #self.ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
             #self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
             #self.ngi.txSock.sendto(self.ngi.msg02(self.ngi.POS_FORCE_COORDS, self.ngi.NEG_FORCE_COORDS, axis),
-            #                (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))
-            self.adjustForce_old(self.ngi,axis,ias)
-    
+            #                (self.ngi.UDP_IP_NGI, self.ngi.UDP_PORT_ROTCHAR))    
     @staticmethod
     def adjustForce_old(ngi, axis, ias):
         print("Trying to run the old method")
@@ -74,7 +39,7 @@ class SimpleJoysticInteface():
 
         if ias < 5:
             ias = 5
-        force = SimpleJoysticInteface.__calcForce(ias)
+        force = SimpleJoystickInterface.__calcForce(ias)
 
         if axis == 'pitch':
             scale = 1.5
@@ -120,7 +85,7 @@ class SimpleJoysticInteface():
         return airspeed / 4
     
 def main():
-    JoysticInteface = SimpleJoysticInteface()
+    JoysticInteface = SimpleJoystickInterface()
     time.sleep(1)
     #Trying to print out positions every half second
     t_delay = 0.5
