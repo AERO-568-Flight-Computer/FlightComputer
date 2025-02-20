@@ -29,6 +29,19 @@ Data aggregator will only exit cleanly if the partitions are closed after the ag
 
 Use control C to stop the aggregator properly. If it is not exited cleanly, the ports might be in use for a little bit until the OS realizes they are not in use.
 
+# Functions of the dataAggregator and dataProcessor
+
+1. Setup Partitions
+2. Data Decode
+3. Listener T
+4. 
+
+
+
+
+
+
+
 
 
 # TODO:

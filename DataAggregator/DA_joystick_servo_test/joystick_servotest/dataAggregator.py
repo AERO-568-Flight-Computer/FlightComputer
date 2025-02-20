@@ -259,7 +259,7 @@ def main():
     partitionInfo = 0
 
     # Load the setup file
-    with open("joystick_DA_i.json") as f:
+    with open("joystick_servo.json") as f:
         partitionInfo = json.load(f)
 
 
@@ -302,6 +302,7 @@ def main():
 
     # This list will hold an array for each partition that stores the data
     # An additional array for each partition will hold the time the data was received
+    
     for i, port in enumerate(receivePorts):
         
         # Check that port is an int
