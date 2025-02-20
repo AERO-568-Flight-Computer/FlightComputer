@@ -17,8 +17,6 @@ def crc16_custom(data: bytes) -> int:
 
     return crc
 
-
-
 while True:
     pitot = ser.read(1)
     sync_byte = 255
@@ -51,7 +49,7 @@ while True:
         diffPressureDL = struct.unpack('f', byteArray[20:24])[0]
         print("deltaPres [Pa]: ", diffPressureDL)
 
-        # Temperature difference in Celcius (4 byte float)
+        # Temperature difference in Celcius (4 byte float) #What does dl mean?
         diffSenseTempDL = struct.unpack('f', byteArray[24:28])[0]
         print("deltaTemp [C]: ", diffSenseTempDL)
 
@@ -69,14 +67,14 @@ while True:
         # CRC check
         crcCheck = int.from_bytes(byteArray[36:38], byteorder='little')
         print(crcCheck)
-
-        # dataDictionary = {
-        #     "sysTimeStamp": sysTimeStamp,
-        #     "militime": militime,
-        #     "absPressure": absPressure,
-        #     "absSenseTemp": absSenseTemp,
-        #     "diffPressure": diffPressure,
-        #     "diffSenseTemp": diffSenseTemp,
-        #     "rearFlagAOA": rearFlagAOA,
-        #     "frontFlagYaw": frontFlagYaw
-        # }
+        #I would like to pack a message, bit I want it to be very clear
+        #What variable goes into what position
+        dataDictionary = {
+             "militime": militime,
+             "absPressure": absPressure,
+             "absSenseTemp": absSenseTemp,
+             "diffPressureDL": diffPressureDL,
+             "diffSenseTempDL": diffSenseTempDL,
+             "rearFlagAOA": rearFlagAOA,
+             "frontFlagYaw": frontFlagYaw
+         }
