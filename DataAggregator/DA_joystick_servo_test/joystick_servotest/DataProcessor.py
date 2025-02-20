@@ -93,7 +93,7 @@ class DataProcessor:
             return None
         
         numFields = len(self.sendDict)
-        numRows = len(dataDictionaryList)
+        numRows = 1 #len(dataDictionaryList)
         dataArray = np.full((numRows, numFields), np.nan, dtype=np.float64)
         
         for row, dataDictionary in enumerate(dataDictionaryList):
@@ -135,6 +135,8 @@ class DataProcessor:
             for numColumns in self.receivePartitionFieldCount:
                 numRowsBytes = data[byteOffset:byteOffset + 2]
                 numRows = int.from_bytes(numRowsBytes, byteorder='big')
+                print("numRows")
+                print(numRows)
                 byteOffset += 2
 
                 payloadSize = numRows * numColumns * 8
