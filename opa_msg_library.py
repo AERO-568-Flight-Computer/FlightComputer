@@ -42,10 +42,58 @@ def unpack_joystic_state_msg(msg):
     return jsk_id, msg_type, time_msg_sent, pitch, roll
 
 #Air data unit
-def pack_adc_state_msg(adc_id,time_msg_sent,ias,angle_of_attack,sideslip):
-    msg = b'asf'
+def pack_adc_state_msg(adc_id,time_msg_sent,adc):
+    #add: adc data dictionary
+    #ADC data is a bit long. so instead of passing a lot of variables,
+    #I'll pass a dictionary. A question I have is what happens when you unpack that 
+    #and return a dictionary though
+    #does it take longer than or not? I probably don;t care at this point...
+    #adc_data_dict fiedls are the same last yer people left:
+    #adc_data_dict = {
+    #     "militime": militime,
+    #     "absPressure": absPressure,
+    #     "absSenseTemp": absSenseTemp,
+    #     "diffPressureDL": diffPressureDL,
+    #     "diffSenseTempDL": diffSenseTempDL,
+    #     "rearFlagAOA": rearFlagAOA,
+    #     "frontFlagYaw": frontFlagYaw
+    #     }
+    msg_p1 = struct.pack('2s2sd',adc_id,b"AD",time_msg_sent)
+    msg_p2 = struct.pack('ddd',adc["militime"],adc["absPressure"],adc["absSenseTemp"])
+    msg_p3 = struct.pack('dd',adc["diffPressureDL"],adc["diffSenseTempDL"])
+    msg_p4 = struct.pack('dd',adc["rearFlagAOA"],adc["frontFlagYaw"])
+    msg = msg_p1 + msg_p2 + msg_p3 + msg_p4
     return msg
 
-def unpack_adc_state(msg):
-    if msg_type != b'AD': raise Exception("Invalid message")
-    return adc_id,time_msg_sent,ias,angle_of_attack,sideslip
+def unpack_adc_state_msg(msg):
+    msg_tuple = struct.unpack('2s2sdddddddd',msg)
+    adc_id         = msg_tuple[0]
+    msg_type       = msg_tuple[1]
+    if msg_type != b'AD': raise Exception("Invalid message")   
+    time_msg_sent  = msg_tuple[2]
+    militime       = msg_tuple[3]
+    absPressure    = msg_tuple[4]
+    absSenseTemp   = msg_tuple[5]
+    diffPressureDL = msg_tuple[6]
+    diffSenseTempDL= msg_tuple[7]
+    rearFlagAOA    = msg_tuple[8]
+    frontFlagYaw   = msg_tuple[9]
+
+    adc_data_dict = {
+         "militime": militime,
+         "absPressure": absPressure,
+         "absSenseTemp": absSenseTemp,
+         "diffPressureDL": diffPressureDL,
+         "diffSenseTempDL": diffSenseTempDL,
+         "rearFlagAOA": rearFlagAOA,
+         "frontFlagYaw": frontFlagYaw
+         }
+    return adc_id, msg_type, time_msg_sent, adc_data_dict
+
+#Vector Nav
+#Vector narv is the hardest to do, lots of fields.
+#Probably has several types of messages it sends out.
+#Probably, if it'so, It would be best to make a multipart zmq messages,
+#First part being msg type. but for now for simplicity, I think just send what we need in one message when we get it.
+#The info we need for our msg constains in several vector nav msg's. So we wait for all vector nav msgs's
+#That contain the info, and then make our msg.
