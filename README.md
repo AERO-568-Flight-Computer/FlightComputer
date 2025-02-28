@@ -19,6 +19,7 @@ The idea here is that even with a group of people making changes all at once: ma
 Contains files set up interaction between joystick and servo.
 ### joystick:
 Contains files to recieve NGI joystick data on Flight Computer and NGI calibration file.
+Sterling Joystick can only configure its own IP address from DHCP.  The flight computer ubuntu installation is configured to run dhcpd on port enp13s0 and always assign IP 192.168.10.101/24 to the sterling. Another option is to use the external wifi router as the dhcp server (we don't actually use the wifi, just the wired side of it) - check the config to see if it is configured to assgin the same consistent/reserved IP address to the joystick.
 ### servo:
 Contains files to communicate with servo.
 ### sockets:
