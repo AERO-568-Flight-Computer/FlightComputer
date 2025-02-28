@@ -1,8 +1,8 @@
 #example code of what the partiton manager expects from a partiton to know it has been initalized
 
-from partitonManager import initialize
+from PartitionManager.partitonManager import initialize
 
-initialize.initialize()
+initialize.initialize() #place this line at a point in your partition where the setup is complete 
 
 # import socket
 # import time

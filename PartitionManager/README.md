@@ -83,6 +83,7 @@ Run:
 * sudo apt install python3-pip
 * sudo apt install python3-tk
 * sudo apt install python3-venv
+* sudo apt install xterm
 
 Now we want to create a virtual enviroment, run the following commands. Whenever you try to run 
 * cd
