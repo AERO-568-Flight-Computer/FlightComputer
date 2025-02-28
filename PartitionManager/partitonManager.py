@@ -7,12 +7,25 @@ from colorama import Fore, Back, Style
 from tkinter import messagebox as mb
 import sys
 
+port = 54321
+
+class initialize:
+    def initialize():
+        import socket
+        import time
+
+        time.sleep(0.5) #adds delay to make sure that the server is setup
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
+        client.connect(('localhost', port)) #connects socket to the partiton manager as a client
+        client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
+        print('Initialization signal sent')
+
 def main():
     close_all_sockets() #ensures all sockets are closed (does not work on MacOs)
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based server
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind(('localhost', 54321)) #puts the socket on a local port
+    server.bind(('localhost', port)) #puts the socket on a local port
 
     with open("PartitionManager/joystickTest.json") as f: #loads in data
         partitionInfo = json.load(f)
@@ -23,7 +36,7 @@ def main():
     nameList = [] #creates a list that makes it easy to call the name of a partiton
 
     for partition in partitionInfo: #open all partitions
-        p.append(subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to list p
+        p.append(subprocess.Popen(['gnome-terminal -- python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to list p
         nameList.append(partition['name']) #adds name to namelist
         print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
         checkInitialized(server, partition) #ensures partitions have been initilazied
@@ -41,7 +54,7 @@ def main():
                 try:
                     if partitionInfo[item]['restart'].lower() == "true": #runs if program asked to restart
                         print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                        p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                        p[item] = subprocess.Popen(['gnome-terminal -- python3 '+partitionInfo[item]['path']], shell=True)
                         print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                         checkInitialized(server, partitionInfo[item])
 
@@ -51,7 +64,7 @@ def main():
 
                         if option == 1: #if answered yes, attempts restart
                             print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                            p[item] = subprocess.Popen(['xterm -T "'+nameList[item]+'" -e python3 '+partitionInfo[item]['path']], shell=True)
+                            p[item] = subprocess.Popen(['gnome-terminal -- python3 '+partitionInfo[item]['path']], shell=True)
                             print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                             checkInitialized(server, partitionInfo[item])
 
