@@ -40,7 +40,7 @@ def main():
         nameList.append(partition['name']) #adds name to namelist
         time.sleep(20)
         # print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
-        # checkInitialized(server, partition) #ensures partitions have been initilazied
+        checkInitialized(server, partition) #ensures partitions have been initilazied
 
     openPartitons = nameList.copy() #creates list that stores a list of whatever partitons are open
 
