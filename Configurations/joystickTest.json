@@ -7,11 +7,13 @@
     {
         "name": "Joystick 1",
         "path": "DataManager/joystick2servo/joystick1.py",
-        "priority": 1
+        "priority": 1,
+        "restart": "False"
     },
     {
         "name": "Elevator Servo",
         "path": "OfficialPartitions/ElevatorServo.py",
-        "priority": 3
+        "priority": 3,
+        "restart": "ask"
     }
 ]
