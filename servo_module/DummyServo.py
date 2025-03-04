@@ -1,8 +1,10 @@
 import time
+import random
 class Servo:
     def __init__(self,port_string,actuator_id = 0x01):
         #port string is the port at which the servo is going to be.
         #'/dev/ttyS4' is the port of the servo we run
+        self.ser = port_string
         self.actuator_id = actuator_id
 
     # Methods taken from volz_actuator.py, in particular from ServoUtilMethods
@@ -17,12 +19,121 @@ class Servo:
     '''
 
     def set_pos(self,servo_desired_pos_deg):
-        time.sleep(0.005)
-        print("DesiredPos:",servo_desired_pos_deg)
+        time.sleep(0.01)
         return 0
-    
+            
     def get_pos(self):
-        #Checking power
-        time.sleep(0.005)
-        pos_deg = 42
+        pos_deg = -55 + 110*random.random()
         return pos_deg, 0         
+
+    def run_power_diag(self):
+        return 1, 1 
+
+    @staticmethod
+    def generate_crc(command):
+        # 0xDD, 0x01, 0x14, 0x40 – new position +30°
+        #command = [0xDD, 0x1F, 0x14, 0x40]
+        #command = [0xDD, 0x1F, 0x0D, 0x3A]  # command, actuator ID, arg1, arg2
+
+        crc = 0xFFFF  # init value
+
+        for x in range(4):
+            crc = ((command[x] << 8) ^ crc)
+
+            for y in range(8):
+                if (crc & 0x8000):
+                    crc = (crc << 1) ^ 0x8005
+                else:
+                    crc = crc << 1
+
+        crc &= 0xFFFF  # keep the result within 16 bits
+        crc = "{:X}".format(crc)
+        padded_crc = crc.zfill(4)
+
+        # split checksum, add to argument list
+        command.append(int(padded_crc[0:2], 16))
+        command.append(int(padded_crc[2:4], 16))
+        return command
+
+    # Index 0: Command code
+    # Index 1: Actuator ID
+    # Index 2: Argument 1
+    # Index 3: Argument 2
+    # Index 4: CRC High-Byte
+    # Index 5: CRC Low Byte
+    @staticmethod
+    def _deg2hex(deg):
+        decimal_command_num = 19.2 * deg + 2048
+        bin_str = format(int(round(decimal_command_num)), '#014b')
+
+        # split binary string
+        indices = [2, 7, 14]
+        bin_arg_lst = [bin_str[i:j] for i, j in zip(indices, indices[1:] + [None])]
+
+        # convert binary -> int
+        arg1 = int(bin_arg_lst[0], 2)
+        arg2 = int(bin_arg_lst[1], 2)
+
+        hex_val = [arg1, arg2]  # decimal translation of individual hex values
+        return hex_val
+
+    @staticmethod
+    def _hex2deg(vals):
+        # vals: array of 2 decimal values for servo position
+        bin_arg_list = list()
+        for val in vals:
+            val_bin = bin(val)                      # '0b10011'
+            val_bin_str = val_bin[2:len(val_bin)]   # '10011'
+            bin_arg_list.append(val_bin_str)
+        bin_str = '0b' + bin_arg_list[0] + bin_arg_list[1].zfill(7)
+        deg = (int(bin_str, 2) - 2048) / 19.2
+        return deg
+
+    # define actuator set position command
+    def _build_pos_command(self, degree):
+        # 0x1F = broadcast
+        base_command = [0xDD, self.actuator_id]
+
+        hex_val = Servo._deg2hex(degree)
+        arg1 = hex_val[0]
+        arg2 = hex_val[1]
+
+        # add arguments to command list
+        base_command.append(arg1)
+        base_command.append(arg2)
+
+        # generate checksum
+        cmd = Servo.generate_crc(base_command)
+
+        return cmd
+
+# get input voltage data
+    def _get_pwr_status(self):
+        pwr_servo  = 22
+        pwr_clutch = 22
+        return pwr_servo, pwr_clutch
+
+    def _get_pos(self):
+        pos_deg = 20    
+        pos_hex = self._deg2hex(pos_deg)
+        return pos_deg, pos_hex
+
+def main():
+    #Runs test if directly called
+    elevator_servo_port = '/dev/ttyS4'
+    elevator_servo_id = 0x01
+    ElevatorServo = Servo(elevator_servo_port, elevator_servo_id)
+    time.sleep(2)
+    positions = [-50, -25, 0, 25, 50]
+    delay = 0.5
+
+    while True:
+        for pos in positions:
+            print("Tryuing to set postion")
+            set_pos_err_code = ElevatorServo.set_pos(pos)
+            time.sleep(delay)      
+            if set_pos_err_code != 0:
+                print("set_pos failed with exit code?:")
+                print(set_pos_err_code)
+if __name__ == "__main__":
+    main()
