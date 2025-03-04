@@ -5,88 +5,23 @@ import binascii
 import socket
 import select
 
-# Description: This class helps a partition to send and receive data to and from the data aggregator.
-# Inside the class, we have the JSON string that contains the information about the partitions. This
-# JSON string can be used by any part of the code to get the information about the partitions. 
+# Description: This class helps a partition to send and receive data to and from the data aggregator in the proper format.
+# When inializing, provide the name of the partition and the path to the JSON file that contains the partition information.
+# THis should be the same json path that the data aggregator uses.
 
 
 class DataProcessor:
-    JSON_STRING = '''
-    [
-        {
-            "name": "partition1",
-            "portSend": 12351,
-            "portReceive": 12361,
-            "rate": 1,
-            "sendDict": {
-                "0": "yaw",
-                "1": "pitch",
-                "2": "roll"
-            },
-            "receiveDict": {
-                "0": ["partition1", "yaw"],
-                "1": ["partition1", "pitch"],
-                "2": ["partition1", "roll"],
-                "3": ["partition2", "roll"]
-            }
-        },
-        {
-            "name": "name1",
-            "portSend": 12353,
-            "portReceive": 12363,
-            "rate": 900,
-            "sendDict":
-                {
-                    "0": "timeRec",
-                    "1": "sineWave"
-                },
-            "receiveDict":
-                {
-                    "0": ["name1", "timeRec"],
-                    "1": ["name1", "sineWave"]
-                }
-        },
-        {
-            "name": "partition2",
-            "portSend": "FALSE",
-            "portReceive": 12362,
-            "rate": 1,
-            "receiveDict": {
-                "0": ["partition1", "pitch"]
-            }
-        },
-        {
-            "name": "partition3",
-            "portSend": 12353,
-            "portReceive": 12363,
-            "rate": 1,
-            "receiveDict": {
-                "0": ["partition1", "roll"]
-            }
-        },
-        {
-            "name": "AirDC",
-            "portSend": 12351,
-            "portReceive": "FALSE",
-            "rate": 1,
-            "sendDict": {
-                "0": "yaw",
-                "1": "pitch",
-                "2": "roll",
-                "3": "militime",
-                "4": "absPressure",
-                "5": "absSenseTemp",
-                "6": "diffPressure",
-                "7": "diffSenseTemp",
-                "8": "rearFlagAOA",
-                "9": "frontFlagYaw"
-            }
-        }
-    ]
-    '''
 
-    def __init__(self, partitionName):
-        self.jsonData = json.loads(DataProcessor.JSON_STRING)
+    def __init__(self, partitionName, jsonFilePath=None):
+
+        # Load the JSON data from the file
+        if jsonFilePath:
+            with open(jsonFilePath) as jsonFile:
+                self.jsonData = json.load(jsonFile)
+        else:
+            # Error
+            raise ValueError("JSON file path not provided.")
+
         self.partitionName = partitionName
         self.name = False
         self.portSend = False
@@ -94,7 +29,7 @@ class DataProcessor:
         self.rate = False
         self.sendDict = False
         self.receiveDict = False
-        self.dataPointsPerPartition = None
+        self.dataPointsPerPartition = None   # Dictionary to store the number of data points per partition
         self.currentRow = None
         
         self.initVariables()
@@ -140,10 +75,19 @@ class DataProcessor:
 
                 # Create a dictionary that stores the data received from other partitions
                 for partition, numPoints in dataPointsPerPartition.items():
-                    self.numpyArraysDict[partition] = np.zeros((numPoints, 2000))
+                    self.numpyArraysDict[partition] = np.zeros((2000, numPoints), dtype=np.float64)
+
+                # Store the number of fields for each partition in a separate list
+                self.receivePartitionFieldCount = [array.shape[1] for array in self.numpyArraysDict.values()]
+
+                # Store the number of data points per partition
+                self.dataPointsPerPartition = dataPointsPerPartition
 
                 break
     
+    # This method takes in a list of dictionaries, where each dictionary contains the data to be sent. The keys of the
+    # dictionary should match the keys in the sendDict attribute of the partition. The method then sends the data over
+    # UDP to the data aggregator.
     def sendData(self, dataDictionaryList):
         if not self.sendDict:
             return None
@@ -166,7 +110,19 @@ class DataProcessor:
         # Send the packet over UDP
         self.sendSock.sendto(packet, ('localhost', self.portSend))
 
+
+
     def receiveData(self):
+    
+    # This method receives data from the data aggregator. It reads the data from the receive socket and stores it in a
+    # numpy array, with each partition having one 2D array dedicated to it. The data is stored in a circular buffer, 
+    # so that the most recent data is always available. The method reads all the available packets from the socket 
+    # and processes them.
+
+    # Open questions:
+    # 1. Are there multiple numpy arrays to store data from different partitions?
+    # 2. What happens when the data rate from one partition is higher than the data rate from another partition?
+
         if not self.receiveSock:
             return None
 
@@ -176,7 +132,7 @@ class DataProcessor:
             byteOffset = 0
             partitionBytes = []
 
-            for numColumns in self.dataPointsPerPartitionArray:
+            for numColumns in self.receivePartitionFieldCount:
                 numRowsBytes = data[byteOffset:byteOffset + 2]
                 numRows = int.from_bytes(numRowsBytes, byteorder='big')
                 byteOffset += 2
@@ -193,15 +149,19 @@ class DataProcessor:
             for i, (partitionName, numColumns) in enumerate(self.dataPointsPerPartition.items()):
 
                 receivedData = np.frombuffer(partitionData, dtype=np.float64)
-                receivedData = receivedData.reshape(-1, numColumns)  # Reshape the data based on the number of columns
+                receivedData = receivedData.reshape(-1, numColumns)
 
                 currentRow = self.currentRow.get(partitionName, 0)
                 
+                # TODO: Handle the case where the received data is larger than the buffer size
+                #       Also, don't hardcode the buffer size
                 remainingSpace = 2000 - currentRow
+
+                numRows = receivedData.shape[0]
 
                 if numRows <= remainingSpace:
                     # If the received data fits within the remaining space, write it directly
-                    self.numpyArraysDict[partitionName][currentRow:currentRow+numRows] = receivedData
+                    self.numpyArraysDict[partitionName][currentRow:currentRow+numRows,:] = receivedData
                 else:
                     # If the received data exceeds the remaining space, write in two parts
                     # First, write the data that fits within the remaining space
@@ -237,3 +197,9 @@ class DataProcessor:
             recentData = np.vstack((dataFromEnd, dataFromStart))
 
         return recentData
+    
+
+
+# TODO:
+# Set up the receive method to clear out the buffer the first time it is called
+# Don't hardcode the buffer size anywhere

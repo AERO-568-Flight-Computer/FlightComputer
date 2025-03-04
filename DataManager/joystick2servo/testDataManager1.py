@@ -135,12 +135,15 @@ def main():
                 #print("Roll Angle after trim: ", ail_angle)
 
             # Create a socket object using UDP (not TCP)
-            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
             # Convert the float to bytes, as we can only send bytes
             message_bytes = struct.pack('fff', angle, trimup, trimdwn) #trimlft, trimrht)
-            client.sendto(message_bytes, ('localhost', 12300)) 
-            print("Sending: ", angle, "to port 12300")
+            
+            
+            
+        #    client.sendto(message_bytes, ('localhost', 12300)) 
+        #    print("Sending: ", angle, "to port 12300")
 
         except ValueError:
             print("Error: Received data is not valid.")

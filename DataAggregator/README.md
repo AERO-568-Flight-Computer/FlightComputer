@@ -5,13 +5,27 @@ Created by Danilo Carrasco
 
 This data aggregator is designed to follow the ARINC 653 inspired architecture by Carl Denslow. It is not fully in compliance with this spec yet, as the scheduler is yet to be implemented.
 
-For the new (under construction) version:
+# Subfolder DA joystick servo test: 
+this subfolder contains three example tests for the data aggregator class for use in trouble shooting. each is self contained with its own copy of the data processor, joystick and servo classes and functions required. Each test has its own setup json files 
+# Status of tests:
+The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz. To run test run dataAggregator.py, angle_command.py and servoTest.py in separate terminal windows all in the folder DA_Servo_Test.
+
+    # Tests to do 
+    The data aggregator joystick and data aggregator joystick servo tests do not function properly. The data aggregator successfully saves the correct data from each partition, but the servo does not respond to joystick inputs. Current issue believed to be either with the get recent data function or with the setup and configuration. Attempts to simply log desired servo command (an output) based on the joystick input that feeds into the flight control partition have failed. The data appears to only come through properly very occaisionally often returning 0 or nan. 
+    See zmq branch for possible alternate socket based communcations to replace data aggregator.
+    To run the joystick test run dataAggregator.py, FC_demo.py and joystickPartition.py in separate terminal windows all in the folder DA_joystick_Test.
+    To run the joystick and servo test run dataAggregator.py, FC_demo.py, servoTest.py and joystickPartition.py in separate terminal windows all in the folder joystick_servotest.
+
+# For the new (under construction) version:
 
 # What is received:
 This is capable of receiving numpy 2D 64 bit float arrays from partitions. The columns in these arrays will represent the different types of data. Rows represent the time, with the highest row index being the most recent time.
 
 # What is sent:
 The aggregator sends data to the partition at the rate listed in the json setup file for the partition. This packet will contain a numpy array for each partition from which a given partition is requesting data. It will only send the fields that are requested from the partitions, in the order which they are requested. If the requested data doesn't exist yet, the packet will be padded with a nan array to be the same amount of columns requested. 
+
+TODO: It seems like there needs to be more explanation here about exactly how the ordering of the packet works.
+I think the answer here is that the partition data will be sent in the order that the partitions appear in the receive dict, and then within that, each field will be in order of appearance in the receive dict, such that each partition will appear once in the packet, and occupy a contiguous space in the packet.
 
 # How is data stored:
 The data aggregator maintains a CVT for each partition (2D numpy 64bit float array). It also retains a time table that records when each data point was obtained (2D numpy 64bit float array). The aggregator also intermittently stores all the data in csv files. These are updated at the rate the user specifies. These are for archival/data acquisition/debugging purposes, they are not referenced by any FC software. A folder "DataAggRecords" will be created in the current directory. If there are already save files there, more data will likely be added to the end of then, not overwritten. Please delete or move the files each time you start the data aggregator, so your data is not tampered with.
@@ -26,12 +40,11 @@ Data aggregator will only exit cleanly if the partitions are closed after the ag
 
 Use control C to stop the aggregator properly. If it is not exited cleanly, the ports might be in use for a little bit until the OS realizes they are not in use.
 
-
-
 # TODO:
 
 1 Figure out why the save is making all the senders slow down. This might be an area where true parallelism would be advantageous. Explanation: right around where the save happens, the sender threads slow down to about 0.02 s per send, which is likely unacceptable. My guess is that saving to a file is taking up a lot of time, and even though it is multithreaded, the os takes big chunks of time to do it. We could look at Kurt's influx DB as a way to fix this. Another option could be doing this operation on another core (i.e. parallel). I'm not sure what the best solution will be.
 
 2 IMPORTANT: there is likely a fatal issue in the data aggregator, since all the data is being saved to memory. Eventually, we will run out, and the aggragator will fail. We should only save a certain amount of data. This will probably be the ratio of the slowest send rate to the highest send rate plus a little bit of cushion.
+    Discussed solution: create a dictionary of fixed size using only the most recent data, and create a second partition to record the dictionary after every update to create the saved time series history. Realistically in flight only the most recent data is needed for the vast majority of functions so buffering more information in an accessible format is not very valuable for the data aggregator partition to be concerned with. 
 
 3 Add info about the sockets and ports to this readme
