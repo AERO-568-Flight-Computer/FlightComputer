@@ -36,7 +36,7 @@ def main():
     nameList = [] #creates a list that makes it easy to call the name of a partiton
 
     for partition in partitionInfo: #open all partitions
-        p.append(subprocess.Popen(['gnome-terminal -- python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to list p
+        p.append(subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to list p
         nameList.append(partition['name']) #adds name to namelist
         print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
         checkInitialized(server, partition) #ensures partitions have been initilazied
@@ -54,7 +54,7 @@ def main():
                 try:
                     if partitionInfo[item]['restart'].lower() == "true": #runs if program asked to restart
                         print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                        p[item] = subprocess.Popen(['gnome-terminal -- python3 '+partitionInfo[item]['path']], shell=True)
+                        p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
                         print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                         checkInitialized(server, partitionInfo[item])
 
@@ -64,7 +64,7 @@ def main():
 
                         if option == 1: #if answered yes, attempts restart
                             print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                            p[item] = subprocess.Popen(['gnome-terminal -- python3 '+partitionInfo[item]['path']], shell=True)
+                            p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
                             print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                             checkInitialized(server, partitionInfo[item])
 
