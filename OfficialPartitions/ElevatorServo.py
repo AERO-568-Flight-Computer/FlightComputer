@@ -56,7 +56,7 @@ angleLimMin = -55
 angleLimMax = 55
 
 # initialize.initialize()
-time.sleep(0.5) #adds delay to make sure that the server is setup
+# time.sleep(0.5) #adds delay to make sure that the server is setup
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
 client.connect(('localhost', 54321)) #connects socket to the partiton manager as a client
 client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
@@ -68,13 +68,13 @@ while running:
     data, address = sock.recvfrom(4096)
 
     # determine what the clutch status is - powered on or off?
-    if startup == 0:
-        try:
-            pwr_clutch = get_pwr_status(ser)[1]
-            print('pwr_clutch: '+pwr_clutch)
-        except:
-            print("Error: Could not get clutch status... Servo may not be turned on.1")
-            continue
+    # if startup == 0:
+    #     try:
+    #         pwr_clutch = get_pwr_status(ser)[1]
+    #         print('pwr_clutch: '+pwr_clutch)
+    #     except:
+    #         print("Error: Could not get clutch status... Servo may not be turned on.1")
+    #         continue
 
     print('test6')
 

@@ -38,8 +38,8 @@ def main():
     for partition in partitionInfo: #open all partitions
         p.append(subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)) #opens partition and appends the Popen object to list p
         nameList.append(partition['name']) #adds name to namelist
-        time.sleep(20)
-        # print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
+        # time.sleep(20)
+        print(Style.RESET_ALL+partition['name']+' has been launched, waiting for initialization') #confirms attempt to launch
         checkInitialized(server, partition) #ensures partitions have been initilazied
 
     openPartitons = nameList.copy() #creates list that stores a list of whatever partitons are open
