@@ -3,7 +3,7 @@ from ServoUtilMethods import *
 import serial
 import struct
 import time
-from PartitionManager.partitonManager import initialize
+# from PartitionManager.partitonManager import initialize
 
 # Initialize serial connection to the actuator
 ser = serial.Serial('/dev/ttyS4', 115200, timeout=1)
@@ -47,7 +47,7 @@ currentTrim = 0
 angleLimMin = -55
 angleLimMax = 55
 
-initialize.initialize()
+# initialize.initialize()
 
 running = True
 while running:

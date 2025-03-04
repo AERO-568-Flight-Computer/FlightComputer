@@ -2,7 +2,7 @@ import socket
 import struct
 from NGIcalibration1 import *
 from time import sleep, time
-from PartitionManager.partitonManager import initialize
+# from PartitionManager.partitonManager import initialize
 
 # Calculates force based on speed
 def calcForce(airspeed):
@@ -88,7 +88,7 @@ def main():
         ngi.configSetup()
         # sleep(2)
 
-        initialize.initialize() #place this line at a point in your partition where the setup is complete
+        # initialize.initialize() #place this line at a point in your partition where the setup is complete
         
         """ STIRLING INTERACTION """
         interact(ngi)

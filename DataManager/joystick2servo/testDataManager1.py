@@ -3,7 +3,7 @@ import serial
 import struct
 import time
 from time import sleep
-from PartitionManager.partitonManager import initialize
+# from PartitionManager.partitonManager import initialize
 
 # Data Aggregator: Receives data from the NGI and sends it to Servo.
 # Translates hex data from servo to force in Newtons. Then converts to degrees for servo, sends command after time.
@@ -93,7 +93,7 @@ def main():
     server_address = ('localhost', 11111)
     sock.bind(server_address)
 
-    initialize.initialize() #place this line at a point in your partition where the setup is complete 
+    # initialize.initialize() #place this line at a point in your partition where the setup is complete 
 
 
     running = True
