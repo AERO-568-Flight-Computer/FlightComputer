@@ -3,6 +3,7 @@ import serial
 import struct
 import time
 from time import sleep
+from PartitionManager.partitonManager import initialize
 
 # Data Aggregator: Receives data from the NGI and sends it to Servo.
 # Translates hex data from servo to force in Newtons. Then converts to degrees for servo, sends command after time.
@@ -92,6 +93,9 @@ def main():
     server_address = ('localhost', 11111)
     sock.bind(server_address)
 
+    initialize.initialize() #place this line at a point in your partition where the setup is complete 
+
+
     running = True
     while running:
         print("Waiting to receive data")
@@ -131,12 +135,15 @@ def main():
                 #print("Roll Angle after trim: ", ail_angle)
 
             # Create a socket object using UDP (not TCP)
-            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
             # Convert the float to bytes, as we can only send bytes
             message_bytes = struct.pack('fff', angle, trimup, trimdwn) #trimlft, trimrht)
-            client.sendto(message_bytes, ('localhost', 12300)) 
-            print("Sending: ", angle, "to port 12300")
+            
+            
+            
+        #    client.sendto(message_bytes, ('localhost', 12300)) 
+        #    print("Sending: ", angle, "to port 12300")
 
         except ValueError:
             print("Error: Received data is not valid.")

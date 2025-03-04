@@ -5,7 +5,18 @@ Created by Danilo Carrasco
 
 This data aggregator is designed to follow the ARINC 653 inspired architecture by Carl Denslow. It is not fully in compliance with this spec yet, as the scheduler is yet to be implemented.
 
-For the new (under construction) version:
+# Subfolder DA joystick servo test: 
+this subfolder contains three example tests for the data aggregator class for use in trouble shooting. each is self contained with its own copy of the data processor, joystick and servo classes and functions required. Each test has its own setup json files 
+# Status of tests:
+The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz. To run test run dataAggregator.py, angle_command.py and servoTest.py in separate terminal windows all in the folder DA_Servo_Test.
+
+    # Tests to do 
+    The data aggregator joystick and data aggregator joystick servo tests do not function properly. The data aggregator successfully saves the correct data from each partition, but the servo does not respond to joystick inputs. Current issue believed to be either with the get recent data function or with the setup and configuration. Attempts to simply log desired servo command (an output) based on the joystick input that feeds into the flight control partition have failed. The data appears to only come through properly very occaisionally often returning 0 or nan. 
+    See zmq branch for possible alternate socket based communcations to replace data aggregator.
+    To run the joystick test run dataAggregator.py, FC_demo.py and joystickPartition.py in separate terminal windows all in the folder DA_joystick_Test.
+    To run the joystick and servo test run dataAggregator.py, FC_demo.py, servoTest.py and joystickPartition.py in separate terminal windows all in the folder joystick_servotest.
+
+# For the new (under construction) version:
 
 # What is received:
 This is capable of receiving numpy 2D 64 bit float arrays from partitions. The columns in these arrays will represent the different types of data. Rows represent the time, with the highest row index being the most recent time.
@@ -29,12 +40,11 @@ Data aggregator will only exit cleanly if the partitions are closed after the ag
 
 Use control C to stop the aggregator properly. If it is not exited cleanly, the ports might be in use for a little bit until the OS realizes they are not in use.
 
-
-
 # TODO:
 
 1 Figure out why the save is making all the senders slow down. This might be an area where true parallelism would be advantageous. Explanation: right around where the save happens, the sender threads slow down to about 0.02 s per send, which is likely unacceptable. My guess is that saving to a file is taking up a lot of time, and even though it is multithreaded, the os takes big chunks of time to do it. We could look at Kurt's influx DB as a way to fix this. Another option could be doing this operation on another core (i.e. parallel). I'm not sure what the best solution will be.
 
 2 IMPORTANT: there is likely a fatal issue in the data aggregator, since all the data is being saved to memory. Eventually, we will run out, and the aggragator will fail. We should only save a certain amount of data. This will probably be the ratio of the slowest send rate to the highest send rate plus a little bit of cushion.
+    Discussed solution: create a dictionary of fixed size using only the most recent data, and create a second partition to record the dictionary after every update to create the saved time series history. Realistically in flight only the most recent data is needed for the vast majority of functions so buffering more information in an accessible format is not very valuable for the data aggregator partition to be concerned with. 
 
 3 Add info about the sockets and ports to this readme
