@@ -41,9 +41,9 @@ class SimpleJoystickInterface():
                 rollPosition = pos[0]
                 roll_found = True
             if (roll_found and pitch_found):
-                return pitchPosition, rollPosition, 0
+                return pitchPosition, rollPosition
         print("Couldn't get Joystic location in time")
-        return -1,-1,-1
+        raise Exception("Timeout")
     
     def adjustForce(self, ias):
     # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
@@ -126,9 +126,8 @@ def main():
     t_delay = 0.5
     count = 0
     while True:
-        pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
+        pitchPosition, rollPosition = JoysticInteface.get_pitch_roll()
         print("----------------------")
-        print("Error code: ",err_code)
         print("Pitch:", pitchPosition,' idkunits')
         print("Roll:", rollPosition,' idkunits')
         print(count)

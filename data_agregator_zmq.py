@@ -1,9 +1,19 @@
+#Data Agregator like.
+#THIS IS THE MAIN PART OF OUR NETW0RKING. CENTRAL NODE.
+#This is only a router.
+#It's sole purpose is to copy incoming messages from input_sockets list.
+#   Paste into output_sockets
+#routing_table defines to where the routing happens.
+
 import zmq
 import time
 import struct
 from opa_msg_library import *
 
+socket_timeout = 5000 # in milliseconds
+no_msg_timeout = 45000 # in milliseconds
 verbose = True
+
 def switchboard(input_sockets, output_sockets, routing_table):
     """
     Routes messages from input sockets to output sockets based on the routing table.
@@ -14,7 +24,6 @@ def switchboard(input_sockets, output_sockets, routing_table):
         routing_table (list): List of lists where each sublist corresponds to an input socket
                               and contains indices of output sockets to which messages should be sent.
     """
-    no_msg_timeout = 45000 # in milliseconds
     # Create poller and register input sockets
     if verbose: print("Creating poller and registering input sockets")
     poller = zmq.Poller()
@@ -64,8 +73,6 @@ def set_default_ops_pull(socket,timeout):
     socket.setsockopt(zmq.CONFLATE, 1)
 
 def main():
-    socket_timeout = 5000 # in milliseconds
-
     if verbose: print("Setting up sockets")
     context = zmq.Context()
     
@@ -114,9 +121,10 @@ def main():
     #logger_tx_sock.bind('tcp://localhost:6100')
     #logger_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
 
-    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock]
-    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock]
-    routing_table =  [[3],           [2],          [1],            [0]]
+    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock] #Listen for messages arriving to here.
+    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock] #Send to there
+    routing_table =  [[3],           [2],          [1],            [0]] 
+    #example: routing_table[0] = [3,4]. Sends message from socket with index 0 from input_sockets list to index 3 and 4 of output_socket list.
 
     try:
         switchboard(input_sockets, output_sockets, routing_table)

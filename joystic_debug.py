@@ -11,7 +11,7 @@ def main():
     while True:
         JoysticInteface.adjustForce(50)
         #Trying to read jostic status
-        pitch, roll, _ = JoysticInteface.get_pitch_roll()
+        pitch, roll = JoysticInteface.get_pitch_roll()
         time_now = time.time()
         state_msg = pack_joystic_state_msg(jsk_id,time_now,pitch,roll)
         print(f"Joystic state message: {unpack_joystic_state_msg(state_msg)}")

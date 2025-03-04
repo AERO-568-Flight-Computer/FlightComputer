@@ -1,3 +1,4 @@
+#Improvment of pitotRead.py to send data via zmq. untested yet.  
 import serial
 import struct
 
