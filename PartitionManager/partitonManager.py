@@ -48,7 +48,7 @@ def main():
             if p[item].poll() == None: #checks if is closed
                 if nameList[item] not in openPartitons: openPartitons.append(nameList[item]) #add back into list if it reopens
                 print(Style.RESET_ALL+nameList[item]+' is running')
-            else: #runs if program is open
+            else: #runs if program is closed
                 print(Fore.YELLOW+nameList[item]+' has closed')
                 if nameList[item] in openPartitons: openPartitons.remove(nameList[item]) #notes that partiton is closed
                 try:
