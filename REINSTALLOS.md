@@ -122,7 +122,9 @@ sudo systemctl start ssh
 sudo systemctl status ssh
 sudo systemctl enable ssh
 sudo nano /etc/ssh/sshd_config```
+
 Uncomment Port 22 so it uses Port 22 to communicate
+
 ```sudo systemctl restart ssh```
 
 Set up wireless casting (STILL DEBUGGING):
