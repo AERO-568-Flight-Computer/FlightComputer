@@ -56,8 +56,8 @@ def main():
                     if partitionInfo[item]['restart'].lower() == "true": #runs if program asked to restart
                         print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
                         p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
-                        # print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
-                        # checkInitialized(server, partitionInfo[item])
+                        print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
+                        checkInitialized(server, partitionInfo[item])
 
                     elif partitionInfo[item]['restart'].lower() == "ask": #runs if program asked if it should restart
                         print(Style.RESET_ALL+'Seeing if restart of '+nameList[item]+' is requested')
@@ -66,8 +66,8 @@ def main():
                         if option == 1: #if answered yes, attempts restart
                             print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
                             p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
-                            # print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
-                            # checkInitialized(server, partitionInfo[item])
+                            print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
+                            checkInitialized(server, partitionInfo[item])
 
                         else:
                             print(Style.RESET_ALL+nameList[item]+' not restarted per instructions')
