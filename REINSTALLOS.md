@@ -115,15 +115,15 @@ Set up DHCP server:
  * make sure joystick is connected on the crossover cable
 
 Set up SSH:
-* sudo apt update
-* sudo apt upgrade
-* sudo apt install openssh-server
-* sudo systemctl start ssh
-* sudo systemctl status ssh
-* sudo systemctl enable ssh
-* sudo nano /etc/ssh/sshd_config
+```sudo apt update
+sudo apt upgrade
+sudo apt install openssh-server
+sudo systemctl start ssh
+sudo systemctl status ssh
+sudo systemctl enable ssh
+sudo nano /etc/ssh/sshd_config```
 Uncomment Port 22 so it uses Port 22 to communicate
-* sudo systemctl restart ssh
+```sudo systemctl restart ssh```
 
 Set up wireless casting (STILL DEBUGGING):
 * sudo apt install gnome-network-displays
