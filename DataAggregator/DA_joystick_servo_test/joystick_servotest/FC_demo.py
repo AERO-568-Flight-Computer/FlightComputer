@@ -54,7 +54,7 @@ def main():
     sineWaveReceived = None
 
     try:
-        for _ in range(90000):
+        for _ in range(9000000):
             
             time.sleep(1/rateInternal)
             # Generate 1 point of a sine wave
@@ -65,7 +65,7 @@ def main():
 
             dataDictionaryList[0]["timeRec"] = internalTime
             dataDictionaryList[0]["Airspeed"] = Airspeed
-            dataDictionaryList[0]["elevator_servo_angle"] = PitchCommandReceived
+            dataDictionaryList[0]["elevator_servo_angle_command"] = PitchCommandReceived
             processor.sendData(dataDictionaryList)
 
             # Receive data
@@ -73,26 +73,23 @@ def main():
 
             # TODO: Only do this if data is received
             # Print the data every 10 iterations
-            if _ % 10 == 0:
+            #if _ % 10 == 0:
 
                 # Use the method to get the data for partition "name1" and one row, i.e. the most recent point of data
                 # The first argument is the name of the partition to get data from, it must have been
                 # listed in the JSON text as a receive from partition for the current partition
                 # The second argument is the number of rows to get, it will always include the most recent row
-                recentData = processor.getRecentData("name1joystick", 1)
-                recentData1 = processor.getRecentData("servo_demo", 1)
+                #recentData = processor.getRecentData("name1joystick", 1)
+            recentData1 = processor.getRecentData("servo_demo", 1)
                 
-                print("joystick data")
-                print(recentData)
-                print("Servo data")
-                print(recentData1)
+            print("FCdemo", "joystick data", recentData, "Servo data", recentData1)
                 
                 #timeSent = dataDictionaryList[0]["timeRec"]
                 #Airspeed = dataDictionaryList[0]["Airspeed"]
-                timeRecReceived = recentData[0, 0]
+                #timeRecReceived = recentData[0, 0]
                 
-                timeReceivedservo = recentData1[0, 0]
-                posReceivedservo = recentData1[0, 1]
+                #timeReceivedservo = recentData1[0, 0]
+                #posReceivedservo = recentData1[0, 1]
 
                 #TODO WHY IS PITCH COMMAND PRINTING AIRSPEED
 

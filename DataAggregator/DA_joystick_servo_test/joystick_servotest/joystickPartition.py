@@ -36,17 +36,17 @@ while True:
     timeRecRecieved = recentData[0, 0]
     iasReceived = recentData[0, 1]
     ias = iasReceived  # Placeholder for IAS
-    print("airspeed")
-    print(ias)
+    
     pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
     
     count = count+1
     if count > 20:
-        print("Trying to adjust the force")
+        #print("Trying to adjust the force")
         JoysticInteface.adjustForce(ias)
         count = 0
 
     dataDictionaryList[0]["timeRec"] = int_time
     dataDictionaryList[0]["pitchCommand"] = pitchPosition
-    print(dataDictionaryList)
+    #print(dataDictionaryList)
+    print("Joystick Partition","Tiume Recieved", timeRecRecieved, "Airspeed Recieved", ias, "time Sent", dataDictionaryList[0]["timeRec"], "Angle Command sent", dataDictionaryList[0]["pitchCommand"] )
     processor.sendData(dataDictionaryList)

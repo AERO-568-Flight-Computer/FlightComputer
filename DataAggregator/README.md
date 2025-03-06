@@ -11,7 +11,7 @@ this subfolder contains three example tests for the data aggregator class for us
 # Status of tests on the "servo-demo-partition-manager" branch
     The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz 
     # Running the Tests
-    In DA_joystick_servo_test/joystick_servotest run dataAggregator.py, FC_demo, joystickPartition and Servotest in their own terminal windows. 
+    In DA_joystick_servo_test/joystick_servotest run dataAggregator.py, FC_demo, joystickPartition and Servotest in their own terminal windows. run in a virtual environment in the root of the git.
     The setup json being used is joystick_servo.json
     Running these scripts, the joystick should control the servo as demonstrated by the existing and function joystick and servo test that does not use the data aggregator. 
 
