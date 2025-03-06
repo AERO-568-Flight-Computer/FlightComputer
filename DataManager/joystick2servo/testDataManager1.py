@@ -3,7 +3,7 @@ import serial
 import struct
 import time
 from time import sleep
-from PartitionManager.partitonManager import initialize
+# from PartitionManager.partitonManager import initialize
 
 # Data Aggregator: Receives data from the NGI and sends it to Servo.
 # Translates hex data from servo to force in Newtons. Then converts to degrees for servo, sends command after time.
@@ -93,8 +93,11 @@ def main():
     server_address = ('localhost', 11111)
     sock.bind(server_address)
 
-    initialize.initialize() #place this line at a point in your partition where the setup is complete 
-
+    # initialize.initialize() #place this line at a point in your partition where the setup is complete 
+    # time.sleep(0.5) #adds delay to make sure that the server is setup
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
+    client.connect(('localhost', 54321)) #connects socket to the partiton manager as a client
+    client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
 
     running = True
     while running:
@@ -135,15 +138,15 @@ def main():
                 #print("Roll Angle after trim: ", ail_angle)
 
             # Create a socket object using UDP (not TCP)
-        #    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
             # Convert the float to bytes, as we can only send bytes
             message_bytes = struct.pack('fff', angle, trimup, trimdwn) #trimlft, trimrht)
             
             
             
-        #    client.sendto(message_bytes, ('localhost', 12300)) 
-        #    print("Sending: ", angle, "to port 12300")
+            client.sendto(message_bytes, ('localhost', 12300)) 
+            print("Sending: ", angle, "to port 12300")
 
         except ValueError:
             print("Error: Received data is not valid.")
