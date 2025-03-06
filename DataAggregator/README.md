@@ -8,10 +8,14 @@ This data aggregator is designed to follow the ARINC 653 inspired architecture b
 # Subfolder DA joystick servo test: 
 this subfolder contains three example tests for the data aggregator class for use in trouble shooting. each is self contained with its own copy of the data processor, joystick and servo classes and functions required. Each test has its own setup json files 
 
-# Status of tests:
+# Status of tests on the "servo-demo-partition-manager" branch
     The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz 
+    # Running the Tests
+    In DA_joystick_servo_test/joystick_servotest run dataAggregator.py, FC_demo, joystickPartition and Servotest in their own terminal windows. 
+    The setup json being used is joystick_servo.json
+    Running these scripts, the joystick should control the servo as demonstrated by the existing and function joystick and servo test that does not use the data aggregator. 
 
-    # Tests to do 
+    # Test results
     The data aggregator joystick and data aggregator joystick servo tests do not function properly. 
     The data aggregator successfully saves the correct data from each partition, but the servo does not respond to joystick inputs.
     Current issue believed to be either with the get recent data function or with the setup and configuration. 
