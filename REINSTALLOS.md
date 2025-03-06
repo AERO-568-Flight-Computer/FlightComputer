@@ -111,7 +111,10 @@ cd
 cd Desktop/FlightComputer
 python3 -m venv .venv
 source .venv/bin/activate
-pip install psutil colorama pyzmq pyserial
+pip install psutil 
+pip install colorama
+pip install pyzmq
+pip install pyserial
 ```
 >Add any additional packages with:
 ```bash
