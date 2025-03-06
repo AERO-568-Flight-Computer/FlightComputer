@@ -52,8 +52,8 @@ startup = 0
 currentTrim = 0
 
 # Angle limits to keep the servo within (so it doesn't hit capstan limits)
-angleLimMin = -55
-angleLimMax = 55
+angleLimMin = -45
+angleLimMax = 65
 
 # initialize.initialize()
 # time.sleep(0.5) #adds delay to make sure that the server is setup
