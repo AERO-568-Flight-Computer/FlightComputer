@@ -5,7 +5,7 @@ from opa_msg_library import *
 import zmq
 import time
 import struct
-from servo_module.Servo import Servo
+from servo_module.DummyServo import Servo
 from PartitionManager.partitonManager import initialize 
 
 verbose = True
