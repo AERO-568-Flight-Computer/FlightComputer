@@ -12,8 +12,18 @@ this subfolder contains three example tests for the data aggregator class for us
     The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz 
 
     # Tests to do 
-    The data aggregator joystick and data aggregator joystick servo tests do not function properly. The data aggregator successfully saves the correct data from each partition, but the servo does not respond to joystick inputs. Current issue believed to be either with the get recent data function or with the setup and configuration. Attempts to simply log desired servo command (an output) based on the joystick input that feeds into the flight control partition have failed. The data appears to only come through properly very occaisionally often returning 0 or nan. 
-    See zmq branch for possible alternate socket based communcations to replace data aggregator.
+    The data aggregator joystick and data aggregator joystick servo tests do not function properly. 
+    The data aggregator successfully saves the correct data from each partition, but the servo does not respond to joystick inputs.
+    Current issue believed to be either with the get recent data function or with the setup and configuration. 
+    Attempts to simply log desired servo command (an output) based on the joystick input that feeds into the flight control partition have failed. 
+    The data appears to only come through properly very occaisionally often returning 0 or nan. 
+
+    As the data aggregator has a fatal memory leak and currently buffers more than the one time step of data, and has uncontrolled slow downs during saving, 
+    the data aggregator in this form is no longer being developed. 
+
+    Further development of a data aggregator replacement based around robust transmission controlled zmq sockets. 
+    See the ZMQ branch for the development of the replacement communication solution.
+
 
 # For the new (under construction) version:
 
