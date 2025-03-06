@@ -1,120 +1,137 @@
-## Reinstalling commands
-Create a bootable ubuntu installer flashdrive (this is tested with 24.04)
-Turn computer off
-Turn computer on
-Mash escape
-Go to boot menu
-Select flashdrive
-Press enter
-Select try/install
-Wait a few seconds
-next -> next -> next -> next -> use wired connection -> update if prompted (reopen if needed and repeat steps) -> interactive installation -> default selection -> check install third party software and additonal media formats -> erase disk and install Ubuntu
+## Reinstalling Ubuntu Guide
 
+Create a bootable Ubuntu installer USB drive (this is tested with Ubuntu 24.04)
+Good tutorial here (https://ubuntu.com/tutorials/create-a-usb-stick-on-windows#1-overview)
+
+Turn flight computer off
+Turn flight computer on
+Press ESC rapidly until you see a screen with multiple options
+Click Boot Menu button
+Select your USB installer you just made
+Press Enter
+
+Select Try/Install Ubuntu (use arrow keys to navigate) and press Enter 
+Wait for Ubuntu to load and launch the installer, this might take a bit
+Once the installer opens press next -> next -> next -> next -> use wired connection -> Update installer if prompted (reopen if needed and repeat steps, if it doesn't automattically reopen) -> interactive installation -> default selection -> check install third party software and additonal media formats -> erase disk and install Ubuntu
+
+Make sure to set the values as stated below:
 Your name: cp-opa
 Your computer's name: cp-opa
 Your username: cp-opa
 Password: 1234
 
 Uncheck require my password to login and use active directory
-
-next -> next
-
-Review choices (make sure it's on the right drive and that everything looks "good")
-
-Click install, sit back, and relax
+next -> next -> Review choices (make sure it's on the right drive and that everything looks "good") -> Click install, sit back, and relax, this will take a while
 
 Follow the instructions on the screen (restart, remove install media, let it reboot)
+Once rebooted, click next -> skip ubuntu pro -> next -> no don't share system data -> finish
 
-Once rebooted, click next, skip ubuntu pro, next, no don't share system data, finish
+Open the Terminal (in the side bar of press Ctrl+Alt+T)
+Run (copy and paste each line individually):
+```
+cd
+sudo apt update
+sudo apt upgrade
+```
+This might take a while. NOTE: It is good practice to run those two commands every couple days to a week to make sure your repositories and packages are up to date.
+```
+sudo apt install git
+```
+Go to App Center and install Sublime Text, Sublime Merge, and code (VS Code)
+Restart the flight computer
 
-Go to app center and intsall sublime text, sublime merge, and code
-
-Run:
-* cd
-* sudo apt update
-* sudo apt upgrade
- * Takes awhile, be patient
-* sudo apt install git
-
-Restart
-
-On sublime merge, add a repo with source URL https://github.com/AERO-568-Flight-Computer/FlightComputer, repository name FlightComputer, and path /home/cp-opa/Desktop/FlightComputer
+On Sublime Merge:
+Add a repo with source URL: https://github.com/AERO-568-Flight-Computer/FlightComputer
+Repository name: FlightComputer
+Path: /home/cp-opa/Desktop/FlightComputer
 Clone repo
 Click push button
-Duplicate a file, stage it, and commit it
-When prompted, enter name and email from onedrive sandbox 2024 and apply to global configuration
-Push
-When prompted, enter username from onedrive sandbox 2024 and access token from onedrive sandbox 2025 (do NOT pt in the git under any circumstance) (it's useful to have an extra flash drive to transfer files)
+To test that it worked duplicate a file in the repo, stage it, and commit it
+When prompted, enter name and email from Onedrive Sandbox 2024 folder and apply to global configuration
+Click push button again
+When prompted, enter username from Onedrive Sandbox 2024 and access token from Onedrive Sandbox 2025 (do NOT put in the git under any circumstance) (it's useful to have an extra flash drive to transfer files)
 __THIS IS NOT WORKING, I CANNOT PUSH WILL COME BACK TO THIS LATER (MAY NEED A NEW ACCESS TOKEN EACH TIME)__
 
 Run:
-* cd 
-* sudo apt install python3-pip
-* sudo apt install python3-tk
-* sudo apt install python3-venv
-* sudo apt install xterm
-
-Now we want to create a virtual enviroment, run the following commands. Whenever you try to run 
-* cd
-* cd Desktop/FlightComputer
-* python3 -m venv .venv
-* source .venv/bin/activate
-* pip install psutil
-* pip install colorama
-* pip install pyzmq
-* pip install pyserial
-Add any other packages you need
-
+```
+cd 
+sudo apt install python3-pip
+sudo apt install python3-tk
+sudo apt install python3-venv
+sudo apt install xterm
+```
+Now we want to create a virtual enviroment, run the following commands:
+```
+cd
+cd Desktop/FlightComputer
+python3 -m venv .venv
+source .venv/bin/activate
+pip install psutil
+pip install colorama
+pip install pyzmq
+pip install pyserial
+```
+Add any other packages you need (pip install _____)
 Then close out of terminal
 
-Note that whenever you want to run python code you will need to enter our virtual enviroment (called venv) using source .venv/bin/activate
-
+NOTE: Whenever you want to run python code you will need to enter our virtual enviroment (called venv) using the command: 
+```
+source .venv/bin/activate
+```
 Install your drivers:
 Download the drivers you need (DM35424 and SER25330 (installed by default on newer kernals)) from https://www.rtd.com/software_drivers.htm
 Unzip drivers
 Follow instructions in the readme (something like make then sudo make load, located in the Driver section of the README.txt)
 
 Set permissions on your serial ports by running:
-* cd
-* sudo usermod -a -G dialout $USER
+```
+cd
+sudo usermod -a -G dialout $USER
+```
 Reboot your system. If this does not work, you can set in one port at a time (and every time you reboot) similar to:
-* sudo chmod 666 /dev/ttyS4
-
+```
+sudo chmod 666 /dev/ttyS4
+```
 Configure your network settings:
-Go to settings -> Network
+Go to Settings -> Network
 Enable enp13s0 and select the little gear icon next to it
 Go to ipv4 and set to manual with IP address 192.168.10.116 and netmask to 255.255.0.0
 
 Set up DHCP server:
-* cd
-* sudo apt install isc-dhcp-server
-* cd /etc/dhcp/
-* sudo nano dhcpd.conf
- * in nano, append to the end of the .conf file
-    ```
-    subnet 192.168.10.0 netmask 255.255.255.0 {
-    range 192.168.10.102 192.168.10.110;
-    option routers 192.168.10.1;
-    option broadcast-address 192.168.10.255;
-    default-lease-time 600;
-    max-lease-time  7200;
-    }
+```
+cd
+sudo apt install isc-dhcp-server
+cd /etc/dhcp/
+sudo nano dhcpd.conf
+```
+in nano, append to the end of the .conf file
+```
+subnet 192.168.10.0 netmask 255.255.255.0 {
+range 192.168.10.102 192.168.10.110;
+option routers 192.168.10.1;
+option broadcast-address 192.168.10.255;
+default-lease-time 600;
+max-lease-time  7200;
+}
 
+# This is the configuration for the Stirling Joystick
+# It assigns a specific IP address to the MAC address of the joystick
+host myClient {
+hardware ethernet 00:01:c0:03:e7:dd;
+fixed-address 192.168.10.101;
+}
+```
+Then run:
+```
+sudo systemctl restart isc-dhcp-server.service
+```
+Wait 30 seconds
+```
+ping 192.168.10.101 -c 5
+```
+Make sure joystick is connected on the crossover cable and verify the ping worked
 
-
-    # This is the configuration for the Stirling Joystick
-    # It assigns a specific IP address to the MAC address of the joystick
-    host myClient {
-    hardware ethernet 00:01:c0:03:e7:dd;
-    fixed-address 192.168.10.101;
-    }
-    ```
-* sudo systemctl restart isc-dhcp-server.service
- * wait 30 seconds
-* ping 192.168.10.101 -c 5
- * make sure joystick is connected on the crossover cable
-
-Set up SSH:
+Set up SSH, run:
 ```
 sudo apt update
 sudo apt upgrade
@@ -124,10 +141,11 @@ sudo systemctl status ssh
 sudo systemctl enable ssh
 sudo nano /etc/ssh/sshd_config
 ```
-* Uncomment Port 22 so it uses Port 22 to communicate
+Uncomment Port 22 so it uses Port 22 to communicate
 ```
 sudo systemctl restart ssh
 ```
-
 Set up wireless casting (STILL DEBUGGING):
-* sudo apt install gnome-network-displays
+```
+sudo apt install gnome-network-displays
+```
