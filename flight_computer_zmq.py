@@ -3,6 +3,7 @@
 import zmq
 from opa_msg_library import *
 import time
+from PartitionManager.partitonManager import initialize 
 
 verbose = True
 
@@ -23,6 +24,7 @@ def set_default_ops_pull(socket,timeout):
     socket.setsockopt(zmq.CONFLATE, 1) 
 
 def main():
+    initialize.initialize()
     #Defining FC: Flight Computer.
     #ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
     #For now: FC waits for messages. Raises an exception if no messages incoming with no_msg_timeout

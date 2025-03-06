@@ -27,7 +27,7 @@ def main():
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(('localhost', port)) #puts the socket on a local port
 
-    with open("Configurations/joystickTest.json") as f: #loads in data
+    with open("Configurations/joystickTest_zmq.json") as f: #loads in data
         partitionInfo = json.load(f)
 
     partitionInfo = sorted(partitionInfo, key=lambda x: x['priority']) #sorts partitions by priority so the most important ones open first

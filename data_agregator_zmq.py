@@ -9,6 +9,7 @@ import zmq
 import time
 import struct
 from opa_msg_library import *
+from PartitionManager.partitonManager import initialize 
 
 socket_timeout = 5000 # in milliseconds
 no_msg_timeout = 45000 # in milliseconds
@@ -73,6 +74,7 @@ def set_default_ops_pull(socket,timeout):
     socket.setsockopt(zmq.CONFLATE, 1)
 
 def main():
+    initialize.initialize()
     if verbose: print("Setting up sockets")
     context = zmq.Context()
     

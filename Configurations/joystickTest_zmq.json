@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Data manager",
+        "path": "/data_agregator_zmq.py",
+        "priority": 1,
+        "restart": "False"
+    },
+    {
+        "name": "Flight computer",
+        "path": "/flight_computer_zmq.py",
+        "priority": 2,
+        "restart": "True"
+    },
+    {
+        "name": "Elevator Servo",
+        "path": "/elevator_servo_zmq.py",
+        "priority": 4,
+        "restart": "ask"
+    },
+    {
+        "name": "Joystic",
+        "path": "/joystic_zmq.py",
+        "priority": 3,
+        "restart": "ask"
+    }
+]

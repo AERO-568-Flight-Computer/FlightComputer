@@ -4,10 +4,12 @@ import time
 import zmq
 
 from opa_msg_library import *
-from joystic_module.SimpleJoystickInterface import SimpleJoystickInterface
+from joystic_module.DummySimpleJoystickInterface import SimpleJoystickInterface
+from PartitionManager.partitonManager import initialize 
 
 verbose = True
 def main():
+    initialize.initialize()
     #Defining joystic config. id is used for messsages
     #ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
     #servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 

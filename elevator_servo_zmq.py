@@ -6,9 +6,11 @@ import zmq
 import time
 import struct
 from servo_module.Servo import Servo
+from PartitionManager.partitonManager import initialize 
 
 verbose = True
 def main():
+    initialize.initialize()
     #Defining servo config. id is used for messsages
     #ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
     #servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
