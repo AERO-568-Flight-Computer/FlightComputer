@@ -115,6 +115,7 @@ pip install psutil
 pip install colorama
 pip install pyzmq
 pip install pyserial
+pip install numpy
 ```
 >Add any additional packages with:
 ```bash
