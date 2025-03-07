@@ -10,6 +10,7 @@ this subfolder contains three example tests for the data aggregator class for us
 
 # Status of tests on the "servo-demo-partition-manager" branch
     The data aggregator servo test works with its dummy flight control partition as expected and the partitions are set up with an expected sampling rate of 50 hz 
+
     # Running the Tests
     In DA_joystick_servo_test/joystick_servotest run dataAggregator.py, FC_demo, joystickPartition and Servotest in their own terminal windows. 
     The setup json being used is joystick_servo.json
@@ -21,6 +22,8 @@ this subfolder contains three example tests for the data aggregator class for us
     Current issue believed to be either with the get recent data function or with the setup and configuration. 
     Attempts to simply log desired servo command (an output) based on the joystick input that feeds into the flight control partition have failed. 
     The data appears to only come through properly very occaisionally often returning 0 or nan. 
+    Furthermore, in the FCdemo Partition, the data aggregator is not properly differentiating between the joystick and servo data, leading to the servo partition reported servo position being fed back to the servo as its commanded position, and not the joystick partition's position command.
+    Three different team members have checked the setup files and partitions for mixups that could cause this error, but none have been found. The current understanding is that this is possibly a bug in the getRecentData method in the DataProcessor class.
 
     As the data aggregator has a fatal memory leak and currently buffers more than the one time step of data, and has uncontrolled slow downs during saving, 
     the data aggregator in this form is no longer being developed. 
