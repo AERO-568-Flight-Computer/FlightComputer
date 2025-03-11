@@ -10,6 +10,7 @@ import sys
 port = 54321
 
 class initialize:
+    port = 54321
     def initialize():
         import socket
         import time
