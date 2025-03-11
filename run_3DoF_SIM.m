@@ -4,7 +4,7 @@ clc
 
 %% Load in Aircraft Parameters 
 load("Aircraft Params\cea308.mat") 
-J = 5; 
+J = 300; 
 gravity = 9.807; 
 
 
@@ -17,12 +17,11 @@ end
 
 %% Set Initial States + Controls 
 states_init = [0 5000 -0.02056 23.3505 1.0289 0]; 
-deltaE = -10; 
+deltaE = 5; 
 throttle = 0.65; 
 
 
 
 
 %% Open Simulink Model
-Takeoff_Model
-
+SIM_3DoF

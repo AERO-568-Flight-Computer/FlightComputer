@@ -1,4 +1,7 @@
 % % CEA-308 Aircraft Data
+close all 
+clear 
+clc 
 % Source: Calculations and measurements carried out by the Center for Aeronautical Studies at UFMG 
 
 % Powerplants:

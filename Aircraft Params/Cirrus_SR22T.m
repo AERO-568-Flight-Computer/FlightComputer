@@ -44,7 +44,10 @@ xa = 0.1002;
 % Jyy =  1.2316;
 % Jzz =  1;
 % Jxz =  0;
-J = 377.32 * lbin22kgm2;  % lb-in^2 
+% J = 377.32 * lbin22kgm2;  % lb-in^2  
+Ry = 0.38; % Raymer 
+L = 25.98 * ft2m; 
+J = (L^2 * (1633/9.81) * Ry^2)/(4);% Raymer 
 
 % Aircraft mass - kg
 M = 1633;
@@ -53,35 +56,20 @@ M = 1633;
 % ----------------- LIFT -----------------------%
 
 % CL when alpha = 0.
-CL_zero = 0;
+CL_zero = 0.27; % ?? unsure of this val 
 
 % CL due to alpha.
 % Input: alpha (rad).
 % Stall still needs to be included.
-CL_alpha = ...
-   	     [
-          -1.57        -0.2 
-          -0.35        -0.2 
-          -0.30        -0.6 
-          -0.25        -0.8 
-          -0.018235950 0.0703
-          -0.014475358 0.0837
-          -0.009557253 0.1013
-          -0.002937117 0.1250
-          0.006289397 0.1582
-          0.019714663 0.2067
-          0.040357830 0.2813
-          0.074525414 0.4051
-          0.137262533 0.6329
-          0.190465205 0.8267
-          0.272189002 1.1252
-          0.344199784 1.3891
-          0.407080411 1.6203
-          0.43        1.60
-          0.5         1.2
-          0.6         0.2  
-          1.57        0.2  
-          ];
+
+load('Cirrus Data\CLWBTable.mat')
+CL_alpha = [CLWBTable(:,2), CLWBTable(:,1)]
+
+figure 
+plot(rad2deg(CLWBTable(:,2)), CLWBTable(:,1)) % this works 
+ylabel('CL')
+xlabel('alpha (deg)')
+
 
 % CL due to elevator deflection.
 % Note: Multiplicative coefficient for elevator deflection (rad).
@@ -91,10 +79,86 @@ CLEH_alpha = 4.6086;
 
 down_wash = 0.1268; 
 
-% 3-2-1-1
-% increase time??? (proportional) 
+% CD due to alpha.
+% Input: alpha (rad).
+% Values do not include parasitic drag.
 
+load('Cirrus Data\CD_total.mat')
+load('Cirrus Data\CL_total.mat')
+
+CL_Polar = real(CL_Final_integer);
+CD_Polar = real(CD_total);
+
+% Create mirrored values
+CL_Mirror = -flip(CL_Polar);
+CD_Mirror = flip(CD_Polar);
+
+% Insert NaN row to break the connection
+CL_Polar = [CL_Mirror, CL_Polar]; 
+CD_Polar = [CD_Mirror, CD_Polar]; 
 
 % figure 
-% % plot(rad2deg(CL_alpha(:, 1)), CL_alpha(:, 2))
-% 
+% plot(CD_Polar, CL_Polar)
+% xlabel('CD')
+% ylabel('CL')
+
+% Extracting CL as a function of alpha
+alpha_CL = CLWBTable(:,2); % alpha in radians
+CL_alpha2 = CLWBTable(:,1); % Corresponding CL values
+
+% Interpolating CD using available CL data
+CL_query = interp1(alpha_CL, CL_alpha2, alpha_CL, 'linear', 'extrap'); % CL at given alpha
+CD_query = interp1(CL_Polar, CD_Polar, CL_query, 'linear', 'extrap'); % Interpolating CD for those CL values
+
+% Store CD(alpha) as a 2-column matrix
+CD_alpha = [alpha_CL, CD_query]
+
+figure 
+plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
+ylabel('CD')
+xlabel('alpha (deg)')
+
+
+%% TODO 
+% ----------------- Pitch -----------------------%
+
+% Cm for alpha = 0.
+Cm_zero = -0.0623;
+
+% Cm due to elevator deflection.
+% Input: alpha (rad).
+% Note: Coefficient multiplied by elevator deflection.
+Cm_elev = ...
+	[-0.35   -0.5
+     -0.27   -0.8
+     0.0000  -1.1903
+     0.25    -1.1902];
+     % 0.30    20];
+
+de = deg2rad(linspace(-20, 20));
+Cmde = 0.00585; % 0.00585
+Cme = - de .* Cmde; 
+
+figure 
+plot(rad2deg(de), Cme)
+
+
+hold on
+plot(rad2deg(Cm_elev(:,1)), Cm_elev(:,2))
+
+Cm_elev = [de(:), Cme(:)]; % Ensures column format
+
+
+% Get all variables in the workspace
+vars = whos;
+
+% Create an empty struct
+SR22T = struct();
+
+% Loop through variables and add them to the struct
+for i = 1:length(vars)
+    SR22T.(vars(i).name) = eval(vars(i).name);
+end
+
+
+save('SR22T.mat', 'SR22T');
