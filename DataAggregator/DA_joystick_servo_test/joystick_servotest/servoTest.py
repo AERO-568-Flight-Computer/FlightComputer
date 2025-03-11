@@ -46,19 +46,14 @@ while True:
     dataDictionaryList[0]["timeRec"] = int_time
     dataDictionaryList[0]["position"]  = pos
     #dataDictionaryList[0]["clutchStatus"] = clutch
-    #print(dataDictionaryList)
-
-    print("Servo_Partition", "Time Recieved", timeRecReceived,"Angle command:" ,AngleCommandReceived, "Servo position", pos,  dataDictionaryList[0]["position"], "timesent", dataDictionaryList[0]["timeRec"])
-
+    print(dataDictionaryList)
     processor.sendData(dataDictionaryList)
 
     if -55 < AngleCommandReceived < 55: # Make sure the capstans are not hit
-        #print("Trying to set postion")
+        print("Trying to set postion")
         set_pos_err_code = TestServo.set_pos(AngleCommandReceived) # Send the servo to the given angle
         if set_pos_err_code != 0: # Catch any errors
-            pass
-            #print("set_pos failed with exit code?:")
-            #print(set_pos_err_code)
+            print("set_pos failed with exit code?:")
+            print(set_pos_err_code)
     else:
-        pass
-        #print("Angle out of range, input angle between -55° and 55°")
+        print("Angle out of range, input angle between -55° and 55°")

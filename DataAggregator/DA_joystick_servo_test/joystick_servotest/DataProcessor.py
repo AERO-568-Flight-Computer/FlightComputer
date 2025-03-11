@@ -93,7 +93,7 @@ class DataProcessor:
             return None
         
         numFields = len(self.sendDict)
-        numRows = len(dataDictionaryList)
+        numRows = 1 #len(dataDictionaryList)
         dataArray = np.full((numRows, numFields), np.nan, dtype=np.float64)
         
         for row, dataDictionary in enumerate(dataDictionaryList):

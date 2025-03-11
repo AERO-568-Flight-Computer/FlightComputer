@@ -155,16 +155,16 @@ class Servo:
 # get input voltage data
     def _get_pwr_status(self):
         #cmd = [0xB1, 0X01, 0X00, 0X00, 0x54, 0x05]
-        #print(self.actuator_id)
+        print(self.actuator_id)
         cmd = [0xB1, self.actuator_id, 0X00, 0X00]
         # generate checksum
         cmd = Servo.generate_crc(cmd)
         self.ser.write(bytearray(cmd))
         rx = self.ser.read(12)  # cmd echo is first 6 bytes, response is second set of 6 bytes
-        #print("Get power status Command")
-        #print(cmd)
-        #print("Get power status Reply")
-        #print(rx)
+        print("Get power status Command")
+        print(cmd)
+        print("Get power status Reply")
+        print(rx)
             
         pwr_servo = int(hex(rx[8]), 16) * 0.2   # 200 mV per val, volts
         pwr_clutch = int(hex(rx[9]), 16) * 0.2 
@@ -195,11 +195,11 @@ def main():
 
     while True:
         for pos in positions:
-            #print("Tryuing to set postion")
+            print("Tryuing to set postion")
             set_pos_err_code = ElevatorServo.set_pos(pos)
             time.sleep(delay)      
             if set_pos_err_code != 0:
-                #print("set_pos failed with exit code?:")
-                #print(set_pos_err_code)
+                print("set_pos failed with exit code?:")
+                print(set_pos_err_code)
 if __name__ == "__main__":
     main()
