@@ -37,16 +37,16 @@ this subfolder contains three example tests for the data aggregator class for us
     source .venv/bin/activate
     
     In the first terminal window run: 
-    python3 DataAggregator/DA_joystick_servo_test/joystick_servotest/dataAggregator.py
+    python3 DataAggregator/joystick_servotest/dataAggregator.py
     
     In the second terminal window run:
-    python3 DataAggregator/DA_joystick_servo_test/joystick_servotest/FC_demo.py
+    python3 DataAggregator/joystick_servotest/FC_demo.py
 
     In the third terminal window run: 
-    python3 DataAggregator/DA_joystick_servo_test/joystick_servotest/joystickPartition.py
+    python3 DataAggregator/joystick_servotest/joystickPartition.py
 
     In the fourth terminal window run:
-    python3 DataAggregator/DA_joystick_servo_test/joystick_servotest/servotest.py     
+    python3 DataAggregator/joystick_servotest/servotest.py     
     
     The setup json being used is joystick_servo.json in the FlightComputer folder 
 
