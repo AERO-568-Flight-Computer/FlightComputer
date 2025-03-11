@@ -160,7 +160,7 @@ class Servo:
 # get input voltage data
     def _get_pwr_status(self):
         #cmd = [0xB1, 0X01, 0X00, 0X00, 0x54, 0x05]
-        print(self.actuator_id)
+        #print(self.actuator_id)
         cmd = [0xB1, self.actuator_id, 0X00, 0X00]
         # generate checksum
         cmd = Servo.generate_crc(cmd)

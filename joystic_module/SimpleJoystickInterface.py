@@ -27,7 +27,7 @@ class SimpleJoystickInterface():
         while (runtime < self.get_pitch_roll_timeout) :
             data, addr = self.ngi.rxSockStatus.recvfrom(4096)
             axis, pos, force, switch09, switch10, switch11, switch12 = self.__decodeMsg10_partmanager(data)
-            print("------Data manager decode done-----------")
+            #print("------Data manager decode done-----------")
             #axis, pos, force, trimlft, trimup, trimrht, trimdwn = self.ngi.decodeMsg10(data)
             #print("----------Striling inceptor decode done----------")
             time_now = time.time()
@@ -42,7 +42,7 @@ class SimpleJoystickInterface():
                 roll_found = True
             if (roll_found and pitch_found):
                 return pitchPosition, rollPosition
-        print("Couldn't get Joystic location in time")
+        #print("Couldn't get Joystic location in time")
         raise Exception("Timeout")
     
     def adjustForce(self, ias):
@@ -58,7 +58,7 @@ class SimpleJoystickInterface():
             else:
                 scale = 1
 
-            print(f"ias: {ias} | force: {force}")
+            #print(f"ias: {ias} | force: {force}")
 
             #self.ngi.POS_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
             #self.ngi.NEG_FORCE_COORDS = [[0, 0], [5, scale*force], [10, 1.25*scale*force], [15, 1.5*scale*force], [20, 1.75*scale*force]]
@@ -68,7 +68,7 @@ class SimpleJoystickInterface():
     
     @staticmethod
     def adjustForce_old(ngi, axis, ias):
-        print("Trying to run the old method")
+        #print("Trying to run the old method")
             # check deflection on joystick - if positive, send the first pos/force coordinate on the schedule
             # if negative, send the first pos/force coordinate on the neg schedule
 
@@ -127,13 +127,13 @@ def main():
     count = 0
     while True:
         pitchPosition, rollPosition = JoysticInteface.get_pitch_roll()
-        print("----------------------")
-        print("Pitch:", pitchPosition,' idkunits')
-        print("Roll:", rollPosition,' idkunits')
-        print(count)
+        #print("----------------------")
+        #print("Pitch:", pitchPosition,' idkunits')
+        #print("Roll:", rollPosition,' idkunits')
+        #print(count)
         count = count+1
         if count > 20:
-            print("Trying to adjust the force")
+            #print("Trying to adjust the force")
             JoysticInteface.adjustForce(20)
             count = 0
 if __name__ == "__main__":
