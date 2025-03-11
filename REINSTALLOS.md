@@ -194,6 +194,8 @@ ping 192.168.10.101 -c 5
 ```
 Ensure the joystick is connected via the crossover cable.
 
+Note that the joystick does not have a static IP, it has a reserved IP that we reserve for it using the DHCP server. As it is directly connected and is not designed to have a static IP, we must create the DHCP server and reserve an IP address in order to connect to it.
+
 ---
 
 ## Set Up SSH
