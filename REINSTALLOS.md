@@ -76,23 +76,26 @@ Restart the flight computer after installation.
 
 ---
 
-## Setting Up Sublime Merge
-1. Open **Sublime Merge**.
-2. Add a repository with:
-   - **Source URL:** `https://github.com/AERO-568-Flight-Computer/FlightComputer`
-   - **Repository Name:** `FlightComputer`
-   - **Path:** `/home/cp-opa/Desktop/FlightComputer`
-3. Click **Clone Repo**.
-4. Click **Push Button**.
-5. To test:
-   - Duplicate a file in the repo.
-   - Stage and commit it.
-   - Enter **name** and **email** from `Onedrive Sandbox 2024` when prompted.
-   - Click **Push Button** again.
-   - Enter **username** from `Onedrive Sandbox 2024` and **access token** from `Onedrive Sandbox 2025`.
-   - **DO NOT STORE ACCESS TOKEN IN GIT.**
+## Setting Up Sublime Merge & GitHub Account  
+1. Open **Sublime Merge**.  
+2. Add a repository with:  
+   - **Source URL:** `https://github.com/AERO-568-Flight-Computer/FlightComputer`  
+   - **Repository Name:** `FlightComputer`  
+   - **Path:** `/home/cp-opa/Desktop/FlightComputer`  
+3. Click **Clone Repo**.  
+4. Log in to GitHub on the browser (ask Iscold for 2FA, login info is in OneDrive).  
+5. Run:  
 
-> **Issue:** Unable to push changes. Might need a new access token each time.
+   ```bash
+   sudo apt install gh
+   gh auth login
+   ```  
+6. Select the following options:  
+   - **What account?** GitHub.com  
+   - **Preferred protocol?** HTTPS  
+   - **Authenticate with GitHub credentials?** Yes  
+   - **Authenticate with GitHub CLI?** Login with a web browser  
+7. Copy your first-time code and follow the instructions in the browser.
 
 ---
 
