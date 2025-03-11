@@ -4,6 +4,14 @@ Written by Ajay Parikh
 ## Objective
 Start and ensure running of all partitons
 
+## How to use
+```
+cd
+cd Desktop/FlightComputer
+source .venv/bin/activate
+python3 PartitonManager/partitonManager.py
+```
+
 ## Order of operations
 Read .json file (eventually sync with DataAggregator) with the partitons you want to launch and some additonal relevant information
 

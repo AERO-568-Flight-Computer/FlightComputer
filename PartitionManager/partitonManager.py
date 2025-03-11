@@ -53,10 +53,9 @@ def main():
                 print(Fore.YELLOW+nameList[item]+' has closed')
                 if nameList[item] in openPartitons: openPartitons.remove(nameList[item]) #notes that partiton is closed
                 try:
-                    partition = partition[item]
                     if partitionInfo[item]['restart'].lower() == "true": #runs if program asked to restart
                         print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                        p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
+                        p[item] = subprocess.Popen(['xterm -T "'+partitionInfo[item]['name']+'" -e python3 '+partitionInfo[item]['path']], shell=True)
                         print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                         checkInitialized(server, partitionInfo[item])
 
@@ -66,7 +65,7 @@ def main():
 
                         if option == 1: #if answered yes, attempts restart
                             print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
-                            p[item] = subprocess.Popen(['xterm -T "'+partition['name']+'" -e python3 '+partition['path']], shell=True)
+                            p[item] = subprocess.Popen(['xterm -T "'+partitionInfo[item]['name']+'" -e python3 '+partitionInfo[item]['path']], shell=True)
                             print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                             checkInitialized(server, partitionInfo[item])
 
