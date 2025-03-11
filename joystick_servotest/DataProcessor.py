@@ -135,8 +135,8 @@ class DataProcessor:
             for numColumns in self.receivePartitionFieldCount:
                 numRowsBytes = data[byteOffset:byteOffset + 2]
                 numRows = int.from_bytes(numRowsBytes, byteorder='big')
-                print("numRows")
-                print(numRows)
+                #print("numRows")
+                #print(numRows)
                 byteOffset += 2
 
                 payloadSize = numRows * numColumns * 8

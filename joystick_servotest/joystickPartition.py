@@ -3,7 +3,7 @@ from DataProcessor import DataProcessor
 import time
 
 
-JoysticInteface = SimpleJoysticInteface()
+JoysticInteface = SimpleJoysticInteface(True)
 time.sleep(1)
 #Trying to print out positions every half second
 t_delay = 0.5
@@ -36,13 +36,13 @@ while True:
     timeRecRecieved = recentData[0, 0]
     iasReceived = recentData[0, 1]
     ias = iasReceived  # Placeholder for IAS
-    print("airspeed")
-    print(ias)
+    #print("airspeed")
+    #print(ias)
     pitchPosition, rollPosition, err_code = JoysticInteface.get_pitch_roll()
     
     count = count+1
     if count > 20:
-        print("Trying to adjust the force")
+        #print("Trying to adjust the force")
         JoysticInteface.adjustForce(ias)
         count = 0
 
