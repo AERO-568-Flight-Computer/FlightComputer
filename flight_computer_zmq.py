@@ -1,5 +1,4 @@
 #Flight computer partition.
-
 import zmq
 from opa_msg_library import *
 import time
@@ -82,14 +81,19 @@ def main():
                     # setting servo position to joystic position
                     # sending an IAS placeholder to joystic, for force feedback
                     jsk_pos_msg_unpacked = unpack_joystic_state_msg(msg)
-                    print(f"Jsk pos msg in: {jsk_pos_msg_unpacked}")
-
+                    
+                    time1 = time.time()
+                    print(f"{time1} : Jsk pos msg in: {jsk_pos_msg_unpacked}")
+                    
                     servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
-                    print(f"Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
+                    
+                    time1 = time.time()
+                    print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
                     fc_s1_cm_tx_sock.send(servo_cmd_msg)
 
                     jsk_cmd_msg = pack_joystic_cmd_msg(b'JK',time.time(),20)
-                    #print(f"Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
+                    time1 = time.time()
+                    print(f"{time1} : Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
                     fc_jsk_ias_tx_sock.send(jsk_cmd_msg)
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")

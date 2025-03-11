@@ -53,6 +53,8 @@ def main():
         pos_msg = pack_servo_pos_msg(servo_id,msg_time,pos_deg)
         #print(f"Pos msg out: {unpack_servo_pos_msg(pos_msg)}")
         s1_pos_tx_sock.send(pos_msg)
+        time1 = time.time()
+        print(f"{time1} : Position message out: {unpack_servo_pos_msg(pos_msg)}")
 
         #Try to recieve position, if haven't arrived, just continue to send current position.
         try:
@@ -62,7 +64,8 @@ def main():
 
         if set_pos_flag:
             servo_id_rxd, msg_type,time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
-            print(f"Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)}")
+            time1 = time.time()
+            print(f"{time1} : Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)}")
             servo.set_pos(servo_angle_req)
 
         #Sleeping to not tax the CPU too much.
