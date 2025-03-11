@@ -63,7 +63,9 @@ def main():
 
         if ias_msg_rxed:
             jsk_id_rxed, msg_type, time_msg_sent, ias = unpack_joystic_cmd_msg(ias_msg)
-            #print(f"IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
+            
+            time1 = time.time()
+            print(f"{time1} : IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
             if jsk_id != jsk_id_rxed : ias_msg_valid = False
 
         if ias_msg_valid and ias_msg_rxed:
@@ -74,7 +76,9 @@ def main():
         time_now = time.time()
         state_msg = pack_joystic_state_msg(jsk_id,time_now,pitch,roll)
         jsk_pos_tx_sock.send(state_msg)
-        print(f"Joystic state message: {unpack_joystic_state_msg(state_msg)}")
+
+        time1 = time.time()
+        print(f"{time1} : Joystic state message: {unpack_joystic_state_msg(state_msg)}")
 
         time.sleep(1/joystic_max_freq)
 
