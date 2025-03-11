@@ -137,7 +137,7 @@ source .venv/bin/activate
    - **SER25330** (*installed by default on newer kernels*)
    - [RTD Drivers](https://www.rtd.com/software_drivers.htm)
 2. Unzip the drivers.
-3. Follow the README instructions (**typically:** `make` then `sudo make load`).
+3. Follow the README instructions (**typically:** `make` then `sudo make load` but make sure to double check).
 
 ### Set Serial Port Permissions
 ```bash
@@ -145,7 +145,7 @@ cd
 sudo usermod -a -G dialout $USER
 ```
 Reboot your system.
-If needed, manually set permissions each time using:
+If needed, manually set permissions each time using (you should **not** need to do this):
 ```bash
 sudo chmod 666 /dev/ttyS4
 ```
@@ -192,7 +192,9 @@ Wait 30 seconds and verify connectivity:
 ```bash
 ping 192.168.10.101 -c 5
 ```
-Ensure the joystick is connected via the crossover cable.
+This should ping the joystick 5 times and you should recive 5 responces. The responce time should be <1 second. If it isn't, reboot.
+
+Ensure the joystick is connected via the crossover cable and plugged in.
 
 Note that the joystick does not have a static IP, it has a reserved IP that we reserve for it using the DHCP server. As it is directly connected and is not designed to have a static IP, we must create the DHCP server and reserve an IP address in order to connect to it.
 
@@ -222,7 +224,7 @@ sudo systemctl restart ssh
 
 ---
 
-## Set Up Wireless Casting (Still Debugging)
+## Set Up Wireless Casting (Still Debugging, does not work)
 ```bash
 sudo apt install gnome-network-displays
 ```
