@@ -200,30 +200,6 @@ Note that the joystick does not have a static IP, it has a reserved IP that we r
 
 ---
 
-## Set Up SSH
-```bash
-sudo apt update
-sudo apt upgrade
-sudo apt install openssh-server
-sudo systemctl start ssh
-sudo systemctl status ssh
-sudo systemctl enable ssh
-```
-Modify the SSH configuration:
-```bash
-sudo nano /etc/ssh/sshd_config
-```
-Uncomment the line:
-```bash
-Port 22
-```
-Restart SSH service:
-```bash
-sudo systemctl restart ssh
-```
-
----
-
 ## Set Up Wireless Casting (Still Debugging, does not work)
 ```bash
 sudo apt install gnome-network-displays
