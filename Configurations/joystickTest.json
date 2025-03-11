@@ -2,7 +2,8 @@
     {
         "name": "Test Data Manager",
         "path": "DataManager/joystick2servo/testDataManager1.py",
-        "priority": 2
+        "priority": 2,
+        "restart": "ask"
     },
     {
         "name": "Joystick 1",
