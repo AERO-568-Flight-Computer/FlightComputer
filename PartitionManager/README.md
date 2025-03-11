@@ -5,6 +5,7 @@ Written by Ajay Parikh
 Start and ensure running of all partitons
 
 ## How to use
+Run the following in terminal:
 ```
 cd
 cd Desktop/FlightComputer
@@ -31,6 +32,8 @@ Repeat last 2 steps until program ended
 * priority: integer that gives the order to start program, lower number starts sooner
 * restart: string that says what to do upon partiton close, can be "True" (restarts program automatically) or "Ask" (creates dialog box asking if program should be restarted) with all other options (blank, "False", et cetera) not restarting the program
 
+## Known Issues
+If a partiton has any sort of error, the partiton closes and does not report the error. This can be solved by putting the entire partiton in a try expect statement.
 
 ## Debugging help
 
