@@ -50,7 +50,7 @@ while True:
     processor.sendData(dataDictionaryList)
 
     if -55 < AngleCommandReceived < 55: # Make sure the capstans are not hit
-        print("Trying to set postion")
+        #print("Trying to set postion")
         set_pos_err_code = TestServo.set_pos(AngleCommandReceived) # Send the servo to the given angle
         if set_pos_err_code != 0: # Catch any errors
             print("set_pos failed with exit code?:")
