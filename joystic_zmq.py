@@ -4,23 +4,23 @@ import time
 import zmq
 
 from opa_msg_library import *
-from joystic_module.DummySimpleJoystickInterface import SimpleJoystickInterface
+from joystic_module.SimpleJoystickInterface import SimpleJoystickInterface
 from PartitionManager.partitonManager import initialize 
 
 verbose = True
 def main():
-    time.sleep(0.5) #adds delay to make sure that the server is setup
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
-    client.connect(('localhost', 54321)) #connects socket to the partiton manager as a client
-    client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
-    print('Initialization signal sent')
+    #time.sleep(0.5) #adds delay to make sure that the server is setup
+    #client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
+    #client.connect(('localhost', 54321)) #connects socket to the partiton manager as a client
+    #client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
+    #print('Initialization signal sent')
     
     #Defining joystic config. id is used for messsages
     #ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
     #servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
     jsk_id = b'JK'
     socket_timeout = 1000
-    joystic_max_freq = 50
+    joystic_max_freq = 80
 
     if verbose: print("--------- Joystick: starting socket creation ---------")
     #Setting up sockets. PULL is type to recieve. PUSH to send.
