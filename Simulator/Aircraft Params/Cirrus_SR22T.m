@@ -35,7 +35,7 @@ Sh = (57.13) * ft22m2;
 % Horizontal tail arm
 xt = 215 * in2m;
 % Wing-fuselage assembly arm
-xa = 0.1002;
+xa = 0.5;
 
 
 % % Moments of inertia and product of inertia
