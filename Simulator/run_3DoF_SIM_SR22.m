@@ -20,7 +20,7 @@ end
 states_init = [0 5000 0 90 0 0];  % initial conditions 
 %             [x(m) y(m) theta(rad) Vx(m/s) Vy(m/s) q(rad/s)]
 
-CD0 = 0.00; 
+CD0 = 0.00; % not necessary for SR22T (Parastic Drag included in Drag Data) 
 
 deltaE = 25; % in degrees + is pitch down 
 throttle = 0.65; % currently not implemented 
