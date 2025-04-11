@@ -13,6 +13,19 @@ class SimpleJoystickInterface():
         time.sleep(2)
         self.ngi.configSetup()
         time.sleep(2)
+        
+        self.log_flag = True        
+        if self.log_flag:
+            self.log_end_string   = b'endmsg'
+            self.log_start_string = b'startmsg' 
+            self.log_filename = "joystic_raw_log.binlog"
+            self.log_file = open(self.log_filename,"bw")
+            self.log_counter = 1000
+        else:
+            self.log_end_string   = None
+            self.log_start_string = None
+            self.log_filename = None
+            self.log_file = None
 
     def get_pitch_roll(self):
         #So there is message 11 which should have rotary characteristics?
@@ -40,8 +53,23 @@ class SimpleJoystickInterface():
                 #roll axis
                 rollPosition = pos[0]
                 roll_found = True
+
+            if pitch_found or roll_found:
+                #log data
+                print("Logging...")
+                if self.log_flag:
+                    logmsg = self.log_start_string + data + self.log_end_string
+                    self.log_file.write(logmsg)
+                    self.log_counter = self.log_counter -1
+                    if self.log_counter <= 0:
+                        self.log_file.close()
+                        print("LOGGING SESSION DONE")
+                        #TERMINATING, HOW DO I DO IT BETTER
+                        raise("Logging session done")
+                    
             if (roll_found and pitch_found):
                 return pitchPosition, rollPosition
+            
         #print("Couldn't get Joystic location in time")
         raise Exception("Timeout")
     
