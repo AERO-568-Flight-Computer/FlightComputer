@@ -424,7 +424,7 @@ def joinBytes(bytes):
 
 if __name__ == "__main__":
 
-    port = serial.Serial('COM3', 115200) # Port may be changed depending on where you plug the VectorNav into
+    port = serial.Serial('/dev/ttyUSB0', 115200) # Port may be changed depending on where you plug the VectorNav into
     sync_byte = b'\xfa'
 
     try:
