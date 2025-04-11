@@ -2,7 +2,7 @@
 import serial
 import struct
 
-ser = serial.Serial('/dev/tty.usbserial-A9087BP2', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
 def crc16_custom(data: bytes) -> int:
     crc = 0x0000  # Initial value for 16-bit CRC

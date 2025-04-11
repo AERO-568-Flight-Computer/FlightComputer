@@ -3,7 +3,7 @@ import time
 import struct
 
 # port on my laptop being used is COM3 and the baudrate for the VN-310 is 115200
-port = serial.Serial(port='COM3', baudrate=115200)
+port = serial.Serial(port='/dev/ttyUSB0', baudrate=115200)
 size = 138 # Size of the message in bytes 
 
 def calculate_crc(data):
