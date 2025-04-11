@@ -1,4 +1,4 @@
-from .NGIcalibration import StirlingInceptor
+from NGIcalibration import StirlingInceptor
 import time
 import struct
 class SimpleJoystickInterface():
@@ -151,18 +151,19 @@ def main():
     JoysticInteface = SimpleJoystickInterface()
     time.sleep(1)
     #Trying to print out positions every half second
-    t_delay = 0.5
+    t_delay = 0.05
     count = 0
     while True:
         pitchPosition, rollPosition = JoysticInteface.get_pitch_roll()
-        #print("----------------------")
-        #print("Pitch:", pitchPosition,' idkunits')
-        #print("Roll:", rollPosition,' idkunits')
-        #print(count)
+        print("----------------------")
+        print("Pitch:", pitchPosition,' idkunits')
+        print("Roll:", rollPosition,' idkunits')
+        print(count)
         count = count+1
         if count > 20:
             #print("Trying to adjust the force")
             JoysticInteface.adjustForce(20)
             count = 0
+        time.sleep(t_delay)
 if __name__ == "__main__":
     main()
