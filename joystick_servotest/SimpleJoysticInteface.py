@@ -7,6 +7,20 @@ class SimpleJoysticInteface():
         self.get_pitch_roll_timeout = 1.0/6.0
         if run_self_calibration:
             self.ngi.IBIT()
+
+        self.log_flag = True        
+        if self.log_flag:
+            self.log_end_string   = b'endmsg'
+            self.log_start_string = b'startmsg' 
+            self.log_filename = "joystic_raw_log.binlog"
+            self.log_file = open(self.log_filename,"bw")
+            self.log_counter = 1000
+        else:
+            self.log_end_string   = None
+            self.log_start_string = None
+            self.log_filename = None
+            self.log_file = None
+
         """ ACTIVATION """
         self.ngi.activate()
         """ ADJUST CALIBRATION FORCE OFFSET """
@@ -24,6 +38,7 @@ class SimpleJoysticInteface():
         runtime = 0
         pitch_found = False
         roll_found = False
+        #TEMPORARY LOGGING
         while (runtime < self.get_pitch_roll_timeout) :
             data, addr = self.ngi.rxSockStatus.recvfrom(4096)
             axis, pos, force, switch09, switch10, switch11, switch12 = self.__decodeMsg10_partmanager(data)
@@ -33,10 +48,30 @@ class SimpleJoysticInteface():
             time_now = time.time()
             runtime = time_now - time_start
             if axis == 0:
+                #Log the valid message, substruct log counter, when log counter 0, print out a message that logging is done?
+                if self.log_flag:
+                    logmsg = self.log_start_string + data + self.log_end_string
+                    self.log_file.write(logmsg)
+                    self.log_counter = self.log_counter -1
+                    if self.log_counter <= 0:
+                        self.log_file.close()
+                        print("LOGGING SESSION DONE")
+                        #TERMINATING, HOW DO I DO IT BETTER
+                        raise("Logging session done")
                 #pitch axis
                 pitchPosition = pos[0]
                 pitch_found = True
             if axis == 1:
+                #Log the valid message
+                if self.log_flag:
+                    logmsg = self.log_start_string + data + self.log_end_string
+                    self.log_file.write(logmsg)
+                    self.log_counter = self.log_counter -1
+                    if self.log_counter <= 0:
+                        self.log_file.close()
+                        print("LOGGING SESSION DONE")
+                        #TERMINATING, HOW DO I DO IT BETTER
+                        raise("Logging session done")
                 #roll axis
                 rollPosition = pos[0]
                 roll_found = True

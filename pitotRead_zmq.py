@@ -1,6 +1,9 @@
 #Improvment of pitotRead.py to send data via zmq. untested yet.  
 import serial
 import struct
+import zmq
+
+
 
 ser = serial.Serial('/dev/tty.usbserial-A9087BP2', 115200, timeout=1)
 
@@ -17,6 +20,8 @@ def crc16_custom(data: bytes) -> int:
                 crc = (crc << 1) & 0xFFFF  # Ensure it stays within 16 bits
 
     return crc
+
+
 
 while True:
     pitot = ser.read(1)

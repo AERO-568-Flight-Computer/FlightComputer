@@ -115,6 +115,15 @@ def main():
     set_default_ops_pull(fc_jsk_ias_rx_sock,socket_timeout)    
     fc_jsk_ias_rx_sock.bind('tcp://localhost:5673')
 
+    #Flightcomputer recieves air data here
+    fc_pitot_tx_sock = context.socket(zmq.PUSH)
+    set_default_ops_push(fc_pitot_tx_sock)
+    fc_pitot_tx_sock.connect('tcp://localhost:5674')
+
+    #Air data unit sents data messages here
+    pitot_rx_sock = context.socketz(zmq.PULL)
+    set_default_ops_pull(pitot_rx_sock)
+
 
     #For the logger
     #logger_tx_sock = context.socket(zmq.PUSH)

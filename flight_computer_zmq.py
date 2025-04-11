@@ -47,6 +47,11 @@ def main():
     fc_jsk_ias_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_push(fc_jsk_ias_tx_sock,socket_timeout) #To tx joystic_cmd_msg
     fc_jsk_ias_tx_sock.connect('tcp://localhost:5673')
+
+    fc_pitot_tx_sock = context.socket(zmq.PULL)
+    set_default_ops_push(fc_pitot_tx_sock)
+    fc_pitot_tx_sock.connect('tcp://localhost:5674')
+    
     if verbose: print("Sockets set up")
 
     #Poller allows to wait for messages from multiple sockets.
