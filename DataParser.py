@@ -424,7 +424,7 @@ def joinBytes(bytes):
 
 if __name__ == "__main__":
 
-    port = serial.Serial('COM3', 115200) # Port may be changed depending on where you plug the VectorNav into
+    port = serial.Serial('/dev/ttyUSB0', 115200) # Port may be changed depending on where you plug the VectorNav into
     sync_byte = b'\xfa'
 
     try:
@@ -432,7 +432,6 @@ if __name__ == "__main__":
             try:
 
                 message = getMessage(port, sync_byte) # Get the message
-
                 # CRC Check to ensure message is not corrupted
                 # *Note: From reading the manual, the CRC is caluclated from the byte after the sync byte to the end of the message.
                 #        VectorNav makes it easy to check the CRC because when this calculation is done, the CRC should always be 0 for a valid message.
@@ -440,6 +439,7 @@ if __name__ == "__main__":
                 data = joinBytes(new_message) # joins the bytes into a single byte string
                 crc = calculate_crc(data) # calculates the CRC
 
+                print(crc)
                 if crc != 0:
                     raise ValueError("Message may be corrupted! CRC does not match.")
                 
