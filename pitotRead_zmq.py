@@ -1,6 +1,8 @@
 #Improvment of pitotRead.py to send data via zmq. untested yet.  
 import serial
 import struct
+from opa_msg_library import *
+from time import *
 
 ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
@@ -79,3 +81,11 @@ while True:
              "rearFlagAOA": rearFlagAOA,
              "frontFlagYaw": frontFlagYaw
          }
+        
+        msg = pack_adc_state_msg(b'P1', time.time(), dataDictionary)
+
+        print(msg)
+
+        unpack_adc_state_msg(msg)
+
+        print(msg)
