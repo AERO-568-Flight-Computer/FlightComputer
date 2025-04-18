@@ -3,7 +3,9 @@ import serial
 import struct
 from opa_msg_library import *
 import time
+import zmq
 
+verbose = True
 #Defining servo config. id is used for messsages
 #ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
 #servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
