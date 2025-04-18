@@ -2,7 +2,7 @@
 import serial
 import struct
 from opa_msg_library import *
-from time import *
+import time
 
 ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
@@ -86,6 +86,10 @@ while True:
 
         print(msg)
 
+        time.sleep(1)
+
         unpack_adc_state_msg(msg)
 
         print(msg)
+
+        time.sleep(1)
