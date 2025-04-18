@@ -106,6 +106,14 @@ def main():
     set_default_ops_push(fc_s1_pos_tx_sock,socket_timeout)
     fc_s1_pos_tx_sock.bind('tcp://localhost:5671')
 
+    fc_adc_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
+    set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
+    fc_adc_cm_rx_sock.bind('tcp://localhost:5680')
+    
+    fc_adc_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives ADC command from here
+    set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
+    fc_adc_pos_tx_sock.bind('tcp://localhost:5681')
+
     #For communications with joystick
     fc_jsk_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives joystick position from here
     set_default_ops_push(fc_jsk_pos_tx_sock,socket_timeout)    
@@ -113,7 +121,7 @@ def main():
 
     fc_jsk_ias_rx_sock = context.socket(zmq.PULL) #Flight computer sends IAS for the joystic here
     set_default_ops_pull(fc_jsk_ias_rx_sock,socket_timeout)    
-    fc_jsk_ias_rx_sock.bind('tcp://localhost:5673')
+    fc_jsk_ias_rx_sock.bind('tcp://localhost:5673')  
 
 
     #For the logger
@@ -121,9 +129,9 @@ def main():
     #logger_tx_sock.bind('tcp://localhost:6100')
     #logger_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
 
-    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock] #Listen for messages arriving to here.
-    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock] #Send to there
-    routing_table =  [[3],           [2],          [1],            [0]] 
+    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock, fc_adc_cm_rx_sock] #Listen for messages arriving to here.
+    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock, fc_adc_pos_tx_sock] #Send to there
+    routing_table =  [[4],          [3],           [2],          [1],            [0]] 
     #example: routing_table[0] = [3,4]. Sends message from socket with index 0 from input_sockets list to index 3 and 4 of output_socket list.
 
     try:

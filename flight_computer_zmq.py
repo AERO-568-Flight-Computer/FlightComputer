@@ -47,6 +47,15 @@ def main():
     fc_jsk_ias_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_push(fc_jsk_ias_tx_sock,socket_timeout) #To tx joystic_cmd_msg
     fc_jsk_ias_tx_sock.connect('tcp://localhost:5673')
+
+    fc_adc_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
+    set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
+    fc_adc_cm_rx_sock.bind('tcp://localhost:5680')
+    
+    fc_adc_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives ADC command from here
+    set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
+    fc_adc_pos_tx_sock.bind('tcp://localhost:5681')
+
     if verbose: print("Sockets set up")
 
     #Poller allows to wait for messages from multiple sockets.
@@ -55,7 +64,7 @@ def main():
     #       at that point poller.poll() will return a dictionary that indicates which sockets recieved.
     if verbose: print("Creating poller and registering input socket")
     poller = zmq.Poller()
-    input_sockets = [fc_s1_pos_rx_sock, fc_jsk_pos_rx_sock]
+    input_sockets = [fc_s1_pos_rx_sock, fc_jsk_pos_rx_sock, fc_adc_cm_rx_sock]
     for sock in input_sockets:
         poller.register(sock, zmq.POLLIN)
     
@@ -95,6 +104,9 @@ def main():
                     time1 = time.time()
                     print(f"{time1} : Joystic cmd out: {unpack_joystic_cmd_msg(jsk_cmd_msg)}")
                     fc_jsk_ias_tx_sock.send(jsk_cmd_msg)
+                elif sock is fc_adc_cm_rx_sock:
+                    # Recieve ADC message
+                    adc_msg_unpacked = unpack_adc_state_msg(msg)
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")
 if __name__ == '__main__':

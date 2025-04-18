@@ -4,6 +4,31 @@ import struct
 from opa_msg_library import *
 import time
 
+#Defining servo config. id is used for messsages
+#ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
+#servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
+adc_id = b'A1'
+socket_timeout = 5000 # in milliseconds
+
+#Each socket is supposed to recieve it's own type of message.
+if verbose: print("Setting up sockets")
+#Setting up sockets. PULL is type to recieve. PUSH to send.
+#LINGER 0 makes it close immidiatly when close is caleed for.
+#CONFLATE 1 keeps only the last message in the socket.
+#ip's are defined in data_agregator_zmq, all connections are to it.
+context = zmq.Context()
+a1_cmd_rx_sock = context.socket(zmq.PULL)
+a1_cmd_rx_sock.setsockopt(zmq.RCVTIMEO, socket_timeout)
+a1_cmd_rx_sock.setsockopt(zmq.LINGER, 0)
+a1_cmd_rx_sock.setsockopt(zmq.CONFLATE, 1)
+a1_cmd_rx_sock.connect('tcp://localhost:5580') 
+
+a1_pos_tx_sock = context.socket(zmq.PUSH)
+a1_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
+a1_pos_tx_sock.setsockopt(zmq.LINGER, 0)
+a1_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
+a1_pos_tx_sock.connect('tcp://localhost:5581')
+
 ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
 def crc16_custom(data: bytes) -> int:
@@ -84,12 +109,6 @@ while True:
         
         msg = pack_adc_state_msg(b'P1', time.time(), dataDictionary)
 
-        print(msg)
-
-        time.sleep(1)
-
-        unpack_adc_state_msg(msg)
-
-        print(msg)
-
-        time.sleep(1)
+        a1_pos_tx_sock.send(msg)
+        time1 = time.time()
+        print(f"{time1} : ADC message out: {unpack_servo_pos_msg(msg)}")
