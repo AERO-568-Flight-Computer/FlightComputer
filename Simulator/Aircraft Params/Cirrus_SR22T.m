@@ -27,15 +27,25 @@ isTrimming = 0;
 % Wing area - m²
 Sw = 144.9 * ft22m2;
 % Wing span - m
-Bw = 38.3 * ft2m;
+Bw = 11.67;
+% Fuselage lenght - m
+L = 7.92;
 % Mean wing chord - m
 Cw = 4.03 * ft2m;
 % Horizontal tail area - m²
-Sh = (57.13) * ft22m2;
+Sh = 2.40;
 % Horizontal tail arm
-xt = 215 * in2m;
+xt = 156.48 * in2m;
 % Wing-fuselage assembly arm
-xa = 0.5;
+xa = 0.05;
+% Aircraft mass - kg
+M = 1033;
+% Airplane raddi of gyration
+Ry = 0.38;
+% Airplane Inertial - kg*m^2
+J  = (L^2*M*Ry^2)/4; 
+% Gravity acceleration - m/s^2
+gravity = 9.807; 
 
 
 % % Moments of inertia and product of inertia
@@ -45,12 +55,11 @@ xa = 0.5;
 % Jzz =  1;
 % Jxz =  0;
 % J = 377.32 * lbin22kgm2;  % lb-in^2  
-Ry = 0.38; % Raymer 
-L = 25.98 * ft2m; 
-J = (L^2 * (1633/9.81) * Ry^2)/(4);% Raymer 
+% Ry = 0.38; % Raymer 
+% L = 25.98 * ft2m; 
+% J = (L^2 * (1633/9.81) * Ry^2)/(4);% Raymer 
 
-% Aircraft mass - kg
-M = 1633;
+
 
 % Aerodynamic data
 % ----------------- LIFT -----------------------%
@@ -63,12 +72,13 @@ CL_zero = 0.27; % ?? unsure of this val
 % Stall still needs to be included.
 
 load('Cirrus Data\CLWBTable.mat')
-CL_alpha = [CLWBTable(:,2), CLWBTable(:,1)]
+% CL_alpha_table = [CLWBTable(:,2), CLWBTable(:,1)];
+CL_alpha = 4.794;
 
-figure 
-plot(rad2deg(CLWBTable(:,2)), CLWBTable(:,1)) % this works 
-ylabel('CL')
-xlabel('alpha (deg)')
+% figure 
+% plot(rad2deg(CLWBTable(:,2)), CLWBTable(:,1)) % this works 
+% ylabel('CL')
+% xlabel('alpha (deg)')
 
 
 % CL due to elevator deflection.
@@ -77,7 +87,7 @@ CL_elev = 1.8863;
 
 CLEH_alpha = 4.6086;
 
-down_wash = 0.1268; 
+down_wash = 0.12; 
 
 % CD due to alpha.
 % Input: alpha (rad).
@@ -111,12 +121,12 @@ CL_query = interp1(alpha_CL, CL_alpha2, alpha_CL, 'linear', 'extrap'); % CL at g
 CD_query = interp1(CL_Polar, CD_Polar, CL_query, 'linear', 'extrap'); % Interpolating CD for those CL values
 
 % Store CD(alpha) as a 2-column matrix
-CD_alpha = [alpha_CL, CD_query]
+CD_alpha = [alpha_CL, 1.2*CD_query]
 
-figure 
-plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
-ylabel('CD')
-xlabel('alpha (deg)')
+% figure 
+% plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
+% ylabel('CD')
+% xlabel('alpha (deg)')
 
 
 %% TODO 
@@ -128,25 +138,26 @@ Cm_zero = -0.0623;
 % Cm due to elevator deflection.
 % Input: alpha (rad).
 % Note: Coefficient multiplied by elevator deflection.
-Cm_elev = ...
-	[-0.35   -0.5
-     -0.27   -0.8
-     0.0000  -1.1903
-     0.25    -1.1902];
-     % 0.30    20];
+% Cm_elev = ...
+% 	[-0.35   -0.5
+%      -0.27   -0.8
+%      0.0000  -1.1903
+%      0.25    -1.1902];
+%      % 0.30    20];
 
-de = deg2rad(linspace(-20, 20));
-Cmde = 0.00585; % 0.00585
-Cme = - de .* Cmde; 
-
-figure 
-plot(rad2deg(de), Cme)
+% de = deg2rad(linspace(-20, 20));
+% Cmde = 0.00585; % 0.00585
+% Cme = - de .* Cmde; 
 
 
-hold on
-plot(rad2deg(Cm_elev(:,1)), Cm_elev(:,2))
+% figure 
+% plot(rad2deg(de), Cme)
 
-Cm_elev = [de(:), Cme(:)]; % Ensures column format
+
+% hold on
+% plot(rad2deg(Cm_elev(:,1)), Cm_elev(:,2))
+
+% Cm_elev = [de(:), Cme(:)]; % Ensures column format
 
 
 % Get all variables in the workspace
