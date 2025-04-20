@@ -3,7 +3,8 @@ clear
 clc 
 
 %% Load in Aircraft Parameters 
-run('.\Aircraft Params\Cirrus_SR22T.m');
+run('.\Aircraft Params\Cirrus_SR22T_rev2.m');
+% run('.\Aircraft Params\Cirrus_SR22T.m');
 load("Aircraft Params\SR22T.mat") 
 
 
@@ -18,9 +19,9 @@ end
 states_init = [0 -2887*0.3048 0.3057/57.3 157.50*1.852/3.6 0 0];  % initial conditions H=ft, Vx=kts
 %             [x(m) y(m) theta(rad) Vx(m/s) Vy(m/s) q(rad/s)]
 
-CD0 = 0.00; % not necessary for SR22T (Parastic Drag included in Drag Data) 
+% CD0 = 0.00; % not necessary for SR22T (Parastic Drag included in Drag Data) 
 
-% set to zer ofro trimming
+% set to zero for trimming
 deltaE = 0; % in degrees + is pitch down 
 throttle = 0; % currently not implemented 
 
