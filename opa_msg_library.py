@@ -54,7 +54,7 @@ def pack_joystic_state_msg(jsk_id, time_msg_sent, pitch, roll):
 def unpack_joystic_state_msg(msg: bytes):
     format_str = '2s2sddd'
     if len(msg) != struct.calcsize(format_str) :
-        print("Message", msg)
+        #print("Message", msg)
         raise Exception("Invalid message")
     jsk_id, msg_type, time_msg_sent, pitch, roll = struct.unpack('2s2sddd',msg)
     if msg_type != b'JS': raise Exception("Invalid message")   

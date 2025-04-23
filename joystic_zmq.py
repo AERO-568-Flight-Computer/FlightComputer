@@ -54,7 +54,7 @@ def main():
     
     while True:
         #Trying to set force, if no new force msg available, just skip
-        print("Joystic loop:")
+        #print("Joystic loop:")
         ias_msg_rxed  = True
         ias_msg_valid = True
         try:
@@ -72,14 +72,14 @@ def main():
                 raise("Invalid joystic ID")
 
         if ias_msg_valid and ias_msg_rxed:
-            print("Adjusting force")
+            #print("Adjusting force")
             JoysticInteface.adjustForce(ias)
 
         #Trying to read jostic status
-        print("Trying to read joystic state")
+        #print("Trying to read joystic state")
         pitch, roll = JoysticInteface.get_pitch_roll()
         time_now = time.time()
-        print("Trying to send joystic state")
+        #print("Trying to send joystic state")
         state_msg = pack_joystic_state_msg(jsk_id,time_now,pitch,roll)
         jsk_pos_tx_sock.send(state_msg)
 
