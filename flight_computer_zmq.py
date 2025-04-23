@@ -50,11 +50,11 @@ def main():
 
     fc_adc_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
     set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
-    fc_adc_cm_rx_sock.bind('tcp://localhost:5680')
+    fc_adc_cm_rx_sock.connect('tcp://localhost:5680')
     
     fc_adc_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives ADC command from here
     set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
-    fc_adc_pos_tx_sock.bind('tcp://localhost:5681')
+    fc_adc_pos_tx_sock.connect('tcp://localhost:5681')
 
     if verbose: print("Sockets set up")
 
