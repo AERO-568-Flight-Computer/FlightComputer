@@ -50,11 +50,7 @@ def main():
 
     fc_adc_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
     set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
-    fc_adc_cm_rx_sock.connect('tcp://localhost:5680')
-    
-    fc_adc_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives ADC command from here
-    set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
-    fc_adc_pos_tx_sock.connect('tcp://localhost:5681')
+    fc_adc_cm_rx_sock.connect('tcp://localhost:5681')
 
     if verbose: print("Sockets set up")
 
@@ -84,7 +80,7 @@ def main():
                 if sock is fc_s1_pos_rx_sock:
                     #Recieved servo_pos_message
                     servo_pos_msg_uncpacked = unpack_servo_pos_msg(msg)
-                    #print(f"Servo pos msg: {servo_pos_msg_uncpacked}")
+                    print(f"Servo pos msg: {servo_pos_msg_uncpacked}")
                 elif sock is fc_jsk_pos_rx_sock:
                     #Recieved joystic postion message, 
                     # setting servo position to joystic position
@@ -107,6 +103,7 @@ def main():
                 elif sock is fc_adc_cm_rx_sock:
                     # Recieve ADC message
                     adc_msg_unpacked = unpack_adc_state_msg(msg)
+                    print(adc_msg_unpacked)
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")
 if __name__ == '__main__':

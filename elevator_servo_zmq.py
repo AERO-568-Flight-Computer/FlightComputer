@@ -14,7 +14,7 @@ def main():
     #servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
     servo_id = b'S1'
     socket_timeout = 5000 # in milliseconds
-    servo_max_freq = 10
+    servo_max_freq = 500
 
     #Each socket is supposed to recieve it's own type of message.
     if verbose: print("Setting up sockets")

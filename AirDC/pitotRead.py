@@ -1,32 +1,7 @@
-#Improvment of pitotRead.py to send data via zmq. untested yet.  
 import serial
 import struct
-from opa_msg_library import *
-import time
-import zmq
 
-verbose = True
-#Defining servo config. id is used for messsages
-#ZMQ is goint to raise an exception if send or recieve is unsucesfull withing socket_timeout.
-#servo_max_freq is to not tax CPU to much. Just going to sleep for that much at the end. 
-adc_id = b'A1'
-socket_timeout = 5000 # in milliseconds
-
-#Each socket is supposed to recieve it's own type of message.
-if verbose: print("Setting up sockets")
-#Setting up sockets. PULL is type to recieve. PUSH to send.
-#LINGER 0 makes it close immidiatly when close is caleed for.
-#CONFLATE 1 keeps only the last message in the socket.
-#ip's are defined in data_agregator_zmq, all connections are to it.
-
-context = zmq.Context()
-a1_pos_tx_sock = context.socket(zmq.PUSH)
-a1_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
-a1_pos_tx_sock.setsockopt(zmq.LINGER, 0)
-a1_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
-a1_pos_tx_sock.connect('tcp://localhost:5581')
-
-ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
+ser = serial.Serial('/dev/tty', 115200, timeout=1)
 
 def crc16_custom(data: bytes) -> int:
     crc = 0x0000  # Initial value for 16-bit CRC
@@ -41,6 +16,8 @@ def crc16_custom(data: bytes) -> int:
                 crc = (crc << 1) & 0xFFFF  # Ensure it stays within 16 bits
 
     return crc
+
+
 
 while True:
     pitot = ser.read(1)
@@ -74,7 +51,7 @@ while True:
         diffPressureDL = struct.unpack('f', byteArray[20:24])[0]
         print("deltaPres [Pa]: ", diffPressureDL)
 
-        # Temperature difference in Celcius (4 byte float) #What does dl mean?
+        # Temperature difference in Celcius (4 byte float)
         diffSenseTempDL = struct.unpack('f', byteArray[24:28])[0]
         print("deltaTemp [C]: ", diffSenseTempDL)
 
@@ -92,20 +69,15 @@ while True:
         # CRC check
         crcCheck = int.from_bytes(byteArray[36:38], byteorder='little')
         print(crcCheck)
-        #I would like to pack a message, bit I want it to be very clear
-        #What variable goes into what position
-        dataDictionary = {
-             "militime": militime,
-             "absPressure": absPressure,
-             "absSenseTemp": absSenseTemp,
-             "diffPressureDL": diffPressureDL,
-             "diffSenseTempDL": diffSenseTempDL,
-             "rearFlagAOA": rearFlagAOA,
-             "frontFlagYaw": frontFlagYaw
-         }
-        
-        msg = pack_adc_state_msg(b'P1', time.time(), dataDictionary)
 
-        a1_pos_tx_sock.send(msg)
-        time1 = time.time()
-        print(f"{time1} : ADC message out: {unpack_adc_state_msg(msg)}")
+        # dataDictionary = {
+        #     "sysTimeStamp": sysTimeStamp,
+        #     "militime": militime,
+        #     "absPressure": absPressure,
+        #     "absSenseTemp": absSenseTemp,
+        #     "diffPressure": diffPressure,
+        #     "diffSenseTemp": diffSenseTemp,
+        #     "rearFlagAOA": rearFlagAOA,
+        #     "frontFlagYaw": frontFlagYaw
+        # }
+        time.sleep(0.02)

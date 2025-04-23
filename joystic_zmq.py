@@ -44,7 +44,7 @@ def main():
         context.term()
 
     try:
-        JoysticInteface = SimpleJoystickInterface()
+        JoysticInteface = SimpleJoystickInterface(True)
         time.sleep(1)
         if verbose: print("Joystic inteface created")
     except:
@@ -54,6 +54,7 @@ def main():
     
     while True:
         #Trying to set force, if no new force msg available, just skip
+        print("Joystic loop:")
         ias_msg_rxed  = True
         ias_msg_valid = True
         try:
@@ -66,14 +67,19 @@ def main():
             
             time1 = time.time()
             print(f"{time1} : IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
-            if jsk_id != jsk_id_rxed : ias_msg_valid = False
+            if jsk_id != jsk_id_rxed : 
+                ias_msg_valid = False
+                raise("Invalid joystic ID")
 
         if ias_msg_valid and ias_msg_rxed:
+            print("Adjusting force")
             JoysticInteface.adjustForce(ias)
 
         #Trying to read jostic status
+        print("Trying to read joystic state")
         pitch, roll = JoysticInteface.get_pitch_roll()
         time_now = time.time()
+        print("Trying to send joystic state")
         state_msg = pack_joystic_state_msg(jsk_id,time_now,pitch,roll)
         jsk_pos_tx_sock.send(state_msg)
 

@@ -17,7 +17,7 @@ class initialize:
 
         time.sleep(0.5) #adds delay to make sure that the server is setup
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #creates a TCP based socket
-        client.connect(('localhost', port)) #connects socket to the partiton manager as a client
+        client.connect(('localhost', 54321)) #connects socket to the partiton manager as a client
         client.send(b'success') #sends a message that tells the partiton manager that initialization has been completed
         print('Initialization signal sent')
 
@@ -53,28 +53,34 @@ def main():
             else: #runs if program is closed
                 print(Fore.YELLOW+nameList[item]+' has closed')
                 if nameList[item] in openPartitons: openPartitons.remove(nameList[item]) #notes that partiton is closed
+                print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test')
                 try:
                     if partitionInfo[item]['restart'].lower() == "true": #runs if program asked to restart
                         print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
                         p[item] = subprocess.Popen(['xterm -T "'+partitionInfo[item]['name']+'" -e python3 '+partitionInfo[item]['path']], shell=True)
                         print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                         checkInitialized(server, partitionInfo[item])
+                        print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test2')
 
                     elif partitionInfo[item]['restart'].lower() == "ask": #runs if program asked if it should restart
                         print(Style.RESET_ALL+'Seeing if restart of '+nameList[item]+' is requested')
                         option = mb.askyesno(title='Restart', message='Would you like to restart '+nameList[item]+'?') #creates dialog box
-
+                        print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test3')
                         if option == 1: #if answered yes, attempts restart
+                            print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test4')
                             print(Style.RESET_ALL+'Attempting restart of '+nameList[item])
                             p[item] = subprocess.Popen(['xterm -T "'+partitionInfo[item]['name']+'" -e python3 '+partitionInfo[item]['path']], shell=True)
                             print(Style.RESET_ALL+nameList[item]+' has been relaunched, waiting for initialization')
                             checkInitialized(server, partitionInfo[item])
+                            print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test5')
 
                         else:
+                            print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test6')
                             print(Style.RESET_ALL+nameList[item]+' not restarted per instructions')
                             partitionInfo[item]['restart'] = "false" #does not ask to restart again
 
                 except:
+                    print(Fore.GREEN+partitionInfo[item]['restart'].lower()+' test7')
                     print(Style.RESET_ALL+nameList[item]+' not restarted')
 
     server.close()
