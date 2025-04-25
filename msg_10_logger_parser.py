@@ -119,11 +119,22 @@ class Msg10LogParser:
         msg_dict_roll = msg_dict_pitch
         alldictlen = len(msg_dict["MessageID"])
 
+        pi = 0
+        ri = 0
+        for i in range(0,alldictlen):
+            if msg_dict(["Axis"] == b'1'):
+                pass
+            elif msg_dict(["Axis"] == b'1'):
+                pass
+
+
 def main():
     Parser = Msg10LogParser("joystic_raw_log.binlog")
     files = os.listdir()
     valid_msg_10s = Parser.parseFile()
     msg_dict_bytes, msg_dict = Parser.msg_10s_2bytes(valid_msg_10s)
+    for i in range(0,len(msg_dict["MotorDemand"])):
+        print(msg_dict["Axis"][i])
     plt.plot(np.array(msg_dict["Position"]))
     plt.plot(np.array(msg_dict["MotorDemand"]))
     plt.show()
