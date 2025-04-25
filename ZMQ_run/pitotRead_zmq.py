@@ -45,6 +45,8 @@ def crc16_custom(data: bytes) -> int:
 
 initialize.initialize()
 
+print("hi")
+
 while True:
     pitot = ser.read(1)
     sync_byte = 255

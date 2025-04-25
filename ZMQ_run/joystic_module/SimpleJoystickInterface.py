@@ -1,4 +1,4 @@
-from NGIcalibration import StirlingInceptor
+from joystic_module.NGIcalibration import StirlingInceptor
 import time
 import struct
 class SimpleJoystickInterface():
