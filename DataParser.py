@@ -439,7 +439,6 @@ if __name__ == "__main__":
                 data = joinBytes(new_message) # joins the bytes into a single byte string
                 crc = calculate_crc(data) # calculates the CRC
 
-                print(crc)
                 if crc != 0:
                     raise ValueError("Message may be corrupted! CRC does not match.")
                 

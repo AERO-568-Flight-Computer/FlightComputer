@@ -28,5 +28,11 @@
         "path": "ZMQ_run/pitotRead_zmq.py",
         "priority": 5,
         "restart": "ask"
+    },
+    {
+        "name":"Logger",
+        "path": "ZMQ_run/zmq_logger.py",
+        "priority": 6,
+        "restart": "ask"
     }
 ]
