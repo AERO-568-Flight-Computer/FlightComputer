@@ -54,7 +54,7 @@ class SimpleJoystickInterface():
                 rollPosition = pos[0]
                 roll_found = True
 
-            if pitch_found or roll_found:
+            if (pitch_found or roll_found) and False:
                 #log data
                 print("Logging...")
                 if self.log_flag:
