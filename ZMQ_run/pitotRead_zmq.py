@@ -4,7 +4,7 @@ import struct
 from opa_msg_library import *
 import time
 import zmq
-from PartitionManager.partitonManager import initialize
+from partitonManagerFunc import initialize
 
 verbose = True
 #Defining servo config. id is used for messsages

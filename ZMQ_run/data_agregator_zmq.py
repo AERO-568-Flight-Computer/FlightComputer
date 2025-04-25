@@ -9,7 +9,7 @@ import zmq
 import time
 import struct
 from opa_msg_library import *
-from PartitionManager.partitonManager import initialize
+from partitonManagerFunc import initialize
 
 socket_timeout = 5000 # in milliseconds
 no_msg_timeout = 45000 # in milliseconds

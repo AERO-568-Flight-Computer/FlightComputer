@@ -6,7 +6,7 @@ import zmq
 import time
 import struct
 from servo_module.Servo import Servo
-from PartitionManager.partitonManager import initialize
+from partitonManagerFunc import initialize
 
 verbose = True
 def main():

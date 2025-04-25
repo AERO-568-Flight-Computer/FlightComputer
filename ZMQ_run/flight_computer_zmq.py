@@ -2,7 +2,7 @@
 import zmq
 from opa_msg_library import *
 import time
-from PartitionManager.partitonManager import initialize
+from partitonManagerFunc import initialize
 
 verbose = True
 
