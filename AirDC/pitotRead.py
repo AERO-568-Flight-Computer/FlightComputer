@@ -1,5 +1,6 @@
 import serial
 import struct
+import time
 
 ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
