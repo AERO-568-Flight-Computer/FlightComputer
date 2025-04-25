@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Data Aggregator",
+        "path": "ZMQ_run/data_agregator_zmq.py",
+        "priority": 1,
+        "restart": "ask"
+    },
+    {
+        "name": "Flight Computer",
+        "path": "ZMQ_run/flight_computer_zmq.py",
+        "priority": 2,
+        "restart": "ask"
+    },
+    {
+        "name": "Joystick",
+        "path": "ZMQ_run/joystic_zmq.py",
+        "priority": 3,
+        "restart": "ask"
+    },
+    {
+        "name": "Elevator Servo",
+        "path": "ZMQ_run/elevator_servo_zmq.py",
+        "priority": 4,
+        "restart": "ask"
+    },
+    {
+        "name": "Pitot",
+        "path": "ZMQ_run/pitotRead_zmq.py",
+        "priority": 5,
+        "restart": "ask"
+    }
+]
