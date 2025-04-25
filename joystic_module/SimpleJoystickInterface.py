@@ -14,7 +14,7 @@ class SimpleJoystickInterface():
         self.ngi.configSetup()
         time.sleep(2)
         
-        self.log_flag = True        
+        self.log_flag = False        
         if self.log_flag:
             self.log_end_string   = b'endmsg'
             self.log_start_string = b'startmsg' 
