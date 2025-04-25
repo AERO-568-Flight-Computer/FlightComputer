@@ -1,10 +1,13 @@
 import zmq
 from partitonManagerFunc import initialize
+import time
+import struct
 
 def main():
     TIMEOUT = 10000
     FILENAME = "LOG_from_zmqlogger.binlog"
     DELIMBYTES = b'delim_123'
+    DELIMTIME  = b'delt'
     SESSIONSTART = b'SESSIONSTART'
     REOPEN_ITER = 1000
 
@@ -24,8 +27,11 @@ def main():
     try:
         i = 0
         while True:
+            time_msg = time.time()
+            time_str = struct.pack('d',time_msg)
+
             msg = logger_rx_sock.recv()
-            logentry = msg + DELIMBYTES
+            logentry = msg + DELIMTIME + time_str + DELIMBYTES
             logfile.write(logentry)
             i = i+1
             if i >= REOPEN_ITER:
