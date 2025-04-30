@@ -29,10 +29,16 @@
         "priority": 5,
         "restart": "ask"
     },
+       {
+        "name": "Vector Nav",
+        "path": "ZMQ_run/vector_nav_zmq.py",
+        "priority": 6,
+        "restart": "ask"
+    },
     {
         "name":"Logger",
         "path": "ZMQ_run/zmq_logger.py",
-        "priority": 6,
+        "priority": 7,
         "restart": "ask"
     }
 ]
