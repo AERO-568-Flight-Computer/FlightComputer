@@ -1,4 +1,4 @@
-#Improvment of pitotRead.py to send data via zmq. untested yet.  
+#Improvment of pitotRead.py to send data via zmq.
 import serial
 import struct
 from opa_msg_library import *
