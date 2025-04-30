@@ -155,7 +155,7 @@ def unpack_vn_state_msg(msg: bytes):
     #the dictionary is defined in pack_ad_msg
     vn_id         = msg_tuple[0]
     msg_type       = msg_tuple[1]
-    if msg_type != b'AD': raise Exception("Invalid message")   
+    if msg_type != b'VN': raise Exception("Invalid message")   
     time_msg_sent  = msg_tuple[2]
     TimeGPS       = msg_tuple[3]
     Yaw    = msg_tuple[4]

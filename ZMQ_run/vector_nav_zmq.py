@@ -4,6 +4,9 @@ import time
 from typing import Dict
 from opa_msg_library import *
 import zmq
+from partitonManagerFunc import initialize
+
+initialize.initialize()
 
 verbose = True
 #Defining servo config. id is used for messsages
@@ -20,11 +23,17 @@ if verbose: print("Setting up sockets")
 #ip's are defined in data_agregator_zmq, all connections are to it.
 
 context = zmq.Context()
+print("1")
 vn_pos_tx_sock = context.socket(zmq.PUSH)
+print("2")
 vn_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
+print("3")
 vn_pos_tx_sock.setsockopt(zmq.LINGER, 0)
+print("4")
 vn_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
+print("5")
 vn_pos_tx_sock.connect('tcp://localhost:5591')
+print("6")
 
 '''-----------------------------Lookup Tables (Data Structure)-------------------------------'''
 
@@ -453,8 +462,9 @@ if __name__ == "__main__":
     try:
         while True:
             try:
-
+                print("7")
                 message = getMessage(port, sync_byte) # Get the message
+                print("8")
                 # CRC Check to ensure message is not corrupted
                 # *Note: From reading the manual, the CRC is caluclated from the byte after the sync byte to the end of the message.
                 #        VectorNav makes it easy to check the CRC because when this calculation is done, the CRC should always be 0 for a valid message.
