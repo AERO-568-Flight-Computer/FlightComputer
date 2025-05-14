@@ -63,7 +63,7 @@ CD_Polar = real(CD_total);
 % plot(CD_Polar, CL_Polar)
 
 % applying smoothing, (polar data is not monoto
-windowSize = 7; % Try 3–11 depending on how smooth you want
+windowSize = 11; % Try 3–11 depending on how smooth you want
 CL_smooth = movmean(CL_Polar, windowSize);
 CD_smooth = movmean(CD_Polar, windowSize);
 
@@ -78,15 +78,15 @@ CD = [CD_smooth, flip(CD_smooth)];
 
 
 % mapping CL to alpha 
-alpha_CL = (CL-CL_zero)./CL_alpha;
+alpha_CL = (CL+CL_zero)./CL_alpha;
 
 % Store CD(alpha) as a 2-column matrix
 CD_alpha = [alpha_CL', 1.2*CD']
 
-figure 
-plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
-ylabel('CD')
-xlabel('alpha (deg)')
+% figure 
+% plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
+% ylabel('CD')
+% xlabel('alpha (deg)')
 
 
 %% Moment 

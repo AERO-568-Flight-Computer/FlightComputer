@@ -16,7 +16,7 @@ end
 
 
 %% Set Initial States + Controls 
-states_init = [0 -2887*0.3048 0.3057/57.3 157.50*1.852/3.6 0 0];  % initial conditions H=ft, Vx=kts
+states_init = [0 -1227 2.2/57.3 157.50*1.852/3.6 0 0];  % initial conditions H=ft, Vx=kts
 %             [x(m) y(m) theta(rad) Vx(m/s) Vy(m/s) q(rad/s)]
 
 % CD0 = 0.00; % not necessary for SR22T (Parastic Drag included in Drag Data) 
@@ -26,7 +26,8 @@ deltaE = 0; % in degrees + is pitch down
 throttle = 0; % currently not implemented 
 
 % Maneuver set to zero deflection for trimming
-t_maneuver = 100;
+% t_maneuver = 100;
+t_maneuver = 0; 
 p_maneuver = 1.5;
 delta_maneuver = 0;
 rate_maneuver = 7;
@@ -46,10 +47,11 @@ opspec = operspec(model);
 opspec.Inputs(1).u = 0;         % Free (to be solved)
 opspec.Inputs(1).Known = false;
 % Set throttle % as fixed.
-opspec.Inputs(2).u = 0.65;      % Set fixed value of % power
+opspec.Inputs(2).u = 0.3875;      % Set fixed value of % power
 opspec.Inputs(2).Known = true;
 % Set altitude as fixed
-opspec.States.x(1) = -3000*0.3048;        % set the altitude value in meters
+% opspec.States.x(1) = -3000*0.3048;        % set the altitude value in meters
+opspec.States.x(1) = -1227; 
 opspec.States.Known(1) = true;            % fix it
 
 opspec.States(1).SteadyState = [0 1 1 1 1 1];   % allow it to grow X state(1) distance
@@ -64,9 +66,34 @@ deltaE = op_point.Inputs(1).u;
 throttle = op_point.Inputs(2).u;
 
 % Maneuver
-delta_maneuver = -5;
-simData = [t_seconds_zeroed+t_maneuver, ADC0_centered_normal*delta_maneuver];
+% delta_maneuver = -26; % + 16 - 25.7 
+% simData = [t_seconds_zeroed+t_maneuver, ADC0_centered_normal*delta_maneuver];
+
+% Using Test Data
+load('./Flight Test/TEST1/ElevatorTest.mat')
+simData = [simData(:,1) + t_maneuver, simData(:,2)];
+
 
 %% Open Simulink Model
-SIM_3DoF
+% SIM_3DoF
+
+%% 
+% Ensure output folder exists
+folder = 'Flight Test/SimData';
+if ~exist(folder, 'dir')
+    mkdir(folder)
+end
+
+% Run simulation and store output
+simOut = sim('SIM_3DoF');  % Replace with your Simulink model name (no .slx)
+
+% Extract logged signals and time from simOut
+simV_kts = simOut.V_kts;   % Match to your "To Workspace" block name
+simh_m = simOut.h_m;       % Match to your "To Workspace" block name
+simtime = simOut.tout;     % Simulation time vector
+simtheta_deg = simOut.theta_deg; 
+simele_def_deg = simOut.ele_def; 
+
+% Save all variables into .mat file
+save(fullfile(folder, 'simSignal.mat'), 'simV_kts', 'simh_m', 'simtime', 'simtheta_deg', 'simele_def_deg')
 

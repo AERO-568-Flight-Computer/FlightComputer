@@ -67,3 +67,17 @@ subplot(2,1,2)
 plot(t_seconds(i:f),Cirrus568.ALT(i:f),'LineWidth',2)
 grid on
 ylabel("h[m]")
+
+V_kts = ((Cirrus568.VX(i:f).^2+Cirrus568.VY(i:f).^2+Cirrus568.VZ(i:f).^2).^0.5)*3.6/1.852; 
+t_secs = t_seconds(i:f); 
+h_m = Cirrus568.ALT(i:f); 
+
+% Create folder if it doesn't exist
+folder_name = 'Flight Test\Data';
+if ~exist(folder_name, 'dir')
+    mkdir(folder_name)
+end
+
+% Save data
+file_path = fullfile(folder_name, 'maneuver_profile_data.mat');
+save(file_path, 't_secs', 'V_kts', 'h_m')
