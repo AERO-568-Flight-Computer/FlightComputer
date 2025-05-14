@@ -23,17 +23,11 @@ if verbose: print("Setting up sockets")
 #ip's are defined in data_agregator_zmq, all connections are to it.
 
 context = zmq.Context()
-print("1")
 vn_pos_tx_sock = context.socket(zmq.PUSH)
-print("2")
 vn_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
-print("3")
 vn_pos_tx_sock.setsockopt(zmq.LINGER, 0)
-print("4")
 vn_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
-print("5")
 vn_pos_tx_sock.connect('tcp://localhost:5591')
-print("6")
 
 '''-----------------------------Lookup Tables (Data Structure)-------------------------------'''
 
@@ -399,6 +393,33 @@ def parse_and_print_data(payload_message, payload_sizes, active_fields_info):
             print(f"{field} ({group_name}):", unpacked_data)
             start_index += size
 
+def parse_and_return_data(payload_message, payload_sizes, active_fields_info):
+    start_index = 0
+
+    data_to_return = []
+
+    for group_name, fields in active_fields_info.items():
+        for field in fields:
+            type_format, size = data_type_lookup_table[field]
+            data_bytes = payload_message[start_index:start_index+size]
+            if ' ' in type_format:
+                formats = type_format.split()
+                results = []
+                offset = 0
+                for fmt in formats:
+                    part_size = struct.calcsize(fmt)
+                    part_bytes = data_bytes[offset:offset+part_size]
+                    results.extend(struct.unpack(fmt, part_bytes))
+                    offset += part_size
+                unpacked_data = tuple(results)
+            else:
+                unpacked_data = struct.unpack(type_format, data_bytes)
+            data_to_return.append(unpacked_data)
+            start_index += size
+
+    return(data_to_return)
+
+
 '''-----------------------------Utility Methods-------------------------------'''
 
 def findSyncByte(port, sync_byte):
@@ -462,9 +483,7 @@ if __name__ == "__main__":
     try:
         while True:
             try:
-                print("7")
                 message = getMessage(port, sync_byte) # Get the message
-                print("8")
                 # CRC Check to ensure message is not corrupted
                 # *Note: From reading the manual, the CRC is caluclated from the byte after the sync byte to the end of the message.
                 #        VectorNav makes it easy to check the CRC because when this calculation is done, the CRC should always be 0 for a valid message.
@@ -488,15 +507,31 @@ if __name__ == "__main__":
                 payload_message = removeHeader(message, active_groups) # This gets rid of the header which contains the syncbyte, groupbyte, and groupfield bytes and the CRC bytes at the end
 
                 # Prints data in a readable format on the terminal
-                print_data = parse_and_print_data(joinBytes(payload_message), payload_sizes, active_fields_info)
+                # print_data = parse_and_print_data(joinBytes(payload_message), payload_sizes, active_fields_info)
+                # print(print_data)
+                # time.sleep(1)
+                # '''This needs work because i'm not sure how other devices will read the data yet.'''
+                # # data that is sent to other devices to be used
+                # VectorNav_data = joinBytes(payload_message)
 
-                '''This needs work because i'm not sure how other devices will read the data yet.'''
-                # data that is sent to other devices to be used
-                VectorNav_data = joinBytes(payload_message)
+                vn_data_list = parse_and_return_data(joinBytes(payload_message), payload_sizes, active_fields_info)
 
-                vn_pos_tx_sock.send(VectorNav_data)
+                TimeGPS = vn_data_list[0]
+                ypr = vn_data_list[1]
+                velned = vn_data_list[2]
+
+                dataDictionary = {"TimeGps": TimeGPS, "ypr": ypr, "velned": velned}
+
+                print(type(dataDictionary["TimeGps"]))
+
+                msg = pack_vn_state_msg(b'V1', time.time(), dataDictionary)
+
+                # print(msg)
+
+                # pack_vn_state_msg(vn_id,time_msg_sent,vn)
+                vn_pos_tx_sock.send(msg)
                 time1 = time.time()
-                print(f"{time1} : VectorNav message out: {unpack_vn_state_msg(VectorNav_data)}")
+                print(f"{time1} : VectorNav message out: {unpack_vn_state_msg(msg)}")
 
             except (ValueError, IndexError) as error:
                 print(error)

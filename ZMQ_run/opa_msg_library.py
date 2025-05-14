@@ -140,9 +140,9 @@ def pack_vn_state_msg(vn_id,time_msg_sent,vn):
 
     #Just for code to be more readable, no meaning in parts
     msg_p1 = struct.pack('2s2sd',vn_id,b"VN",time_msg_sent)
-    msg_p2 = struct.pack('d',vn["TimeGPS"])
-    msg_p3 = struct.pack('ddd',vn["Yaw"],vn["Pitch"],vn["Roll"])
-    msg_p4 = struct.pack('ddd',vn["VelNed1"],vn["VelNed2"],vn["VelNed3"])
+    msg_p2 = struct.pack('d',vn["TimeGps"][0])
+    msg_p3 = struct.pack('ddd',vn["ypr"][0], vn["ypr"][1], vn["ypr"][2])
+    msg_p4 = struct.pack('ddd',vn["velned"][0], vn["velned"][1], vn["velned"][2])
     msg = msg_p1 + msg_p2 + msg_p3 + msg_p4
     return msg
 
@@ -158,20 +158,12 @@ def unpack_vn_state_msg(msg: bytes):
     if msg_type != b'VN': raise Exception("Invalid message")   
     time_msg_sent  = msg_tuple[2]
     TimeGPS       = msg_tuple[3]
-    Yaw    = msg_tuple[4]
-    Pitch   = msg_tuple[5]
-    Roll = msg_tuple[6]
-    VelNed1 = msg_tuple[7]
-    VelNed2    = msg_tuple[8]
-    VelNed3   = msg_tuple[9]
+    ypr    = (msg_tuple[4], msg_tuple[5], msg_tuple[6])
+    velned = (msg_tuple[7], msg_tuple[8], msg_tuple[9])
 
     vn_data_dict = {
-         "TimeGPS": TimeGPS,
-         "Yaw": Yaw,
-         "Pitch": Pitch,
-         "Roll": Roll,
-         "VelNed1": VelNed1,
-         "VelNed2": VelNed2,
-         "VelNed3": VelNed3
+         "TimeGps": TimeGPS,
+         "ypr": ypr,
+         "velned": velned
          }
     return vn_id, msg_type, time_msg_sent, vn_data_dict
