@@ -26,7 +26,7 @@ def main():
             i = i+1
             if i >= REOPEN_ITER:
                 logfile.close()
-                logfile = open(FILENAME,'bw')
+                logfile = open(FILENAME,'ba')
                 i = 0
     except Exception as e:
         print(e)
