@@ -120,3 +120,50 @@ def unpack_adc_state_msg(msg: bytes):
 #Vector narv is the hardest to do, lots of fields.
 #It has multiple internal message types, which arrive at different frequencies. So need to manage that. (multiple types of our messages, or wait till some messages arrive,
 # or send last slow internal messages at the highest freqeuency as well)
+
+def pack_vn_state_msg(vn_id,time_msg_sent,vn):
+    #add: adc data dictionary
+    #ADC data is a bit long. so instead of passing a lot of variables,
+    #I'll pass a dictionary. A question I have is what happens when you unpack that 
+    #   and return a dictionary though
+    #   does it take longer than or not? I probably don;t care at this point...
+    #adc_data_dict fiedls are the same last yer left:
+    #adc_data_dict = {
+    #     "militime": militime,
+    #     "absPressure": absPressure,
+    #     "absSenseTemp": absSenseTemp,
+    #     "diffPressureDL": diffPressureDL,
+    #     "diffSenseTempDL": diffSenseTempDL,
+    #     "rearFlagAOA": rearFlagAOA,
+    #     "frontFlagYaw": frontFlagYaw
+    #     }
+
+    #Just for code to be more readable, no meaning in parts
+    msg_p1 = struct.pack('2s2sd',vn_id,b"VN",time_msg_sent)
+    msg_p2 = struct.pack('d',vn["TimeGps"][0])
+    msg_p3 = struct.pack('ddd',vn["ypr"][0], vn["ypr"][1], vn["ypr"][2])
+    msg_p4 = struct.pack('ddd',vn["velned"][0], vn["velned"][1], vn["velned"][2])
+    msg = msg_p1 + msg_p2 + msg_p3 + msg_p4
+    return msg
+
+def unpack_vn_state_msg(msg: bytes):
+    format_str = '2s2sdddddddd'
+    if len(msg) != struct.calcsize(format_str) : raise Exception("Invalid message")
+
+    msg_tuple = struct.unpack(format_str,msg)
+    #Unpacking into dictionary, to see fields better for whomever uses the function
+    #the dictionary is defined in pack_ad_msg
+    vn_id         = msg_tuple[0]
+    msg_type       = msg_tuple[1]
+    if msg_type != b'VN': raise Exception("Invalid message")   
+    time_msg_sent  = msg_tuple[2]
+    TimeGPS       = msg_tuple[3]
+    ypr    = (msg_tuple[4], msg_tuple[5], msg_tuple[6])
+    velned = (msg_tuple[7], msg_tuple[8], msg_tuple[9])
+
+    vn_data_dict = {
+         "TimeGps": TimeGPS,
+         "ypr": ypr,
+         "velned": velned
+         }
+    return vn_id, msg_type, time_msg_sent, vn_data_dict

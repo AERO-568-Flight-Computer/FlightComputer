@@ -1,0 +1,1 @@
+import iolog = io.open("LOG_from_zmqlogger.txt", "rb", buffering=0)# print(log.read())

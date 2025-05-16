@@ -116,6 +116,14 @@ def main():
     set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
     fc_adc_pos_tx_sock.bind('tcp://localhost:5681')
 
+    fc_vn_cm_rx_sock = context.socket(zmq.PULL) #VN partition
+    set_default_ops_pull(fc_vn_cm_rx_sock,socket_timeout)
+    fc_vn_cm_rx_sock.bind('tcp://localhost:5591')
+
+    fc_vn_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives vn command from here
+    set_default_ops_push(fc_vn_pos_tx_sock,socket_timeout)
+    fc_vn_pos_tx_sock.bind('tcp://localhost:5691')
+
     #For communications with joystick
     fc_jsk_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives joystick position from here
     set_default_ops_push(fc_jsk_pos_tx_sock,socket_timeout)    
@@ -130,9 +138,9 @@ def main():
     set_default_ops_pull(logger_tx_sock,socket_timeout)
     logger_tx_sock.bind('tcp://localhost:6100')
 
-    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock, fc_adc_cm_rx_sock] #Listen for messages arriving to here.
-    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock, fc_adc_pos_tx_sock, logger_tx_sock] #Send to there
-    routing_table =  [[3,5],          [2,5],           [1,5],          [0,5],            [4,5]] 
+    input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock, fc_adc_cm_rx_sock, fc_vn_cm_rx_sock] #Listen for messages arriving to here.
+    output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock, fc_adc_pos_tx_sock, fc_vn_pos_tx_sock, logger_tx_sock] #Send to there
+    routing_table =  [[3,6],          [2,6],           [1,6],            [0,6],              [4,6],             [5,6]] 
     #example: routing_table[0] = [3,4]. Sends message from socket with index 0 from input_sockets list to index 3 and 4 of output_socket list.
 
     initialize.initialize()

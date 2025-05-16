@@ -52,6 +52,10 @@ def main():
     set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
     fc_adc_cm_rx_sock.connect('tcp://localhost:5681')
 
+    fc_vn_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
+    set_default_ops_pull(fc_vn_cm_rx_sock,socket_timeout)    
+    fc_vn_cm_rx_sock.connect('tcp://localhost:5591')
+
     if verbose: print("Sockets set up")
 
     #Poller allows to wait for messages from multiple sockets.
@@ -104,6 +108,10 @@ def main():
                     # Recieve ADC message
                     adc_msg_unpacked = unpack_adc_state_msg(msg)
                     print(adc_msg_unpacked)
+                elif sock is fc_vn_cm_rx_sock:
+                    # Recieve VN message
+                    vn_msg_unpacked = unpack_vn_state_msg(msg)
+                    print(vn_msg_unpacked)
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")
 if __name__ == '__main__':
