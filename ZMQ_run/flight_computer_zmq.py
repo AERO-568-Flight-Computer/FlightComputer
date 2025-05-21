@@ -96,12 +96,12 @@ def main():
                     
                     time1 = time.time()
                     print(f"{time1} : Jsk pos msg in: {jsk_pos_msg_unpacked}")
-                    
-                    servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
-                    
-                    time1 = time.time()
-                    print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
-                    fc_s1_cm_tx_sock.send(servo_cmd_msg)
+                    jsk_pos_value = jsk_pos_msg_unpacked[3]
+                    # servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
+                                         
+                    # time1 = time.time()
+                    # print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
+                    # fc_s1_cm_tx_sock.send(servo_cmd_msg)
 
                     jsk_cmd_msg = pack_joystic_cmd_msg(b'JK',time.time(),20)
                     time1 = time.time()
@@ -111,18 +111,18 @@ def main():
                     # Recieve ADC message
                     adc_msg_unpacked = unpack_adc_state_msg(msg)
                     print(adc_msg_unpacked)
-
-                    servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),adc_msg_unpacked[8])
-                    
-                    time1 = time.time()
-                    print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
-                    fc_s1_cm_tx_sock.send(servo_cmd_msg)
-
+                    adc_AOA_val = adc_msg_unpacked[8]
+                    # servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),adc_msg_unpacked[8])
                 elif sock is fc_vn_cm_rx_sock:
                     # Recieve VN message
                     vn_msg_unpacked = unpack_vn_state_msg(msg)
                     print(vn_msg_unpacked)
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")
+            time1 = time.time()
+            servo_pos_value = jsk_pos_value + adc_AOA_val
+            servo_cmd_msg = pack_servo_cmd_msg(b'S1',time1,servo_pos_value)
+            print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
+            fc_s1_cm_tx_sock.send(servo_cmd_msg)
 if __name__ == '__main__':
     main()
