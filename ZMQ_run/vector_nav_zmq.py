@@ -532,7 +532,7 @@ if __name__ == "__main__":
                 # pack_vn_state_msg(vn_id,time_msg_sent,vn)
                 vn_pos_tx_sock.send(msg)
                 time1 = time.time()
-                print(f"VectorNav message out: {unpack_vn_state_msg(msg)}")
+                print(f"VectorNav message out: {unpack_vn_state_msg(msg)[3]}")
                 sys.stdout.flush()
             except (ValueError, IndexError) as error:
                 print(error)

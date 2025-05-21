@@ -6,6 +6,7 @@ import zmq
 from opa_msg_library import *
 from joystic_module.SimpleJoystickInterface import SimpleJoystickInterface
 from partitonManagerFunc import initialize
+import sys
 
 verbose = True
 def main():
@@ -69,7 +70,7 @@ def main():
             jsk_id_rxed, msg_type, time_msg_sent, ias = unpack_joystic_cmd_msg(ias_msg)
             
             time1 = time.time()
-            print(f"{time1} : IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
+            print(f"IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
             if jsk_id != jsk_id_rxed : 
                 ias_msg_valid = False
                 raise("Invalid joystic ID")
@@ -87,7 +88,8 @@ def main():
         jsk_pos_tx_sock.send(state_msg)
 
         time1 = time.time()
-        print(f"{time1} : Joystic state message: {unpack_joystic_state_msg(state_msg)}")
+        print(f"Joystic state message: {unpack_joystic_state_msg(state_msg)[3], unpack_joystic_state_msg(state_msg)[4]}")
+        sys.stdout.flush()
 
         time.sleep(1/joystic_max_freq)
 
