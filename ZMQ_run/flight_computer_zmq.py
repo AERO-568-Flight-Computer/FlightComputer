@@ -110,8 +110,10 @@ def main():
                 elif sock is fc_adc_cm_rx_sock:
                     # Recieve ADC message
                     adc_msg_unpacked = unpack_adc_state_msg(msg)
-                    print(adc_msg_unpacked)
                     adc_AOA_val = adc_msg_unpacked[8]
+                    # print(adc_msg_unpacked)
+                    print("HERE'S THE VALUE!!!!!")
+                    print(adc_AOA_val)
                     # servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),adc_msg_unpacked[8])
                 elif sock is fc_vn_cm_rx_sock:
                     # Recieve VN message
