@@ -74,6 +74,8 @@ def main():
     #Waiting for at least one message to arrive, processing them when they do.
     if verbose: print("Entering the main loop of the flight computer")
     while True:
+        jsk_pos_value = 0
+        adc_AOA_val = 0
         poller_dict = dict(poller.poll(no_msg_timeout)) 
         if False: 
             print("poller_dict: ", poller_dict)
