@@ -5,6 +5,7 @@ from typing import Dict
 from opa_msg_library import *
 import zmq
 from partitonManagerFunc import initialize
+import sys
 
 initialize.initialize()
 
@@ -491,7 +492,7 @@ if __name__ == "__main__":
                 data = joinBytes(new_message) # joins the bytes into a single byte string
                 crc = calculate_crc(data) # calculates the CRC
 
-                print(crc)
+                # print(crc)
                 if crc != 0:
                     raise ValueError("Message may be corrupted! CRC does not match.")
                 
@@ -522,7 +523,7 @@ if __name__ == "__main__":
 
                 dataDictionary = {"TimeGps": TimeGPS, "ypr": ypr, "velned": velned}
 
-                print(type(dataDictionary["TimeGps"]))
+                # print(type(dataDictionary["TimeGps"]))
 
                 msg = pack_vn_state_msg(b'V1', time.time(), dataDictionary)
 
@@ -531,8 +532,8 @@ if __name__ == "__main__":
                 # pack_vn_state_msg(vn_id,time_msg_sent,vn)
                 vn_pos_tx_sock.send(msg)
                 time1 = time.time()
-                print(f"{time1} : VectorNav message out: {unpack_vn_state_msg(msg)}")
-
+                print(f"VectorNav message out: {unpack_vn_state_msg(msg)}")
+                sys.stdout.flush()
             except (ValueError, IndexError) as error:
                 print(error)
                 continue

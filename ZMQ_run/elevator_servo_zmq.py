@@ -7,6 +7,7 @@ import time
 import struct
 from servo_module.Servo import Servo
 from partitonManagerFunc import initialize
+import sys
 
 verbose = True
 def main():
@@ -39,7 +40,7 @@ def main():
     #elevator_servo_port is COM port this particular servo is connected to.
     #elevator_servo_id role is unclear, but servo's internal communication (COM port based) need it.
     elevator_servo_port = '/dev/ttyS4'
-    elevator_servo_id = 0x01
+    elevator_servo_id = 0x02
     servo = Servo(elevator_servo_port, elevator_servo_id)
     time.sleep(1)
 
@@ -58,6 +59,8 @@ def main():
         s1_pos_tx_sock.send(pos_msg)
         time1 = time.time()
         print(f"{time1} : Position message out: {unpack_servo_pos_msg(pos_msg)}")
+
+        sys.stdout.flush()
 
         #Try to recieve position, if haven't arrived, just continue to send current position.
         try:

@@ -23,19 +23,20 @@ class Servo:
         print(f"Desired position: {servo_desired_pos_deg}")
         servo_power_status = self.run_power_diag()
         if (servo_power_status == 0):
-            #print("Trying to set servo pos, cant:")
+            print("Trying to set servo pos, cant:")
             if servo_power_status == 0:
-                #print("Servo power out")
+                print("Servo power out")
                 pass
             return -1
-        
         #Checking servo position limits
         angleLimMin = -55
         angleLimMax = 55
         if angleLimMin < servo_desired_pos_deg < angleLimMax:
             command = self._build_pos_command(servo_desired_pos_deg)
             self.ser.write(bytearray(command))
-            rx = self.ser.read(12)
+            rx = self.ser.read(24)
+            print(bytearray(command))
+            print(rx)
             return 0
         else:
             #print("Cant set desired position. Out of servo limits")

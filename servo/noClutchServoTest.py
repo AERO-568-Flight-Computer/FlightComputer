@@ -3,7 +3,7 @@ import time
 
 def main():
     test_servo_port = '/dev/ttyS4'
-    test_servo_id = 0x01
+    test_servo_id = 0x02
     TestServo = NoClutchServo.Servo(test_servo_port, test_servo_id) #calls servo class and creates servo
     time.sleep(2)
 

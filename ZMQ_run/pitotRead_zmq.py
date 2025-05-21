@@ -5,6 +5,7 @@ from opa_msg_library import *
 import time
 import zmq
 from partitonManagerFunc import initialize
+import sys
 
 verbose = True
 #Defining servo config. id is used for messsages
@@ -45,58 +46,57 @@ def crc16_custom(data: bytes) -> int:
 
 initialize.initialize()
 
-print("hi")
 
 while True:
     pitot = ser.read(1)
     sync_byte = 255
     if pitot == bytes([sync_byte]):
 
-        print("Received sync byte:", sync_byte)
+        # print("Received sync byte:", sync_byte)
         byteArray = ser.read(38)
 
         # Time in miliseconds (4 byte int)
         militime = int.from_bytes(byteArray[0:4], byteorder='little')
-        print("Time [ms]: ", militime)
+        # print("Time [ms]: ", militime)
 
         # Abs Pressure in Pascals (4 byte float)
         absPressure = struct.unpack('f', byteArray[4:8])[0]
-        print("Abs Pres [Pa]: ", absPressure)
+        # print("Abs Pres [Pa]: ", absPressure)
 
         # Abs Temperature in Celcius (4 byte float)
         absSenseTemp = struct.unpack('f', byteArray[8:12])[0]
-        print("Abs Temp [C]: ", absSenseTemp)
+        # print("Abs Temp [C]: ", absSenseTemp)
 
         # Pressure difference in Pascals (4 byte float)
         diffPressureMS = struct.unpack('f', byteArray[12:16])[0]
-        print("deltaPres [Pa]: ", diffPressureMS)
+        # print("deltaPres [Pa]: ", diffPressureMS)
 
         # Temperature difference in Celcius (4 byte float)
         diffSenseTempMS = struct.unpack('f', byteArray[16:20])[0]
-        print("deltaTemp [C]: ", diffSenseTempMS)
+        # print("deltaTemp [C]: ", diffSenseTempMS)
 
         # Pressure difference in Pascals (4 byte float)
         diffPressureDL = struct.unpack('f', byteArray[20:24])[0]
-        print("deltaPres [Pa]: ", diffPressureDL)
+        # print("deltaPres [Pa]: ", diffPressureDL)
 
         # Temperature difference in Celcius (4 byte float) #What does dl mean?
         diffSenseTempDL = struct.unpack('f', byteArray[24:28])[0]
-        print("deltaTemp [C]: ", diffSenseTempDL)
+        # print("deltaTemp [C]: ", diffSenseTempDL)
 
         # AOA from rear pitot flag
         rearFlagAOA = struct.unpack('f', byteArray[28:32])[0]
-        print("AOA [degs]: ", rearFlagAOA)
+        # print("AOA [degs]: ", rearFlagAOA)
 
         # Yaw from front pitot flag
         frontFlagYaw = struct.unpack('f', byteArray[32:36])[0]
-        print("Yaw [degs]: ", frontFlagYaw)
+        # print("Yaw [degs]: ", frontFlagYaw)
 
         crcArray = bytes([255]) + byteArray[:-2]
         crc_calculated = crc16_custom(crcArray)
-        print(crc_calculated)
+        # print(crc_calculated)
         # CRC check
         crcCheck = int.from_bytes(byteArray[36:38], byteorder='little')
-        print(crcCheck)
+        # print(crcCheck)
         #I would like to pack a message, bit I want it to be very clear
         #What variable goes into what position
         dataDictionary = {
@@ -113,4 +113,6 @@ while True:
 
         a1_pos_tx_sock.send(msg)
         time1 = time.time()
-        print(f"{time1} : ADC message out: {unpack_adc_state_msg(msg)}")
+        # print(type(unpack_adc_state_msg(msg)[3]))
+        print(f"ADC message out: {unpack_adc_state_msg(msg)[3]}")
+        sys.stdout.flush()
