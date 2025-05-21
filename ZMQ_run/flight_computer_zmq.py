@@ -111,6 +111,13 @@ def main():
                     # Recieve ADC message
                     adc_msg_unpacked = unpack_adc_state_msg(msg)
                     print(adc_msg_unpacked)
+
+                    servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),adc_msg_unpacked[8])
+                    
+                    time1 = time.time()
+                    print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
+                    fc_s1_cm_tx_sock.send(servo_cmd_msg)
+
                 elif sock is fc_vn_cm_rx_sock:
                     # Recieve VN message
                     vn_msg_unpacked = unpack_vn_state_msg(msg)
