@@ -6,6 +6,9 @@ import time
 import zmq
 from partitonManagerFunc import initialize
 import sys
+from colorama import Fore, Back, Style
+
+print(Fore.MAGENTA)
 
 verbose = True
 #Defining servo config. id is used for messsages

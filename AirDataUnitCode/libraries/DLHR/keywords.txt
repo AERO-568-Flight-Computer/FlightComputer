@@ -1,5 +1,0 @@
-AMS	KEYWORD1
-readPressure	KEYWORD2
-readTemperature	KEYWORD2
-readSensor	KEYWORD2
-Available	KEYWORD2
