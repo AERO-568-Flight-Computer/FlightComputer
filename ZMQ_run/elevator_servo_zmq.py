@@ -46,6 +46,9 @@ def main():
 
     initialize.initialize()
 
+    pos_msg = 0
+    pos_cmd_msg = 0
+
     while True:
         if False: print("Main loop")
         set_pos_flag = True
@@ -58,9 +61,9 @@ def main():
         #print(f"Pos msg out: {unpack_servo_pos_msg(pos_msg)}")
         s1_pos_tx_sock.send(pos_msg)
         time1 = time.time()
-        print(f"Position message out: {unpack_servo_pos_msg(pos_msg)[3]}")
 
-        sys.stdout.flush()
+        # print(f"Position message out: {unpack_servo_pos_msg(pos_msg)[3]}")
+        # sys.stdout.flush()
 
         #Try to recieve position, if haven't arrived, just continue to send current position.
         try:
@@ -71,9 +74,13 @@ def main():
         if set_pos_flag:
             servo_id_rxd, msg_type,time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
             time1 = time.time()
-            print(f"Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)[3]}")
-            sys.stdout.flush()
+
+            # print(f"Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)[3]}")
+            # sys.stdout.flush()
             servo.set_pos(servo_angle_req)
+
+        sys.stdout.write(f"\r\033[4A{'time_pos_read | '+str(unpack_servo_pos_msg(pos_msg).get('time_pos_read')):<80}\n{'servo_pos_deg | '+str(unpack_servo_pos_msg(pos_msg).get('servo_pos_deg')):<80}\n{'time_msg_sent | '+str(unpack_servo_cmd_msg(pos_cmd_msg).get('time_msg_sent')):<80}\n{'servo_angle_req | '+str(unpack_servo_cmd_msg(pos_cmd_msg).get('servo_angle_req')):<80}")
+        sys.stdout.flush()
 
         #Sleeping to not tax the CPU too much.
         time.sleep(1/servo_max_freq)

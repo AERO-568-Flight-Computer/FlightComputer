@@ -21,7 +21,13 @@ def unpack_servo_cmd_msg(msg: bytes):
     servo_id, msg_type,time_msg_sent, servo_angle_req = struct.unpack(format_str,msg)
     #Checking if the msg type is what expected
     if msg_type != b'SC': raise Exception("Invalid message")
-    return servo_id,msg_type,time_msg_sent, servo_angle_req
+
+    servo_cmd_data_dict = {
+        "time_msg_sent": time_msg_sent,
+        "servo_angle_req": servo_angle_req,
+        }
+
+    # return servo_id,msg_type,time_msg_sent, servo_angle_req
 
 def pack_servo_pos_msg(servo_id, time_pos_read,servo_pos_deg):
     format_str = '2s2sdd'
@@ -33,7 +39,13 @@ def unpack_servo_pos_msg(msg: bytes):
     if len(msg) != struct.calcsize(format_str) : raise Exception("Invalid message")
     servo_id, msg_type, time_pos_read,servo_pos_deg = struct.unpack('2s2sdd',msg)
     if msg_type != b'SP': raise Exception("Invalid message")   
-    return servo_id, msg_type,time_pos_read, servo_pos_deg
+
+    servo_pos_data_dict = {
+        "time_pos_read": time_pos_read,
+        "servo_pos_deg": servo_pos_deg,
+        }
+
+    # return servo_id, msg_type,time_pos_read, servo_pos_deg
 
 #Joystic
 def pack_joystic_cmd_msg(jsk_id,time_msg_sent, ias):
@@ -57,8 +69,14 @@ def unpack_joystic_state_msg(msg: bytes):
         #print("Message", msg)
         raise Exception("Invalid message")
     jsk_id, msg_type, time_msg_sent, pitch, roll = struct.unpack('2s2sddd',msg)
-    if msg_type != b'JS': raise Exception("Invalid message")   
-    return jsk_id, msg_type, time_msg_sent, pitch, roll
+    if msg_type != b'JS': raise Exception("Invalid message") 
+
+    joystic_data_dict = {
+        "pitch": pitch,
+        "roll": roll,
+        }
+
+    # return jsk_id, msg_type, time_msg_sent, pitch, roll
 
 #Air data unit
 def pack_adc_state_msg(adc_id,time_msg_sent,adc):

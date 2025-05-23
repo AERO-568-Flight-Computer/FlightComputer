@@ -3,6 +3,7 @@ import zmq
 from opa_msg_library import *
 import time
 from partitonManagerFunc import initialize
+import sys
 
 verbose = True
 
@@ -128,9 +129,6 @@ def main():
             servo_cmd_msg = pack_servo_cmd_msg(b'S1',time1,servo_pos_value)
             print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
             fc_s1_cm_tx_sock.send(servo_cmd_msg)
-
-            # sys.stdout.write(f"\r\033[6A{'militime | '+str(unpack_adc_state_msg(msg)[3].get('militime')):<80}\n{'absPressure | '+str(unpack_adc_state_msg(msg)[3].get('absPressure')):<80}\n{'absSenseTemp | '+str(unpack_adc_state_msg(msg)[3].get('absSenseTemp')):<80}\n{'diffPressureDL | '+str(unpack_adc_state_msg(msg)[3].get('diffPressureDL')):<80}\n{'diffSenseTempDL | '+str(unpack_adc_state_msg(msg)[3].get('diffSenseTempDL')):<80}\n{'rearFlagAOA | '+str(unpack_adc_state_msg(msg)[3].get('rearFlagAOA')):<80}\n{'frontFlagYaw | '+str(unpack_adc_state_msg(msg)[3].get('frontFlagYaw')):<80}")
-            # sys.stdout.flush()
 
 if __name__ == '__main__':
     main()
