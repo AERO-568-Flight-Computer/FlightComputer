@@ -43,7 +43,7 @@ def main():
     #elevator_servo_port is COM port this particular servo is connected to.
     #elevator_servo_id role is unclear, but servo's internal communication (COM port based) need it.
     elevator_servo_port = '/dev/ttyS4'
-    elevator_servo_id = 0x02
+    elevator_servo_id = 0x01
     servo = Servo(elevator_servo_port, elevator_servo_id)
     time.sleep(1)
 
