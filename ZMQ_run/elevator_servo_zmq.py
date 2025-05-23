@@ -8,6 +8,9 @@ import struct
 from servo_module.Servo import Servo
 from partitonManagerFunc import initialize
 import sys
+from colorama import Fore, Back, Style
+
+print(Fore.CYAN)
 
 verbose = True
 def main():

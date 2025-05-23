@@ -7,6 +7,9 @@ from opa_msg_library import *
 from joystic_module.SimpleJoystickInterface import SimpleJoystickInterface
 from partitonManagerFunc import initialize
 import sys
+from colorama import Fore, Back, Style
+
+print(Fore.RED)
 
 verbose = True
 def main():
