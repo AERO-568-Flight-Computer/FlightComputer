@@ -117,7 +117,7 @@ class StirlingInceptor():
 
     def IBIT(self):
         sleep(1)
-        print("Set joystick to passive")
+        # print("Set joystick to passive")
         msg = self.msg01(axis='pitch', ISUMode=0)
         self.txSock.sendto(msg, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
         sleep(1)
@@ -125,7 +125,7 @@ class StirlingInceptor():
         self.txSock.sendto(msg, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
         sleep(1)
 
-        print("IBIT")
+        # print("IBIT")
         msgIBIT = self.msg01(IBIT=True)
         self.txSock.sendto(msgIBIT, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
 
@@ -138,12 +138,12 @@ class StirlingInceptor():
 
     def activate(self):
         # Put both pitch and roll axes into active mode
-        print("Activating pitch axis")
+        # print("Activating pitch axis")
         msg = self.msg01(axis='pitch', ISUMode=1)
         self.txSock.sendto(msg, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
         sleep(1)
 
-        print("Activating roll axis")
+        # print("Activating roll axis")
         msg = self.msg01(axis='roll', ISUMode=1)
         self.txSock.sendto(msg, (self.UDP_IP_NGI, self.UDP_PORT_CTL))
         sleep(1)
@@ -398,7 +398,7 @@ class StirlingInceptor():
         self.rxSockStatus.close()
 
     def configSetup(self):
-        print("Setting up configuration of stick")
+        # print("Setting up configuration of stick")
         """ PITCH AXIS CONFIGURATION """
         self.txSock.sendto(self.msg08(axis='pitch'),
                            (self.UDP_IP_NGI, self.UDP_PORT_CTLCFG))  # Position Offset Ctrl Msg

@@ -67,8 +67,14 @@ def unpack_joystic_state_msg(msg: bytes):
         #print("Message", msg)
         raise Exception("Invalid message")
     jsk_id, msg_type, time_msg_sent, pitch, roll = struct.unpack('2s2sddd',msg)
-    if msg_type != b'JS': raise Exception("Invalid message")   
-    return jsk_id, msg_type, time_msg_sent, pitch, roll
+    if msg_type != b'JS': raise Exception("Invalid message")
+
+    joystic_data_dict = {
+    "pitch": pitch,
+    "roll": roll,
+    }
+
+    return jsk_id, msg_type, time_msg_sent, joystic_data_dict
 
 #Air data unit
 def pack_adc_state_msg(adc_id,time_msg_sent,adc):
