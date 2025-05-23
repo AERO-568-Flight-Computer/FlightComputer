@@ -99,7 +99,7 @@ def main():
                     
                     time1 = time.time()
                     print(f"{time1} : Jsk pos msg in: {jsk_pos_msg_unpacked}")
-                    jsk_pos_value = jsk_pos_msg_unpacked[3]
+                    jsk_pos_value = jsk_pos_msg_unpacked[3].get('pitch')
                     # servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),jsk_pos_msg_unpacked[3])
                                          
                     # time1 = time.time()

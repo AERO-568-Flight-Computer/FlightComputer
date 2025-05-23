@@ -20,7 +20,7 @@ def main():
     socket_timeout = 1000
     joystic_max_freq = 50
 
-    if verbose: print("--------- Joystick: starting socket creation ---------")
+    # if verbose: print("--------- Joystick: starting socket creation ---------")
     #Setting up sockets. PULL is type to recieve. PUSH to send.
     #LINGER 0 makes it close immidiatly when close is caleed for.
     #CONFLATE 1 keeps only the last message in the socket.
@@ -42,7 +42,7 @@ def main():
     jsk_pos_tx_sock.setsockopt(zmq.CONFLATE, 1)
     jsk_pos_tx_sock.connect('tcp://localhost:5551')
 
-    if verbose: print("-------Joystick: socket creation done -----------")
+    # if verbose: print("-------Joystick: socket creation done -----------")
 
     initialize.initialize()
 
@@ -53,9 +53,9 @@ def main():
     try:
         JoysticInteface = SimpleJoystickInterface(True)
         time.sleep(1)
-        if verbose: print("Joystic inteface created")
+        # if verbose: print("Joystic inteface created")
     except:
-        if verbose: print("Joystic creation failed. Closing")
+        # if verbose: print("Joystic creation failed. Closing")
         close_networking()
         raise
     
@@ -73,7 +73,7 @@ def main():
             jsk_id_rxed, msg_type, time_msg_sent, ias = unpack_joystic_cmd_msg(ias_msg)
             
             time1 = time.time()
-            print(f"IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
+            # print(f"IAS msg recieved: {unpack_joystic_cmd_msg(ias_msg)}")
             if jsk_id != jsk_id_rxed : 
                 ias_msg_valid = False
                 raise("Invalid joystic ID")
@@ -91,7 +91,8 @@ def main():
         jsk_pos_tx_sock.send(state_msg)
 
         time1 = time.time()
-        print(f"Joystic state message: {unpack_joystic_state_msg(state_msg)[3], unpack_joystic_state_msg(state_msg)[4]}")
+        sys.stdout.write(f"\r\033[2A{'pitch | '+str(unpack_joystic_state_msg(state_msg)[3].get('pitch')):<80}\n{'roll | '+str(unpack_joystic_state_msg(state_msg)[3].get('roll')):<80}")
+        # print(f"Joystic state message: {unpack_joystic_state_msg(state_msg)[3], unpack_joystic_state_msg(state_msg)[4]}")
         sys.stdout.flush()
 
         time.sleep(1/joystic_max_freq)

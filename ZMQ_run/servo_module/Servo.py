@@ -20,7 +20,7 @@ class Servo:
 
     def set_pos(self,servo_desired_pos_deg):
         #Checking power
-        print(f"Desired position: {servo_desired_pos_deg}")
+        # print(f"Desired position: {servo_desired_pos_deg}")
         servo_power_status, clutch_power_status = self.run_power_diag()
         if (servo_power_status == 0) or (clutch_power_status == 0):
             #print("Trying to set servo pos, cant:")

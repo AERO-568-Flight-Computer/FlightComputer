@@ -22,7 +22,7 @@ def main():
     servo_max_freq = 500
 
     #Each socket is supposed to recieve it's own type of message.
-    if verbose: print("Setting up sockets")
+    # if verbose: print("Setting up sockets")
     #Setting up sockets. PULL is type to recieve. PUSH to send.
     #LINGER 0 makes it close immidiatly when close is caleed for.
     #CONFLATE 1 keeps only the last message in the socket.
@@ -43,17 +43,16 @@ def main():
     #elevator_servo_port is COM port this particular servo is connected to.
     #elevator_servo_id role is unclear, but servo's internal communication (COM port based) need it.
     elevator_servo_port = '/dev/ttyS4'
-    elevator_servo_id = 0x02
+    elevator_servo_id = 0x01
     servo = Servo(elevator_servo_port, elevator_servo_id)
     time.sleep(1)
 
     initialize.initialize()
 
-    pos_msg = 0
-    pos_cmd_msg = 0
+    pos_cmd_msg = struct.pack('2s2sdd',b'SC',b'SC',0, 0)
 
     while True:
-        if False: print("Main loop")
+        # if False: print("Main loop")
         set_pos_flag = True
         valid_cmd_msg_recieved = False
 
@@ -75,16 +74,17 @@ def main():
             set_pos_flag = False
 
         if set_pos_flag:
-            servo_id_rxd, msg_type,time_msg_sent, servo_angle_req = unpack_servo_cmd_msg(pos_cmd_msg)
+            servo_id_rxd, msg_type,time_msg_sent, servo_angle_dict = unpack_servo_cmd_msg(pos_cmd_msg)
             time1 = time.time()
+
+            servo_angle_req = servo_angle_dict.get('servo_angle_req')
 
             # print(f"Command message in: {unpack_servo_cmd_msg(pos_cmd_msg)[3]}")
             # sys.stdout.flush()
             servo.set_pos(servo_angle_req)
 
-        sys.stdout.write(f"\r\033[4A{'time_pos_read | '+str(unpack_servo_pos_msg(pos_msg).get('time_pos_read')):<80}\n{'servo_pos_deg | '+str(unpack_servo_pos_msg(pos_msg).get('servo_pos_deg')):<80}\n{'time_msg_sent | '+str(unpack_servo_cmd_msg(pos_cmd_msg).get('time_msg_sent')):<80}\n{'servo_angle_req | '+str(unpack_servo_cmd_msg(pos_cmd_msg).get('servo_angle_req')):<80}")
+        sys.stdout.write(f"\r\033[2A{'servo_pos_deg | '+str(unpack_servo_pos_msg(pos_msg)[3].get('servo_pos_deg')):<80}\n{'servo_angle_req | '+str(unpack_servo_cmd_msg(pos_cmd_msg)[3].get('servo_angle_req')):<80}")
         sys.stdout.flush()
-
         #Sleeping to not tax the CPU too much.
         time.sleep(1/servo_max_freq)
 
