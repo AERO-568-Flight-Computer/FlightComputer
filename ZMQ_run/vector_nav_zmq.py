@@ -532,10 +532,10 @@ if __name__ == "__main__":
                 # pack_vn_state_msg(vn_id,time_msg_sent,vn)
                 vn_pos_tx_sock.send(msg)
                 time1 = time.time()
-                print(f"VectorNav message out: {unpack_vn_state_msg(msg)[3]}")
+                sys.stdout.write(f"\r\033[2A{'TimeGps | '+str(unpack_vn_state_msg(msg)[3].get('TimeGps')):<80}\n{'ypr | '+str(unpack_vn_state_msg(msg)[3].get('ypr')):<80}\n{'velned | '+str(unpack_vn_state_msg(msg)[3].get('velned')):<80}")  # <80 ensures at least 80 characters wide, padding with spaces
                 sys.stdout.flush()
             except (ValueError, IndexError) as error:
-                print(error)
+                # print(error)
                 continue
 
             time.sleep(0.1)

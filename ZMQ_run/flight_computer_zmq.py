@@ -73,9 +73,9 @@ def main():
 
     #Waiting for at least one message to arrive, processing them when they do.
     if verbose: print("Entering the main loop of the flight computer")
+    jsk_pos_value = 0
+    adc_AOA_val = 0
     while True:
-        jsk_pos_value = 0
-        adc_AOA_val = 0
         poller_dict = dict(poller.poll(no_msg_timeout)) 
         if False: 
             print("poller_dict: ", poller_dict)
@@ -111,11 +111,11 @@ def main():
                     fc_jsk_ias_tx_sock.send(jsk_cmd_msg)
                 elif sock is fc_adc_cm_rx_sock:
                     # Recieve ADC message
-                    adc_msg_unpacked = unpack_adc_state_msg(msg)
-                    adc_AOA_val = adc_msg_unpacked[8]
-                    # print(adc_msg_unpacked)
-                    print("HERE'S THE VALUE!!!!!")
-                    print(adc_AOA_val)
+                    adc_msg_unpacked = unpack_adc_state_msg(msg)[3]
+                    adc_AOA_val = adc_msg_unpacked.get('rearFlagAOA');
+                    # print(adc_msg_unpacked.get('rearFlagAOA'))
+                    # print("HERE'S THE VALUE!!!!!")
+                    # print(adc_AOA_val)
                     # servo_cmd_msg = pack_servo_cmd_msg(b'S1',time.time(),adc_msg_unpacked[8])
                 elif sock is fc_vn_cm_rx_sock:
                     # Recieve VN message
@@ -128,5 +128,9 @@ def main():
             servo_cmd_msg = pack_servo_cmd_msg(b'S1',time1,servo_pos_value)
             print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
             fc_s1_cm_tx_sock.send(servo_cmd_msg)
+
+            # sys.stdout.write(f"\r\033[6A{'militime | '+str(unpack_adc_state_msg(msg)[3].get('militime')):<80}\n{'absPressure | '+str(unpack_adc_state_msg(msg)[3].get('absPressure')):<80}\n{'absSenseTemp | '+str(unpack_adc_state_msg(msg)[3].get('absSenseTemp')):<80}\n{'diffPressureDL | '+str(unpack_adc_state_msg(msg)[3].get('diffPressureDL')):<80}\n{'diffSenseTempDL | '+str(unpack_adc_state_msg(msg)[3].get('diffSenseTempDL')):<80}\n{'rearFlagAOA | '+str(unpack_adc_state_msg(msg)[3].get('rearFlagAOA')):<80}\n{'frontFlagYaw | '+str(unpack_adc_state_msg(msg)[3].get('frontFlagYaw')):<80}")
+            # sys.stdout.flush()
+
 if __name__ == '__main__':
     main()

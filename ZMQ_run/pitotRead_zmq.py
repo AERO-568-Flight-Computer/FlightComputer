@@ -114,5 +114,6 @@ while True:
         a1_pos_tx_sock.send(msg)
         time1 = time.time()
         # print(type(unpack_adc_state_msg(msg)[3]))
-        print(f"ADC message out: {unpack_adc_state_msg(msg)[3]}")
+        # print(f"ADC message out: {unpack_adc_state_msg(msg)[3]}")
+        sys.stdout.write(f"\r\033[6A{'militime | '+str(unpack_adc_state_msg(msg)[3].get('militime')):<80}\n{'absPressure | '+str(unpack_adc_state_msg(msg)[3].get('absPressure')):<80}\n{'absSenseTemp | '+str(unpack_adc_state_msg(msg)[3].get('absSenseTemp')):<80}\n{'diffPressureDL | '+str(unpack_adc_state_msg(msg)[3].get('diffPressureDL')):<80}\n{'diffSenseTempDL | '+str(unpack_adc_state_msg(msg)[3].get('diffSenseTempDL')):<80}\n{'rearFlagAOA | '+str(unpack_adc_state_msg(msg)[3].get('rearFlagAOA')):<80}\n{'frontFlagYaw | '+str(unpack_adc_state_msg(msg)[3].get('frontFlagYaw')):<80}")
         sys.stdout.flush()
