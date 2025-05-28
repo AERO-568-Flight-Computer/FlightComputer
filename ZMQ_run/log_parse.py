@@ -2,16 +2,24 @@ import struct
 import warnings
 import opa_msg_library as msl
 
+DELIMBYTES   = b'delim_123' #delimiters for the log entries
+DELIMTIME    = b'delt' #delimiter for time tag
+SESSIONSTART = b'SESSIONSTART' #delimiter for session
+
+
 file = open('LOG_from_zmqlogger.binlog','br')
 filestr = file.read()
-entries = filestr.split(b'delim_123')
-for entry in entries:
-    splitentry = entry.split(b'delt')
-    time_raw = splitentry[1]
-    time = struct.unpack('d',time_raw)
-    time = time[0]
-    print(entry[2:4], ' time raw:', time_raw, 'time:', time)
-file.close()
+sessions = filestr.split(SESSIONSTART)
+for i,session in enumerate(sessions):
+    logentries = session.split(DELIMBYTES)
+    sessions[i] = logentries
+    for j, logentry in logentries:
+        taged_logentry = logentry.split(DELIMTIME)
+        session[i][j] = taged_logentry
+
+print(session)
+
+
 
 #First unpack with correct function, and put into a list:
 #each element: dict: {id:, field1:, field2:, etc}
