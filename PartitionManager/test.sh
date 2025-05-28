@@ -1,9 +1,9 @@
-#! /usr/bin/bash
+#!/bin/bash
 
-source env/bin/activate
-echo "entered virtual enviroment"
+# Activate and enter the Virtual Environment
+source .venv/bin/activate
+echo "Entered the virtual environment..."
 
+# Run the Partition Manager
 python3 PartitionManager/partitonManager.py
-echo "launched PM"
-
-pause
+echo "Launched the partition manager..."
