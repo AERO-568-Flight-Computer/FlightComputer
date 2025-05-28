@@ -1,6 +1,6 @@
 import struct
 import warnings
-import opa_msg_library as msl
+import ZMQ_run.opa_msg_library as msl
 
 file = open('LOG_from_zmqlogger.binlog','br')
 filestr = file.read()
