@@ -57,7 +57,8 @@ ylabel('h (m)')
 
 %% Trim Data 
 
-SimData_Test = [t_s_corr, de_filt]; 
+% SimData_Test = [t_s_corr, de_filt]; 
+SimData_Test = [t_s_corr, de_deg]; 
 % simData = SimData_Test(SimData_Test(:,1) >= 6.4 & SimData_Test(:,1) <= 14, :);
 simData = SimData_Test; 
 

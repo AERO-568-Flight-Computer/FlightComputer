@@ -1,6 +1,6 @@
-close all 
-clear 
-clc 
+% close all 
+% clear 
+% clc 
 
 % Unit Conversions
 ft2m = 1/3.281; 
@@ -80,8 +80,10 @@ CD = [CD_smooth, flip(CD_smooth)];
 % mapping CL to alpha 
 alpha_CL = (CL+CL_zero)./CL_alpha;
 
+dragCorr = 1.2; 
+
 % Store CD(alpha) as a 2-column matrix
-CD_alpha = [alpha_CL', 1.2*CD']
+CD_alpha = [alpha_CL', dragCorr*CD'];
 
 % figure 
 % plot(rad2deg(CD_alpha(:,1)), CD_alpha(:,2))
