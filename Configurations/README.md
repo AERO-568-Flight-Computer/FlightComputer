@@ -2,7 +2,7 @@
 Written by Ajay Parikh
 
 ## Objective
-Give the partition manager what to open and how to treat the partitions.
+Give the partition manager what to open (implemented) and the data aggregator information of how to talk to them (not implemented).
 
 ## json file feilds:
 * name: string that gives what the program is called in outputs
