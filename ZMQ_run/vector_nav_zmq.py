@@ -31,7 +31,7 @@ vn_pos_tx_sock = context.socket(zmq.PUSH)
 vn_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
 vn_pos_tx_sock.setsockopt(zmq.LINGER, 0)
 vn_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
-vn_pos_tx_sock.connect('tcp://localhost:5591')
+vn_pos_tx_sock.connect('udp://localhost:5591')
 
 '''-----------------------------Lookup Tables (Data Structure)-------------------------------'''
 

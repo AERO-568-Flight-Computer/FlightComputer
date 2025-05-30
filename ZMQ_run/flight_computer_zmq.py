@@ -36,27 +36,27 @@ def main():
     if verbose: print("Setting up sockets")
     fc_s1_cm_tx_sock   = context.socket(zmq.PUSH)
     set_default_ops_push(fc_s1_cm_tx_sock,socket_timeout)
-    fc_s1_cm_tx_sock.connect('tcp://localhost:5670') #To send(tx) servo1 command message (servo_cmd_msg)
+    fc_s1_cm_tx_sock.connect('udp://localhost:5670') #To send(tx) servo1 command message (servo_cmd_msg)
 
     fc_s1_pos_rx_sock = context.socket(zmq.PULL)
     set_default_ops_pull(fc_s1_pos_rx_sock,socket_timeout)
-    fc_s1_pos_rx_sock.connect('tcp://localhost:5671') #To receive(rx) servo_pos_msg from servo 1
+    fc_s1_pos_rx_sock.connect('udp://localhost:5671') #To receive(rx) servo_pos_msg from servo 1
 
     fc_jsk_pos_rx_sock = context.socket(zmq.PULL) #To rx joystic_state_msg
     set_default_ops_pull(fc_jsk_pos_rx_sock,socket_timeout)
-    fc_jsk_pos_rx_sock.connect('tcp://localhost:5672')
+    fc_jsk_pos_rx_sock.connect('udp://localhost:5672')
 
     fc_jsk_ias_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_push(fc_jsk_ias_tx_sock,socket_timeout) #To tx joystic_cmd_msg
-    fc_jsk_ias_tx_sock.connect('tcp://localhost:5673')
+    fc_jsk_ias_tx_sock.connect('udp://localhost:5673')
 
     fc_adc_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
     set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
-    fc_adc_cm_rx_sock.connect('tcp://localhost:5681')
+    fc_adc_cm_rx_sock.connect('udp://localhost:5681')
 
     fc_vn_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send ADC command here
     set_default_ops_pull(fc_vn_cm_rx_sock,socket_timeout)    
-    fc_vn_cm_rx_sock.connect('tcp://localhost:5691')
+    fc_vn_cm_rx_sock.connect('udp://localhost:5691')
 
     if verbose: print("Sockets set up")
 

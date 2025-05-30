@@ -29,7 +29,7 @@ a1_pos_tx_sock = context.socket(zmq.PUSH)
 a1_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
 a1_pos_tx_sock.setsockopt(zmq.LINGER, 0)
 a1_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
-a1_pos_tx_sock.connect('tcp://localhost:5581')
+a1_pos_tx_sock.connect('udp://localhost:5581')
 
 ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 

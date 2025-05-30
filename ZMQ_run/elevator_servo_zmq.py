@@ -32,13 +32,13 @@ def main():
     s1_cmd_rx_sock.setsockopt(zmq.RCVTIMEO, socket_timeout)
     s1_cmd_rx_sock.setsockopt(zmq.LINGER, 0)
     s1_cmd_rx_sock.setsockopt(zmq.CONFLATE, 1)
-    s1_cmd_rx_sock.connect('tcp://localhost:5560') 
+    s1_cmd_rx_sock.connect('udp://localhost:5560') 
 
     s1_pos_tx_sock = context.socket(zmq.PUSH)
     s1_pos_tx_sock.setsockopt(zmq.SNDTIMEO, socket_timeout)
     s1_pos_tx_sock.setsockopt(zmq.LINGER, 0)
     s1_pos_tx_sock.setsockopt(zmq.CONFLATE,1)
-    s1_pos_tx_sock.connect('tcp://localhost:5561')
+    s1_pos_tx_sock.connect('udp://localhost:5561')
 
     #elevator_servo_port is COM port this particular servo is connected to.
     #elevator_servo_id role is unclear, but servo's internal communication (COM port based) need it.

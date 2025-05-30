@@ -84,60 +84,60 @@ def main():
     #Joystic sockets
     jsk_ias_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_push(jsk_ias_tx_sock,socket_timeout)    
-    jsk_ias_tx_sock.bind('tcp://localhost:5550')
+    jsk_ias_tx_sock.bind('udp://localhost:5550')
 
     jsk_pos_rx_sock = context.socket(zmq.PULL)
     set_default_ops_pull(jsk_pos_rx_sock,socket_timeout)
-    jsk_pos_rx_sock.bind('tcp://localhost:5551')
+    jsk_pos_rx_sock.bind('udp://localhost:5551')
 
     #Servo 1 sockets: elevator
     s1_cmd_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_push(s1_cmd_tx_sock,socket_timeout)
-    s1_cmd_tx_sock.bind('tcp://localhost:5560')
+    s1_cmd_tx_sock.bind('udp://localhost:5560')
 
     s1_pos_rx_sock = context.socket(zmq.PULL)
     set_default_ops_pull(s1_pos_rx_sock,socket_timeout)
-    s1_pos_rx_sock.bind('tcp://localhost:5561')
+    s1_pos_rx_sock.bind('udp://localhost:5561')
 
     #Flight computer sockets
     #For communications with servo 1
     fc_s1_cm_rx_sock = context.socket(zmq.PULL) #Flight computer send servo 1 desired position here
     set_default_ops_pull(fc_s1_cm_rx_sock,socket_timeout)    
-    fc_s1_cm_rx_sock.bind('tcp://localhost:5670')
+    fc_s1_cm_rx_sock.bind('udp://localhost:5670')
     
     fc_s1_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives servo 1 current position from here
     set_default_ops_push(fc_s1_pos_tx_sock,socket_timeout)
-    fc_s1_pos_tx_sock.bind('tcp://localhost:5671')
+    fc_s1_pos_tx_sock.bind('udp://localhost:5671')
 
     fc_adc_cm_rx_sock = context.socket(zmq.PULL) #ADC partition
     set_default_ops_pull(fc_adc_cm_rx_sock,socket_timeout)    
-    fc_adc_cm_rx_sock.bind('tcp://localhost:5581')
+    fc_adc_cm_rx_sock.bind('udp://localhost:5581')
     
     fc_adc_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives ADC command from here
     set_default_ops_push(fc_adc_pos_tx_sock,socket_timeout)
-    fc_adc_pos_tx_sock.bind('tcp://localhost:5681')
+    fc_adc_pos_tx_sock.bind('udp://localhost:5681')
 
     fc_vn_cm_rx_sock = context.socket(zmq.PULL) #VN partition
     set_default_ops_pull(fc_vn_cm_rx_sock,socket_timeout)
-    fc_vn_cm_rx_sock.bind('tcp://localhost:5591')
+    fc_vn_cm_rx_sock.bind('udp://localhost:5591')
 
     fc_vn_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives vn command from here
     set_default_ops_push(fc_vn_pos_tx_sock,socket_timeout)
-    fc_vn_pos_tx_sock.bind('tcp://localhost:5691')
+    fc_vn_pos_tx_sock.bind('udp://localhost:5691')
 
     #For communications with joystick
     fc_jsk_pos_tx_sock = context.socket(zmq.PUSH) #Flight computer receives joystick position from here
     set_default_ops_push(fc_jsk_pos_tx_sock,socket_timeout)    
-    fc_jsk_pos_tx_sock.bind('tcp://localhost:5672')
+    fc_jsk_pos_tx_sock.bind('udp://localhost:5672')
 
     fc_jsk_ias_rx_sock = context.socket(zmq.PULL) #Flight computer sends IAS for the joystic here
     set_default_ops_pull(fc_jsk_ias_rx_sock,socket_timeout)    
-    fc_jsk_ias_rx_sock.bind('tcp://localhost:5673')  
+    fc_jsk_ias_rx_sock.bind('udp://localhost:5673')  
 
     #For the logger
     logger_tx_sock = context.socket(zmq.PUSH)
     set_default_ops_pull(logger_tx_sock,socket_timeout)
-    logger_tx_sock.bind('tcp://localhost:6100')
+    logger_tx_sock.bind('udp://localhost:6100')
 
     input_sockets  = [jsk_pos_rx_sock, s1_pos_rx_sock, fc_s1_cm_rx_sock, fc_jsk_ias_rx_sock, fc_adc_cm_rx_sock, fc_vn_cm_rx_sock] #Listen for messages arriving to here.
     output_sockets = [jsk_ias_tx_sock, s1_cmd_tx_sock, fc_s1_pos_tx_sock,fc_jsk_pos_tx_sock, fc_adc_pos_tx_sock, fc_vn_pos_tx_sock, logger_tx_sock] #Send to there

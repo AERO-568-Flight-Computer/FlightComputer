@@ -16,7 +16,7 @@ def main():
     logger_rx_sock.setsockopt(zmq.RCVTIMEO, TIMEOUT)
     logger_rx_sock.setsockopt(zmq.LINGER, 0)
     logger_rx_sock.setsockopt(zmq.CONFLATE, 1)
-    logger_rx_sock.connect('tcp://localhost:6100')
+    logger_rx_sock.connect('udp://localhost:6100')
 
     logfile = open(FILENAME,'bw')
     logfile.write(SESSIONSTART)
