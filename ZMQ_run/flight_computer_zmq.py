@@ -125,7 +125,7 @@ def main():
                 else:
                     raise Exception("Should have not happened, recieved from an unexpected socket?")
             time1 = time.time()
-            servo_pos_value = jsk_pos_value + adc_AOA_val
+            servo_pos_value = jsk_pos_value # + adc_AOA_val (this can be uncommented if you want the AOA vane to also control the servo motor. This can also be changed with a different value for dual control of the servo.)
             servo_cmd_msg = pack_servo_cmd_msg(b'S1',time1,servo_pos_value)
             print(f"{time1} : Servo cmd msg out:{unpack_servo_cmd_msg(servo_cmd_msg)}")
             fc_s1_cm_tx_sock.send(servo_cmd_msg)
