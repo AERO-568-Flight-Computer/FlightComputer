@@ -1,6 +1,7 @@
 import struct
 import warnings
 import ZMQ_run.opa_msg_library as msl
+import pandas as pd
 
 FILENAME = "LOG_from_zmqlogger.binlog"
 DELIMBYTES = b'delim_123'
@@ -43,35 +44,43 @@ for i,binmsg in enumerate(binmsgs):
         continue
     msg_type = binmsg[2:4]
     msg_dict = {}
-    msg_dict["Time loged"] = time_logged_list[i]
     if msg_type == b'SC':
+        msg_dict["Time loged"] = time_logged_list[i]
         msg_tuple = msl.unpack_servo_cmd_msg(binmsg)
-        msg_dict["Servo ID"] = msg_tuple[0]
+        msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]     = msg_tuple[1]
         msg_dict["Time"]     = msg_tuple[2]
         msg_dict["Angle desired"] = msg_tuple[3]["servo_angle_req"]
+        parsed_msgs.append(msg_dict)
     elif msg_type == b'SP':
+        msg_dict["Time loged"] = time_logged_list[i]
         msg_tuple = msl.unpack_servo_pos_msg(binmsg)
-        msg_dict["Servo ID"] = msg_tuple[0]
+        msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]     = msg_tuple[1]
         msg_dict["Time"]     = msg_tuple[2]
         msg_dict["Servo position"] = msg_tuple[3]["servo_pos_deg"]
+        parsed_msgs.append(msg_dict)
     elif msg_type == b'JC':
+        msg_dict["Time loged"] = time_logged_list[i]    
         msg_tuple = msl.unpack_joystic_cmd_msg(binmsg)
-        msg_dict["Joystic ID"] = msg_tuple[0]
+        msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]       = msg_tuple[1]
         msg_dict["Time"]       = msg_tuple[2]
         msg_dict["IAS"]        = msg_tuple[3] #Why is attempt at force feedback here?
+        parsed_msgs.append(msg_dict)
     elif msg_type == b'JS':
+        msg_dict["Time loged"] = time_logged_list[i]    
         msg_tuple = msl.unpack_joystic_state_msg(binmsg)
-        msg_dict["Joystic ID"] = msg_tuple[0]
+        msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]       = msg_tuple[1]
         msg_dict["Time"]       = msg_tuple[2]
         msg_dict["Pitch"]      = msg_tuple[3]
         msg_dict["Roll"]       = msg_tuple[4]
+        parsed_msgs.append(msg_dict)
     elif msg_type == b'AD':
+        msg_dict["Time loged"] = time_logged_list[i]
         msg_tuple = msl.unpack_adc_state_msg(binmsg)
-        msg_dict["ADC ID"] = msg_tuple[0]
+        msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]   = msg_tuple[1]
         msg_dict["Time"]   = msg_tuple[2]
         adc_data_dic = msg_tuple[3]
@@ -82,13 +91,42 @@ for i,binmsg in enumerate(binmsgs):
         msg_dict["diffSenseTempDL"] = adc_data_dic["diffSenseTempDL"]
         msg_dict["rearFlagAOA"]     = adc_data_dic["rearFlagAOA"]
         msg_dict["frontFlagYaw"]    = adc_data_dic["frontFlagYaw"]
+        parsed_msgs.append(msg_dict)
     elif msg_type == b'VN':
         msg_tuple = msl.unpack_vn_state_msg(binmsg)
     else:
         warnings.warn("Unrecognised msg type")
         continue
-    parsed_msgs.append(msg_dict)
-
 for parsed_msg in parsed_msgs:
     print(parsed_msg)
+
+
+hirerachical_msgs_dict = {}
+print('\n\n')
+for parsed_msg in parsed_msgs:
+    #First, make sure that hirerachical_msgs_dict[parsed_msg["ID"].decode()][parsed_msg["Type"].decode()] exists.
+    #Then, add to it.
+    print(parsed_msg)
+
+    time_logged = parsed_msg["Time loged"]
+    msg_id      = parsed_msg["ID"].decode()
+    msg_type    = parsed_msg["Type"].decode()
+    if msg_id not in hirerachical_msgs_dict.keys():
+        hirerachical_msgs_dict[msg_id] = {}
+    if msg_type not in hirerachical_msgs_dict[msg_id].keys():
+        hirerachical_msgs_dict[msg_id][msg_type] = pd.DataFrame()
+
+    msg_dataframe = pd.DataFrame(parsed_msg,[time_logged])
+    old_dataframe = hirerachical_msgs_dict[msg_id][msg_type]
+
+    new_dataframe = pd.concat([old_dataframe,msg_dataframe])
+    hirerachical_msgs_dict[msg_id][msg_type] = new_dataframe
+
+for msg_id in hirerachical_msgs_dict.keys():
+    filename = msg_id + '_log.xlsx'
+    with pd.ExcelWriter(filename) as exwriter:
+        for msg_type in hirerachical_msgs_dict[msg_id].keys():
+            dataframe = hirerachical_msgs_dict[msg_id][msg_type]
+            dataframe.to_excel(exwriter, sheet_name = msg_type)
+
     

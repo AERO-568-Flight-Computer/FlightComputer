@@ -5,7 +5,11 @@ import struct
 
 def main():
     TIMEOUT = 10000
-    FILENAME = "LOG_from_zmqlogger.binlog"
+    time_and_date = time.asctime()
+    time_and_date = time_and_date.replace(' ','_')
+    time_and_date = time_and_date.replace(':','_')
+    FILENAME = "opa_log_" + time_and_date + ".binlog" #Going to generate filename based on time and date.
+    #Than adjust filename in the logger 
     DELIMBYTES = b'delim_123'
     DELIMTIME  = b'delt'
     SESSIONSTART = b'SESSIONSTART'
