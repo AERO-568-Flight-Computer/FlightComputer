@@ -2,14 +2,10 @@ import struct
 import warnings
 import ZMQ_run.opa_msg_library as msl
 import pandas as pd
-import tkinter as tk
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import askdirectory, askdirectory
 
-root = tk.Tk()
-root.geometry("640x480")
-root.withdraw()
-initial_dir = "/logs"
+initial_dir = "/home/cp-opa/Desktop/FlightComputer/logs"
 
 FILENAME = askopenfilename(
     filetypes=[("Binary Log", "*.binlog")],
@@ -17,13 +13,11 @@ FILENAME = askopenfilename(
     initialdir=initial_dir
 )
 
-DIROUT   = askdirectory()
+DIROUT   = askdirectory(
+    title="Select Location to Save",
+    initialdir=initial_dir
+    )
 
-root.destroy()
-
-# FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
-# DIROUT   = askdirectory()
-# FILENAME = "opa_log_Wed_Jun__4_08_30_08_2025.binlog"
 DELIMBYTES   = b'delim_123'
 DELIMTIME    = b'delt'
 SESSIONSTART = b'SESSIONSTART'
