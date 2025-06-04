@@ -2,8 +2,10 @@ import struct
 import warnings
 import ZMQ_run.opa_msg_library as msl
 import pandas as pd
+from tkinter.filedialog import askopenfilename
 
-FILENAME = "LOG_from_zmqlogger.binlog"
+FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
+# FILENAME = "opa_log_Wed_Jun__4_08_30_08_2025.binlog"
 DELIMBYTES = b'delim_123'
 DELIMTIME  = b'delt'
 SESSIONSTART = b'SESSIONSTART'
@@ -74,8 +76,8 @@ for i,binmsg in enumerate(binmsgs):
         msg_dict["ID"] = msg_tuple[0]
         msg_dict["Type"]       = msg_tuple[1]
         msg_dict["Time"]       = msg_tuple[2]
-        msg_dict["Pitch"]      = msg_tuple[3]
-        msg_dict["Roll"]       = msg_tuple[4]
+        msg_dict["Pitch"]      = msg_tuple[3]["pitch"]
+        msg_dict["Roll"]       = msg_tuple[3]["roll"]
         parsed_msgs.append(msg_dict)
     elif msg_type == b'AD':
         msg_dict["Time loged"] = time_logged_list[i]
