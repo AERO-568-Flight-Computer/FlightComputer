@@ -3,11 +3,14 @@ import warnings
 import ZMQ_run.opa_msg_library as msl
 import pandas as pd
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askdirectory
+
 
 FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
+DIROUT   = askdirectory()
 # FILENAME = "opa_log_Wed_Jun__4_08_30_08_2025.binlog"
-DELIMBYTES = b'delim_123'
-DELIMTIME  = b'delt'
+DELIMBYTES   = b'delim_123'
+DELIMTIME    = b'delt'
 SESSIONSTART = b'SESSIONSTART'
 
 file = open(FILENAME,'br')
@@ -125,7 +128,7 @@ for parsed_msg in parsed_msgs:
     hirerachical_msgs_dict[msg_id][msg_type] = new_dataframe
 
 for msg_id in hirerachical_msgs_dict.keys():
-    filename = msg_id + '_log.xlsx'
+    filename = DIROUT + '/' + msg_id + '_log.xlsx'
     with pd.ExcelWriter(filename) as exwriter:
         for msg_type in hirerachical_msgs_dict[msg_id].keys():
             dataframe = hirerachical_msgs_dict[msg_id][msg_type]

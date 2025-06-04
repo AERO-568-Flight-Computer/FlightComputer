@@ -1,14 +1,24 @@
 import zmq
+import os
 from partitonManagerFunc import initialize
 import time
 import struct
 
 def main():
-    TIMEOUT = 10000
+    #Trying to make a folder to store logs in
     time_and_date = time.asctime()
     time_and_date = time_and_date.replace(' ','_')
     time_and_date = time_and_date.replace(':','_')
-    FILENAME = "opa_log_" + time_and_date + ".binlog" #Going to generate filename based on time and date.
+
+    DIRNAME = "logs" + "/" + "opa_log_" + time_and_date
+    try:
+        os.makedirs(DIRNAME)
+    except Exception as e:
+        print(e)
+        raise
+
+    TIMEOUT = 10000
+    FILENAME = DIRNAME + '/' + "opa_log_" + time_and_date + ".binlog" #Going to generate filename based on time and date.
     #Than adjust filename in the logger 
     DELIMBYTES = b'delim_123'
     DELIMTIME  = b'delt'
