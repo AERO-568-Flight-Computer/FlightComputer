@@ -45,7 +45,7 @@ CL_alpha = 5.16;
 
 % CL due to elevator deflection.
 % Note: Multiplicative coefficient for elevator deflection (rad).
-CL_elev = 1.136;
+CL_elev = 3.136;
 
 CLEH_alpha = 4.52;
 
@@ -57,7 +57,6 @@ load('Cirrus Data\CL_total.mat')
 % extract Polar Data 
 CL_Polar = real(CL_Final_integer);
 CD_Polar = real(CD_total);
-
 
 % figure 
 % plot(CD_Polar, CL_Polar)

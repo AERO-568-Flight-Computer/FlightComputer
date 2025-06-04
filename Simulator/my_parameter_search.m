@@ -14,12 +14,8 @@ for i = 1:length(fields)
     assignin('base', fields{i}, SR22T.(fields{i})); % Assign each field to a variable
 end
 
+CL_zero = 0; 
 M = M - 200; 
-CL_zero = 0.0; 
-dragCorr = 1.2;
-CL_elev = CL_elev * 3.0; 
-
-
 
 %% Set Initial States + Controls 
 states_init = [0 -1227 4.78/57.3 157.50*1.852/3.6 0 0];  % initial conditions H=ft, Vx=kts
