@@ -5,9 +5,9 @@ import pandas as pd
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import askdirectory
 
-
 FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
 DIROUT   = askdirectory()
+root.mainloop()
 # FILENAME = "opa_log_Wed_Jun__4_08_30_08_2025.binlog"
 DELIMBYTES   = b'delim_123'
 DELIMTIME    = b'delt'
@@ -23,8 +23,8 @@ entries = session1.split(DELIMBYTES)
 binmsgs = []
 time_logged_list = []
 
-for entry in entries:
-    print(entry)
+# for entry in entries:
+    # print(entry)
 entries.remove(b'')  # Remove any empty entries
 
 for entry in entries:
@@ -35,11 +35,13 @@ for entry in entries:
     time_logged = struct.unpack('d',time_raw)
     time_logged = time_logged[0]
     time_logged_list.append(time_logged)
-    print(entry[2:4], ' time raw:', time_raw, 'time:', time_logged)
+    # print(entry[2:4], ' time raw:', time_raw, 'time:', time_logged)
 file.close()
 
 #First unpack with correct function, and put into a list:
 #each element: dict: {id:, field1:, field2:, etc}
+
+print("Parsing...")
 
 parsed_msgs = []
 for i,binmsg in enumerate(binmsgs):
@@ -102,16 +104,16 @@ for i,binmsg in enumerate(binmsgs):
     else:
         warnings.warn("Unrecognised msg type")
         continue
-for parsed_msg in parsed_msgs:
-    print(parsed_msg)
+# for parsed_msg in parsed_msgs:
+    # print(parsed_msg)
 
 
 hirerachical_msgs_dict = {}
-print('\n\n')
+# print('\n\n')
 for parsed_msg in parsed_msgs:
     #First, make sure that hirerachical_msgs_dict[parsed_msg["ID"].decode()][parsed_msg["Type"].decode()] exists.
     #Then, add to it.
-    print(parsed_msg)
+    # print(parsed_msg)
 
     time_logged = parsed_msg["Time loged"]
     msg_id      = parsed_msg["ID"].decode()
