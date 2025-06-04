@@ -2,12 +2,27 @@ import struct
 import warnings
 import ZMQ_run.opa_msg_library as msl
 import pandas as pd
+import tkinter as tk
 from tkinter.filedialog import askopenfilename
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askdirectory, askdirectory
 
-FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
+root = tk.Tk()
+root.geometry("640x480")
+root.withdraw()
+initial_dir = "/logs"
+
+FILENAME = askopenfilename(
+    filetypes=[("Binary Log", "*.binlog")],
+    title="Select File to Parse",
+    initialdir=initial_dir
+)
+
 DIROUT   = askdirectory()
-root.mainloop()
+
+root.destroy()
+
+# FILENAME = askopenfilename(filetypes=[("Binary Log", "*.binlog")], title="Select File to Parse")
+# DIROUT   = askdirectory()
 # FILENAME = "opa_log_Wed_Jun__4_08_30_08_2025.binlog"
 DELIMBYTES   = b'delim_123'
 DELIMTIME    = b'delt'
